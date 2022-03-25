@@ -1,25 +1,22 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import UserCard from './Components/UserCard';
 
 function App() {
+
+
+
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  <div className='bg-gray-100 antialiased h-screen '>
+    <main className='main-container '>
+        <div className='grid gap-5 lg:grid-cols-3'>
+          <UserCard />
+          </div>
+          </main>
+          </div>
   );
 }
 
