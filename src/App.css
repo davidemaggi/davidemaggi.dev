@@ -1017,13 +1017,6 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
-.block-title {
-  font-weight: 600;
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-  margin-bottom: 1.25rem;
-}
-
 .item-section > :not([hidden]) ~ :not([hidden]) {
   --tw-space-y-reverse: 0;
   margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));

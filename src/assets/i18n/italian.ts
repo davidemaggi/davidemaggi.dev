@@ -1,8 +1,21 @@
-import i18nLang from "../../Utils/LangInterface";
+import i18nLang from "../../models/LangInterface";
 
 const Italian:i18nLang={
     Common:{
-        DownloadCV:"Scarica il CV"
+        Information:"Informazioni",
+        DownloadCV:"Scarica il CV",
+        Role:"SW Architect / Tech. Leader",
+        Status: "Full Time",
+        Location: "Luogo",
+        BirthDay:"Compleanno",
+        Experience:"Esperienza",
+        Years:"Anni",
+        
+
+
+    },
+    Experience:{
+        Current:"attuale"
     }
 }
 

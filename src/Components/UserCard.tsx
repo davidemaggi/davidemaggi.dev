@@ -3,34 +3,34 @@ import Card from "./UI/Card";
 import userImage from "../assets/img/davide.png";
 import personalData from "../assets/data/personal";
 import { useTranslation } from "../Utils/i18nUtil";
+import Flags from 'country-flag-icons/react/3x2'
 
 
 const UserCard: React.FC<{}> = (props) => {
 
-    const {translate, setLanguage, currentLanguage, languages} = useTranslation();
+    const {translate, setLanguage} = useTranslation();
 
-const testHandler=()=>{
+const langHandler=(lang:string)=>{
 
-    setLanguage("en")
+    setLanguage(lang)
 
-    console.log(translate("AAAAA"))
 
 }
 
-console.log(currentLanguage,languages)
+
 
   return (
     <Card>
       <div className={`h-32 bg-cover header`}></div>
       <div className="pt-14 p-7 bg-white relative">
-        <span className="status-badge bg-gray-400">Busy</span>
+        <span className="status-badge bg-gray-400">{translate('Common.Status')}</span>
         <a href="/personal_cv/">
           <img src={userImage} alt="Avatar" className="user-photo" />
         </a>
         <div className="text-lg font-semibold mb-1.5">{personalData.fullName}</div>
-        <div className="text-sm text-gray-400 mb-7">Senior Developer</div>
+        <div className="text-sm text-gray-400 mb-7">{translate('Common.Role')}</div>
         <div className="flex group">
-          <button className="download-btn" onClick={testHandler}>Download CV</button>
+          <button className="download-btn">{translate('Common.DownloadCV')}</button>
           <button className="download-btn-icon">
             <svg
               xmlns="http://www.w3.org/2000/svg"

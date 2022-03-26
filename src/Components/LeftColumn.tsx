@@ -1,16 +1,16 @@
-import React from "react"
-import Card from "./UI/Card"
+import React from "react";
+import UserCard from "./UserCard";
+import UserInfo from "./UserInfo";
+import UserSkill from "./UserSkills";
 
-const LeftColumn:React.FC<{}> = (props) =>{
+const LeftColumn: React.FC<{}> = (props) => {
+  return (
+    <div className="space-y-5">
+      <UserCard />
+      <UserInfo />
+      <UserSkill />
+    </div>
+  );
+};
 
-    return (
-        <div className='space-y-5'>
-<Card></Card>
-         </div>   
-    )
-
-
-}
-
-
-export default LeftColumn
+export default LeftColumn;

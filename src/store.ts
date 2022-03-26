@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
-import {i18nSlice} from './Slices/i18nSlice'
+import {configSlice} from './Slices/configSlice'
 
 export const store = configureStore({
   reducer: {
-    i18n: i18nSlice.reducer,
+    config: configSlice.reducer,
    
   },
 })
