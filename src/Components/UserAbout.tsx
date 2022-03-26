@@ -4,6 +4,9 @@ import personalData from "../assets/data/personal";
 
 import { useTranslation } from "../Utils/i18nUtil";
 import styles from "../Utils/styles";
+import { BsFacebook } from "react-icons/bs";
+import { IconContext } from "react-icons";
+import SocialButtons from "./SocialButtons";
 
 const UserAbout: React.FC<{}> = (props) => {
   const { translate, setLanguage } = useTranslation();
@@ -24,23 +27,7 @@ const UserAbout: React.FC<{}> = (props) => {
           <span>{personalData.email}</span>
         </a>
 
-        <ul className="flex space-x-5">
-          <li>
-            <a href="#0" className="social-link-hover">
-              <i className="bx bxl-facebook-circle text-2xl"></i>
-            </a>
-          </li>
-          <li>
-            <a href="#0" className="social-link-hover">
-              <i className="bx bxl-twitter text-2xl"></i>
-            </a>
-          </li>
-          <li>
-            <a href="#0" className="social-link-hover">
-              <i className="bx bxl-github text-2xl"></i>
-            </a>
-          </li>
-        </ul>
+        <SocialButtons/>
       </div>
 
       <div className="border-t border-gray-200 my-5"></div>
