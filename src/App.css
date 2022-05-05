@@ -16,3 +16,12 @@
       visibility: hidden;
     }
   }
+
+  .item {
+    @apply
+
+      flex items-center content-center justify-center
+      
+  }
+
+  

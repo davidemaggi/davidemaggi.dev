@@ -1,12 +1,15 @@
 import commandResult from "../models/CommandResult";
+import { contact } from "./commnands/contact";
 import { help } from "./commnands/help";
 import { menu } from "./commnands/menu";
+import { notFound } from "./commnands/notFound";
 
 export const executeCommand = (command:string):commandResult => {
 
     command=command.toLowerCase().trim();
 
     const commandParts=command.split(" ");
+    console.log("Executing Command",commandParts)
 
     if(commandParts[0]==="help"){
         if(commandParts.length>1){
@@ -18,14 +21,19 @@ export const executeCommand = (command:string):commandResult => {
         
     }
 
-    if(commandParts[0]==="ls" || commandParts[0]==="dir" ){
+    if(["dir","ls"].includes(commandParts[0])){
         return menu();
         
     }
 
-    console.log("Executing Command",command)
+    if(["info","about","whoami"].includes(commandParts[0])){
+        return contact();
+        
+    }
+
     
  
+ 
 
-return new commandResult();
+return commandParts.length==0 || commandParts[0].trim().length==0 ? new commandResult() : notFound(commandParts);
 }
