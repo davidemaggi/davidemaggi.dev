@@ -119,7 +119,7 @@ const ConsoleMain: React.FC<{}> = (props) => {
         <div className="top mb-2 flex">
           <ConsoleButtons onClickGreen={scrollToBottom} />
         </div>
-        <div className="overflow-y-auto h-96 scrollbar-thin scrollbar-thumb-blue-700 scrollbar-track-blue-300" ref={rowAreaRef}>
+        <div className="overflow-y-auto h-96 scrollbar-thin scrollbar-thumb-gray-900 scrollbar-track-gray-700" ref={rowAreaRef}>
          {rows.map(r=>  {return r;})}
          <ConsoleRow key={9999999999} isInput={true} cursorPos={cursorPos} userName={currentUser} computerName={currentComputerName} path={currentPath} content={currentCommand}/>
         </div>
