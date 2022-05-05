@@ -21,7 +21,7 @@ const ConsoleRow: React.FC<{
 
   let rowText= props.isInput 
   ?  <><span>{props.content?.substring(0,props.cursorPos)}</span><span className="blink">|</span><span>{props.content?.substring(props.cursorPos? props.cursorPos : 0 )}</span></>
-  : <span>{props.content}</span>;
+  : <span className="whitespace-pre-wrap">{props.content}</span>;
 
 
   return (
