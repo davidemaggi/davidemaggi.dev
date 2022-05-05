@@ -1,17 +1,13 @@
 import "./App.css";
-import LeftColumn from "./Components/LeftColumn";
-import MainColumn from "./Components/MainColumn";
+import ConsoleMain from "./Components/UI/Console";
+
 
 function App() {
   return (
-    <div className="bg-gray-100 antialiased">
-      <main className="main-container ">
-        <div className="grid gap-5 lg:grid-cols-3">
-          <LeftColumn />
-          <MainColumn />
-        </div>
-      </main>
-    </div>
+    <div className="m-auto w-2/3 h-2/3">
+   <ConsoleMain/>
+   </div>
+
   );
 }
 
