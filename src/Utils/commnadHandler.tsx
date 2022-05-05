@@ -1,5 +1,6 @@
 import commandResult from "../models/CommandResult";
 import { help } from "./commnands/help";
+import { menu } from "./commnands/menu";
 
 export const executeCommand = (command:string):commandResult => {
 
@@ -14,6 +15,11 @@ export const executeCommand = (command:string):commandResult => {
         }else{
             return help();
         }
+        
+    }
+
+    if(commandParts[0]==="ls" || commandParts[0]==="dir" ){
+        return menu();
         
     }
 
