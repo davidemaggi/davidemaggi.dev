@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import "./App.css";
 import ConsoleMain from "./Components/UI/Console";
-import MenuBar from "./Components/UI/MenuBar";
 
 function App() {
 
@@ -18,7 +17,7 @@ function App() {
         </div>
   </div>
 	<div className="flex items-center content-center justify-center w-full h-12 flex-none">
-    <MenuBar />
+  &nbsp;
   </div>
 </div>
 

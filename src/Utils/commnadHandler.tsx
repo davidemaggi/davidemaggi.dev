@@ -1,11 +1,11 @@
 import ConsoleRow from "../Components/UI/ConsoleRow";
 import commandResult from "../models/CommandResult";
-import { about } from "./commnands/about";
-import { credits } from "./commnands/credits";
-import { experience } from "./commnands/experience";
-import { help } from "./commnands/help";
-import { menu } from "./commnands/menu";
-import { notFound } from "./commnands/notFound";
+import { aboutCmd } from "./commnands/aboutCmd";
+import { creditsCmd } from "./commnands/creditsCmd";
+import { experienceCmd } from "./commnands/experienceCmd";
+import { helpCmd } from "./commnands/helpCmd";
+import { menuCmd } from "./commnands/menuCmd";
+import { notFoundCmd } from "./commnands/notFoundCmd";
 
 import { v4 as uuidv4 } from "uuid";
 import { BsTranslate } from "react-icons/bs";
@@ -13,7 +13,7 @@ import { BiErrorAlt } from "react-icons/bi";
 
 
 export interface CommandParameters{
-    command:string, setLanguage?:any
+    command:string, setLanguage?:any, lang?:string
 }
 
 export const useCommandExecutor = (p:CommandParameters):commandResult => {
@@ -28,30 +28,30 @@ export const useCommandExecutor = (p:CommandParameters):commandResult => {
     if(commandParts[0]==="help"){
         if(commandParts.length>1){
 
-            return help(commandParts);
+            return helpCmd(commandParts);
         }else{
-            return help();
+            return helpCmd();
         }
         
     }
 
     if(["dir","ls"].includes(commandParts[0])){
-        return menu();
+        return menuCmd();
         
     }
 
     if(["info","about","whoami"].includes(commandParts[0])){
-        return about();
+        return aboutCmd();
         
     }
 
     if(["job","experience","cv"].includes(commandParts[0])){
-        return experience();
+        return experienceCmd([],p.lang);
         
     }
  
     if(["credits"].includes(commandParts[0])){
-        return credits();
+        return creditsCmd();
         
     }
 
@@ -80,5 +80,5 @@ export const useCommandExecutor = (p:CommandParameters):commandResult => {
         
     }
 
-return commandParts.length===0 || commandParts[0].trim().length===0 ? new commandResult() : notFound(commandParts);
+return commandParts.length===0 || commandParts[0].trim().length===0 ? new commandResult() : notFoundCmd(commandParts);
 }

@@ -3,7 +3,7 @@ import commandResult from "../../models/CommandResult";
 import { commandResultEnum } from "../../models/Enums";
 import { v4 as uuidv4 } from 'uuid';
 
-export const menu = (cmd:string[]=[]):commandResult => {
+export const menuCmd = (cmd:string[]=[]):commandResult => {
 
 let ret:commandResult = new commandResult();
 console.log("Command to execute",cmd)

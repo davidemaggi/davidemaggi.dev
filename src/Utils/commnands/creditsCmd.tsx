@@ -7,7 +7,7 @@ import { SiTailwindcss } from "react-icons/si";
 import { cageLine, emptyLine } from "./utils";
 import { BsFacebook } from "react-icons/bs";
 
-export const credits = (cmd:string[]=[]):commandResult => {
+export const creditsCmd = (cmd:string[]=[]):commandResult => {
 
 
     

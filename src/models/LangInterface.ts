@@ -25,7 +25,15 @@ interface i18nLang {
         Missing:string,
     },
     Experience:{
-        Current:string
+        Current:string,
+        Title:string
+    },
+    Commands:{
+        whoami:string,
+        credits:string,
+        skills:string,
+        cv:string,
+        clear:string
     }
 
 }

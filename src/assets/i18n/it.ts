@@ -21,12 +21,20 @@ const Italian:i18nLang={
         Missing: "Seleziona almeno una lingua: 'en' or 'it'",
     },
     Experience: {
-        Current: "attuale"
+        Current: "attuale",
+        Title: "Work Experience"
     },
     About: {
         Title: "Hi! I'm Davide 👋",
         Phone: "<Nascosto>",
         Missing: ""
+    },
+    Commands: {
+        whoami: "A Proposito di me",
+        credits: "Credits",
+        skills: "Skill",
+        cv: "Esperienza",
+        clear: "Pulisci",
     }
 }
 

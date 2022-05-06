@@ -7,7 +7,7 @@ import personalData from "../../assets/data/personal";
 import { MdAlternateEmail } from "react-icons/md";
 import { FaBirthdayCake, FaMapMarkerAlt, FaPhoneSquareAlt } from "react-icons/fa";
 
-export const about = (cmd:string[]=[]):commandResult => {
+export const aboutCmd = (cmd:string[]=[]):commandResult => {
 
 let ret:commandResult = new commandResult();
 console.log("Command to execute",cmd)

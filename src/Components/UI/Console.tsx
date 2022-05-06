@@ -6,7 +6,7 @@ import ConsoleRow from "./ConsoleRow";
 import { v4 as uuidv4 } from "uuid";
 import { useTranslation } from "../../Utils/i18nUtil";
 import { BrowserView, MobileView, isBrowser, isMobile } from 'react-device-detect';
-import MobileButtons from "./MobileButtons";
+import MobileButtons from "../MobileButtons";
 
 
 
@@ -22,7 +22,7 @@ const ConsoleMain: React.FC<{}> = (props) => {
     useState<string>("dmdev");
   const [currentPath, setCurrentPath] = useState<string>("~");
   
-  const { translate, setLanguage } = useTranslation();
+  const { translate, setLanguage,language } = useTranslation();
 
   const rowAreaRef = useRef<HTMLDivElement>(null);
   const consoleRef = useRef<HTMLDivElement>(null);
@@ -41,6 +41,7 @@ const ConsoleMain: React.FC<{}> = (props) => {
   useEffect(() => {
     setCursorPos(currentCommand.length);
     consoleRef.current?.focus();
+    setTriggerCommand(true);
   }, []);
 
   const handleClick = (event: any) => {
@@ -68,7 +69,7 @@ const ConsoleMain: React.FC<{}> = (props) => {
         setRows([]);
       } else {
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        let cmdResult = useCommandExecutor({command:currentCommand, setLanguage:setLanguage});
+        let cmdResult = useCommandExecutor({command:currentCommand, setLanguage:setLanguage, lang:language});
         setRows((oldArray) => [...oldArray, ...cmdResult.rows]);
       }
 
@@ -171,9 +172,9 @@ setCurrentCommand(cmd);
           />
         </div>
       </div>
-      <MobileView>
+      
       <MobileButtons sendCommandUp={handleButtonCommand} />
-  </MobileView>
+  
     </div>
     
     
@@ -183,3 +184,4 @@ setCurrentCommand(cmd);
 };
 
 export default ConsoleMain;
+//<MobileView></MobileView>
