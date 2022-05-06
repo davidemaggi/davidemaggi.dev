@@ -12,7 +12,7 @@ let ret:commandResult = new commandResult();
 console.log("Command to execute",cmd)
 ret.result=commandResultEnum.INFO;
 ret.rows.push(...cageLine("Credits"));
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"How this site has been made?"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"How this site has been built?"}/>);
 
 ret.rows.push(...emptyLine(1));
 
