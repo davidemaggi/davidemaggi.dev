@@ -172,9 +172,9 @@ setCurrentCommand(cmd);
           />
         </div>
       </div>
-      
+      <MobileView>
       <MobileButtons sendCommandUp={handleButtonCommand} />
-  
+      </MobileView>
     </div>
     
     
@@ -184,4 +184,3 @@ setCurrentCommand(cmd);
 };
 
 export default ConsoleMain;
-//<MobileView></MobileView>
