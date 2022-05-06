@@ -1,10 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useCommandExecutor } from "../../Utils/commnadHandler";
 import { insertInString } from "../../Utils/stringUtil";
 import ConsoleButtons from "./ConsoleButtons";
 import ConsoleRow from "./ConsoleRow";
 import { v4 as uuidv4 } from "uuid";
 import { useTranslation } from "../../Utils/i18nUtil";
+import { BrowserView, MobileView, isBrowser, isMobile } from 'react-device-detect';
+import MobileButtons from "./MobileButtons";
 
 
 
@@ -15,6 +17,7 @@ const ConsoleMain: React.FC<{}> = (props) => {
   const [cursorPos, setCursorPos] = useState<number>(0);
   const [currentCommand, setCurrentCommand] = useState<string>("whoami");
   const [currentUser, setCurrentUser] = useState<string>("guest");
+  const [triggerCommand, setTriggerCommand] = useState<boolean>(false);
   const [currentComputerName, setCurrentComputerName] =
     useState<string>("dmdev");
   const [currentPath, setCurrentPath] = useState<string>("~");
@@ -45,7 +48,7 @@ const ConsoleMain: React.FC<{}> = (props) => {
   };
 
   const HandleKeyPress = (event: any) => {
-    //console.log("enter press here! ", event.key);
+    console.log("enter press here! ", event.key);
 
     if (event.key === "Enter") {
       setHistory((oldArray) => [...oldArray, currentCommand]);
@@ -115,7 +118,26 @@ const ConsoleMain: React.FC<{}> = (props) => {
     //console.log(historyLvl, history);
   };
 
+  useEffect(() => {
+
+    if(triggerCommand){
+      HandleKeyPress({key:"Enter"});
+      setTriggerCommand(false);
+    } // This is be executed when `loading` state changes
+}, [triggerCommand])
+  
+  const handleButtonCommand = (cmd:string) => {
+console.log(cmd)
+setCurrentCommand(cmd);
+
+    setTriggerCommand(true);
+
+//HandleKeyPress({key:"Enter"});
+  }
+
+
   return (
+    <>
     <div
     ref={consoleRef}
       className="w-full h-full outline-0"
@@ -149,7 +171,14 @@ const ConsoleMain: React.FC<{}> = (props) => {
           />
         </div>
       </div>
+      <MobileView>
+      <MobileButtons sendCommandUp={handleButtonCommand} />
+  </MobileView>
     </div>
+    
+    
+  
+  </>
   );
 };
 

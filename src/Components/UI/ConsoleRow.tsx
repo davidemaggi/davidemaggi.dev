@@ -10,6 +10,8 @@ const ConsoleRow: React.FC<{
   computerName?: string;
   userName?: string;
   path?: string;
+  contentColor?: string;
+  prefixColor?: string;
   cursorPos?: number;
   indent?: number;
   showPrefix?: boolean;
@@ -25,6 +27,8 @@ const ConsoleRow: React.FC<{
     userName: "guest",
     indent: 0,
     path: "~",
+    prefixColor: "text-green-400",
+    contentColor: "text-gray-100",
     isInput: false,
     cursorPos: 0,
     icon: undefined,
@@ -46,7 +50,7 @@ const ConsoleRow: React.FC<{
   let link=null
 
   if(props.link && props.link?.length>0){
-    link=<a href={props.link} target="_blank" className="social-link-hover"> ➡️ {props.linkText && props.linkText ? props.linkText : props.link} </a>
+    link=<a href={props.link} target="_blank" className="social-link-hover"> → {props.linkText && props.linkText ? props.linkText : props.link} </a>
   }
 
 
@@ -70,12 +74,12 @@ const ConsoleRow: React.FC<{
     >
     <div className="flex mt-0">
       {props.showPrefix && (
-        <span className="text-green-400">
+        <span className={[props.prefixColor].join(" ")}>
           {props.userName}@{props.computerName}:{props.path}$
         </span>
       )}
 
-      <p className="flex-1 typing items-center pl-2 whitespace-pre-wrap">
+      <p className={[props.contentColor,"flex-1", "typing", "items-center", "pl-2", "whitespace-pre-wrap"].join(" ")}>
         {props.icon && <props.icon className="inline"/>}
         {rowText}
         {link ? link : null}
