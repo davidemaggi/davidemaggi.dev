@@ -8,7 +8,7 @@ interface ConfigState {
 
 // Define the initial state using that type
 const initialState: ConfigState = {
-  language:"it",
+  language:"en",
 }
 
 

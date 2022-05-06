@@ -10,6 +10,20 @@ interface i18nLang {
         Experience:string,
         Years:string,
     },
+    Credits:{
+        Title:string,
+        Description:string,
+    },
+    Translate:{
+        Ok:string,
+        Error:string,
+        Missing:string,
+    },
+    About:{
+        Title:string,
+        Phone:string,
+        Missing:string,
+    },
     Experience:{
         Current:string
     }

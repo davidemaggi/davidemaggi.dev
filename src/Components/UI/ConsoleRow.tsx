@@ -2,6 +2,7 @@ import React from "react";
 import { IconContext, IconType } from "react-icons";
 import { BsFacebook, BsArrowRight} from "react-icons/bs";
 import { MdOpenInNew} from "react-icons/md";
+import { useTranslation } from "../../Utils/i18nUtil";
 
 const ConsoleRow: React.FC<{
   content?: string;
@@ -34,6 +35,8 @@ const ConsoleRow: React.FC<{
     showPrefix: true,
   };
 
+  const { translate } = useTranslation();
+
   let outputIndent=props.indent ? props.indent :0;
 
   if(props.icon){
@@ -47,7 +50,7 @@ const ConsoleRow: React.FC<{
   }
 
 
- let ouputContent=(" ".repeat(outputIndent ? outputIndent: 0).concat(props.content?props.content:""));
+ let ouputContent=(" ".repeat(outputIndent ? outputIndent: 0).concat(props.content? translate(props.content):""));
 
   let rowText = props.isInput ? (
     <>

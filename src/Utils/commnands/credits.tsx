@@ -5,14 +5,17 @@ import { v4 as uuidv4 } from 'uuid';
 import { FaReact,FaAws } from "react-icons/fa";
 import { SiTailwindcss } from "react-icons/si";
 import { cageLine, emptyLine } from "./utils";
+import { BsFacebook } from "react-icons/bs";
 
 export const credits = (cmd:string[]=[]):commandResult => {
 
+
+    
 let ret:commandResult = new commandResult();
 console.log("Command to execute",cmd)
 ret.result=commandResultEnum.INFO;
-ret.rows.push(...cageLine("Credits"));
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"How this site has been built?"}/>);
+ret.rows.push(...cageLine("Credits.Title"));
+ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"Credits.Description"}/>);
 
 ret.rows.push(...emptyLine(1));
 

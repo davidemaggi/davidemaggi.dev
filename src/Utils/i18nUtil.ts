@@ -21,12 +21,24 @@ const setLanguage=(lang:string)=>{dispatch(changeLanguage(lang))}
 
 
 
-  const translate = (key:string):string => {
+  const translate = (txt:string):string => {
 
+  
+    let ret:string[]=[];
+    let tmp=txt.replace(" ", "_");
+    let expTxt=txt.split("_");
 
+    expTxt.forEach((key)=>{
+//console.log(key);
+      ret.push(_.get(language==="it" ? languages.italian : languages.english, key,key));
 
+    })
 
-return _.get(language==="it" ? languages.italian : languages.english, key) || key
+//console.log(`"${key}"`,languages,language);
+
+//let ret=_.get(language==="it" ? languages.italian : languages.english, txt);
+//clearconsole.log(expTxt)
+return ret.join("_");
 
     
   };
@@ -35,3 +47,5 @@ return _.get(language==="it" ? languages.italian : languages.english, key) || ke
 
   return { translate, setLanguage, language };
 };
+
+

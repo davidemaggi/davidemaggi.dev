@@ -1,20 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
-import { executeCommand } from "../../Utils/commnadHandler";
+import { useCommandExecutor } from "../../Utils/commnadHandler";
 import { insertInString } from "../../Utils/stringUtil";
 import ConsoleButtons from "./ConsoleButtons";
 import ConsoleRow from "./ConsoleRow";
 import { v4 as uuidv4 } from "uuid";
+import { useTranslation } from "../../Utils/i18nUtil";
+
+
 
 const ConsoleMain: React.FC<{}> = (props) => {
   const [rows, setRows] = useState<any[]>([]);
   const [history, setHistory] = useState<string[]>([]);
   const [historyLvl, setHistoryLvl] = useState<number>(0);
   const [cursorPos, setCursorPos] = useState<number>(0);
-  const [currentCommand, setCurrentCommand] = useState<string>("help");
+  const [currentCommand, setCurrentCommand] = useState<string>("whoami");
   const [currentUser, setCurrentUser] = useState<string>("guest");
   const [currentComputerName, setCurrentComputerName] =
     useState<string>("dmdev");
   const [currentPath, setCurrentPath] = useState<string>("~");
+  
+  const { translate, setLanguage } = useTranslation();
 
   const rowAreaRef = useRef<HTMLDivElement>(null);
   const consoleRef = useRef<HTMLDivElement>(null);
@@ -36,11 +41,11 @@ const ConsoleMain: React.FC<{}> = (props) => {
   }, []);
 
   const handleClick = (event: any) => {
-    console.log("Click! ");
+    //console.log("Click! ");
   };
 
-  const handleKeyPress = (event: any) => {
-    console.log("enter press here! ", event.key);
+  const HandleKeyPress = (event: any) => {
+    //console.log("enter press here! ", event.key);
 
     if (event.key === "Enter") {
       setHistory((oldArray) => [...oldArray, currentCommand]);
@@ -59,7 +64,8 @@ const ConsoleMain: React.FC<{}> = (props) => {
       if (currentCommand.toLowerCase().trim() === "clear") {
         setRows([]);
       } else {
-        let cmdResult = executeCommand(currentCommand);
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        let cmdResult = useCommandExecutor({command:currentCommand, setLanguage:setLanguage});
         setRows((oldArray) => [...oldArray, ...cmdResult.rows]);
       }
 
@@ -75,19 +81,20 @@ const ConsoleMain: React.FC<{}> = (props) => {
   };
 
   const handleKeyUp = (event: any) => {
-    console.log("KeyUp! ", event.key);
+    //console.log("KeyUp! ", event.key);
 
     if (event.key === "ArrowUp") {
    
         setHistoryLvl((old) =>(old -1 >0 ? old - 1 : 0));
         setCurrentCommand(history[historyLvl]);
-        
+        setCursorPos(currentCommand.length);
       
     }
     if (event.key === "ArrowDown") {
     
         setHistoryLvl((old) => (old + 1 < history.length ? old + 1 : history.length-1));
         setCurrentCommand(history[historyLvl]);
+        setCursorPos(currentCommand.length);
       
     }
 
@@ -105,7 +112,7 @@ const ConsoleMain: React.FC<{}> = (props) => {
       );
     }
 
-    console.log(historyLvl, history);
+    //console.log(historyLvl, history);
   };
 
   return (
@@ -113,7 +120,7 @@ const ConsoleMain: React.FC<{}> = (props) => {
     ref={consoleRef}
       className="w-full h-full outline-0"
       onClick={handleClick}
-      onKeyPress={handleKeyPress}
+      onKeyPress={HandleKeyPress}
       onKeyUp={handleKeyUp}
       tabIndex={0}
     >
