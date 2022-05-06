@@ -64,7 +64,7 @@ const ConsoleMain: React.FC<{}> = (props) => {
       }
 
       setCurrentCommand("");
-      setHistoryLvl(0);
+      setHistoryLvl(history.length);
       return;
     }
 
@@ -78,18 +78,17 @@ const ConsoleMain: React.FC<{}> = (props) => {
     console.log("KeyUp! ", event.key);
 
     if (event.key === "ArrowUp") {
-      if (history.length >= historyLvl + 1) {
-      }
-      if (history.length > historyLvl + 1) {
-        setCurrentCommand(history[history.length - historyLvl]);
-        setHistoryLvl((old) => old + 1);
-      }
+   
+        setHistoryLvl((old) =>(old -1 >0 ? old - 1 : 0));
+        setCurrentCommand(history[historyLvl]);
+        
+      
     }
     if (event.key === "ArrowDown") {
-      if (history.length >= historyLvl) {
-        setHistoryLvl((old) => (old - 1 >= 0 ? old - 1 : 0));
-        setCurrentCommand(history[history.length - historyLvl]);
-      }
+    
+        setHistoryLvl((old) => (old + 1 < history.length ? old + 1 : history.length-1));
+        setCurrentCommand(history[historyLvl]);
+      
     }
 
     if (event.key === "Backspace") {
