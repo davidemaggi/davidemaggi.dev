@@ -1,6 +1,5 @@
 import ConsoleRow from "../../Components/UI/ConsoleRow";
 import { v4 as uuidv4 } from 'uuid';
-import React from "react";
 
 export const emptyLine=(n:number=1):JSX.Element[]=>{
     let ret:JSX.Element[]=[]

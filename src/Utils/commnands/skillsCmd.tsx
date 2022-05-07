@@ -2,7 +2,7 @@ import ConsoleRow from "../../Components/UI/ConsoleRow";
 import commandResult from "../../models/CommandResult";
 import { commandResultEnum } from "../../models/Enums";
 import { v4 as uuidv4 } from 'uuid';
-import { cageLine, emptyLine, multilineRows } from "./utils";
+import { cageLine, emptyLine } from "./utils";
 
 import ConsoleIconsRow from "../../Components/UI/ConsoleIconsRow";
 import skilllData from "../../assets/data/skills";
