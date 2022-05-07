@@ -14,6 +14,9 @@ const Italian:i18nLang={
     Credits: {
         Title: "Credits",
         Description: "Com'è stato costruito questo sito?",
+        Msg: "Fatto con ❤️ in ",
+        Support: "Considera una donazione per aiutare i bambini ",
+        Support2: "Se sei un professionista IT considera di unirti ",
     },
     Translate: {
         Ok: "Lingua Applicata!",
