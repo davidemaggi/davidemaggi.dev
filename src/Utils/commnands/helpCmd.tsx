@@ -7,30 +7,34 @@ import { emptyLine, separatorLine } from "./utils";
 export const helpCmd = (cmd:string[]=[]):commandResult => {
 
 let ret:commandResult = new commandResult();
-console.log("Command to execute",cmd)
+//console.log("Command to execute",cmd)
 ret.result=commandResultEnum.INFO;
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"Welcome to the dmdev console."}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"Help.Title"}/>);
 ret.rows.push(...emptyLine(1));
 if(cmd.length>1){
-    ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"TOPIC"}/>);
-    ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={`    ${cmd[1]} Help`}/>);
+    ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"Help.Topic"}/>);
+    ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={`${cmd[1]} Help`}/>);
+    ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={`Work in Progress!!!`}/>);
 }else{
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"TOPIC"}/>);
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"    dmdev Help System"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"Help.Topic"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Intro"}/>);
 ret.rows.push(...emptyLine(1));
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"SHORT DESCRIPTION"}/>);
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"    This is my personal Website"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"Help.DescriptionTitle"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Description"}/>);
 ret.rows.push(...emptyLine(1));
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"AVAILABLE COMMNADS"}/>);
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"    Type 'clear' to clear the console."}/>);
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"    Type 'exit' to exit the console."}/>);
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"    Type 'about' to see the about page."}/>);
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"    Type 'version' to see the version."}/>);
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"    Type 'credits' to see the credits."}/>);
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"    Type 'contact' to see the contact page."}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"Help.AvailableCmd"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Type ' Help.Commands.cmdAbout ' Help.Commands.cmdAboutDescription"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Type ' Help.Commands.cmdCV ' Help.Commands.cmdCVDescription"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Type ' Help.Commands.cmdCredits ' Help.Commands.cmdCreditsDescription"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Type ' Help.Commands.cmdTranslate ' Help.Commands.cmdTranslateDescription"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Type ' Help.Commands.cmdDump ' Help.Commands.cmdDumpDescription"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Type ' Help.Commands.cmdClear ' Help.Commands.cmdClearDescription"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Type ' Help.Commands.cmdShow ' Help.Commands.cmdShowDescription"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Type ' Help.Commands.cmdHelp ' Help.Commands.cmdHelpDescription"}/>);
+
 ret.rows.push(separatorLine(100));
 ret.rows.push(...emptyLine(1));
-ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"Type 'help <command>' to see the help page for a command."}/>);
 }
     return ret;
 }
+

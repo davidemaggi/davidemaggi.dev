@@ -79,7 +79,7 @@ const ConsoleRow: React.FC<{
         </span>
       )}
 
-      <p className={[props.contentColor,"flex-1", "typing", "items-center", "pl-2", "whitespace-pre-wrap"].join(" ")}>
+      <p className={[props.contentColor,"flex-1", "typing", "items-center", "pl-2 pr-2", "whitespace-pre-wrap"].join(" ")}>
         {props.icon && <props.icon className="inline"/>}
         {rowText}
         {link ? link : null}

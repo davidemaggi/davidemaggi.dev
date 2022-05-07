@@ -1,0 +1,57 @@
+import React from "react";
+import { IconContext, IconType } from "react-icons";
+import { BsFacebook, BsArrowRight} from "react-icons/bs";
+import { MdOpenInNew} from "react-icons/md";
+import IconRowInterface from "../../models/IconRowInterface";
+import { useTranslation } from "../../Utils/i18nUtil";
+import IconRowItem from "./IconRowItem";
+
+const ConsoleIconsRow: React.FC<{
+  computerName?: string;
+  userName?: string;
+  path?: string;
+  contentColor?: string;
+  prefixColor?: string;
+  indent?: number;
+  showPrefix?: boolean;
+  icons?:IconRowInterface[]
+
+  
+}> = (props) => {
+    ConsoleIconsRow.defaultProps = {
+    computerName: "dmdev",
+    userName: "guest",
+    indent: 0,
+    path: "~",
+    prefixColor: "text-green-400",
+    contentColor: "text-gray-100",
+    showPrefix: true,
+  };
+
+  const { translate } = useTranslation();
+
+  let outputIndent=props.indent ? props.indent :0;
+
+ 
+
+ 
+
+  
+
+  return (
+   
+    <div className="flex mt-0">
+      {props.showPrefix && (
+        <span className={[props.prefixColor].join(" ")}>
+          {props.userName}@{props.computerName}:{props.path}$
+        </span>
+      )}
+
+      <p className={[props.contentColor,"flex-1", "typing", "items-center", "pl-2", "whitespace-s-wrap","inline"].join(" ")}>
+       {props.icons?.map(i=><IconRowItem item={i}/>)}
+      </p>
+    </div>
+  );
+};
+
+export default ConsoleIconsRow;

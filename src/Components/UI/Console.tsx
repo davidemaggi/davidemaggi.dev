@@ -18,6 +18,7 @@ const ConsoleMain: React.FC<{}> = (props) => {
   const [currentCommand, setCurrentCommand] = useState<string>("whoami");
   const [currentUser, setCurrentUser] = useState<string>("guest");
   const [triggerCommand, setTriggerCommand] = useState<boolean>(false);
+  const [showButtons, setShowButtons] = useState<boolean>(false);
   const [currentComputerName, setCurrentComputerName] =
     useState<string>("dmdev");
   const [currentPath, setCurrentPath] = useState<string>("~");
@@ -49,7 +50,7 @@ const ConsoleMain: React.FC<{}> = (props) => {
   };
 
   const HandleKeyPress = (event: any) => {
-    console.log("enter press here! ", event.key);
+    //console.log("enter press here! ", event.key);
 
     if (event.key === "Enter") {
       setHistory((oldArray) => [...oldArray, currentCommand]);
@@ -65,9 +66,13 @@ const ConsoleMain: React.FC<{}> = (props) => {
         />,
       ]);
 
-      if (currentCommand.toLowerCase().trim() === "clear") {
+      if (["clear","cls"].includes(currentCommand.toLowerCase().trim())) {
         setRows([]);
-      } else {
+      } 
+      else if(["show","menu"].includes(currentCommand.toLowerCase().trim())){
+        setShowButtons(old=>!old)
+      }
+      else {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         let cmdResult = useCommandExecutor({command:currentCommand, setLanguage:setLanguage, lang:language});
         setRows((oldArray) => [...oldArray, ...cmdResult.rows]);
@@ -103,8 +108,12 @@ const ConsoleMain: React.FC<{}> = (props) => {
     }
 
     if (event.key === "Backspace") {
-      setCurrentCommand((old) => old.slice(0, -1));
+      setCurrentCommand((old) =>  old.slice(0, cursorPos-1) + old.slice(cursorPos));
       setCursorPos((old) => (old - 1 >= 0 ? old - 1 : 0));
+    }
+
+    if (event.key === "Delete") {
+      setCurrentCommand((old) =>  old.slice(0, cursorPos) + old.slice(cursorPos+1));
     }
 
     if (event.key === "ArrowLeft") {
@@ -172,6 +181,9 @@ setCurrentCommand(cmd);
           />
         </div>
       </div>
+      <BrowserView>
+     { showButtons && <MobileButtons sendCommandUp={handleButtonCommand} />}
+      </BrowserView>
       <MobileView>
       <MobileButtons sendCommandUp={handleButtonCommand} />
       </MobileView>

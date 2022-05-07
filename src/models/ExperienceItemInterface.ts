@@ -1,3 +1,4 @@
+import IconRowInterface from "./IconRowInterface"
 import StackItem from "./StackItemItnterface"
 
 interface ExperienceItem {
@@ -14,7 +15,7 @@ interface ExperienceItem {
     To?:string,
     Description:string,
     DescriptionEng:string,
-    Stack?:StackItem[]
+    Stack?:IconRowInterface[]
 }
 
 export default ExperienceItem

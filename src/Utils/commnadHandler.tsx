@@ -10,6 +10,7 @@ import { notFoundCmd } from "./commnands/notFoundCmd";
 import { v4 as uuidv4 } from "uuid";
 import { BsTranslate } from "react-icons/bs";
 import { BiErrorAlt } from "react-icons/bi";
+import { skillsCmd } from "./commnands/skillsCmd";
 
 
 export interface CommandParameters{
@@ -25,7 +26,17 @@ export const useCommandExecutor = (p:CommandParameters):commandResult => {
     const commandParts=p.command.split(" ");
     //console.log("Executing Command",commandParts)
 
-    if(commandParts[0]==="help"){
+    if(["dump"].includes(commandParts[0])){
+        let tmp= new commandResult();
+        tmp.rows.push(...aboutCmd().rows)
+        tmp.rows.push(...experienceCmd([],p.lang).rows)
+        tmp.rows.push(...skillsCmd().rows)
+        tmp.rows.push(...creditsCmd().rows)
+        return tmp;
+        
+    }
+
+    if(["help","menu","h"].includes(commandParts[0])){
         if(commandParts.length>1){
 
             return helpCmd(commandParts);
@@ -40,22 +51,27 @@ export const useCommandExecutor = (p:CommandParameters):commandResult => {
         
     }
 
-    if(["info","about","whoami"].includes(commandParts[0])){
+    if(["info","about","whoami", "i","im", "who"].includes(commandParts[0])){
         return aboutCmd();
         
     }
 
-    if(["job","experience","cv"].includes(commandParts[0])){
+    if(["cert","certs","skill","skills","c","s"].includes(commandParts[0])){
+        return skillsCmd();
+        
+    }
+
+    if(["job","experience","cv","e","work","exp"].includes(commandParts[0])){
         return experienceCmd([],p.lang);
         
     }
  
-    if(["credits"].includes(commandParts[0])){
+    if(["credits","dev"].includes(commandParts[0])){
         return creditsCmd();
         
     }
 
-    if(["translate"].includes(commandParts[0])){
+    if(["translate","tr"].includes(commandParts[0])){
         let tmp=new commandResult()
         if(commandParts.length===1){
             
