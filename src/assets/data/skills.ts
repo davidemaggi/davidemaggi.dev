@@ -10,7 +10,7 @@ import SkillInterface from "../../models/SkillInterface";
 const skilllData:SkillInterface={
    
     Certifications:[
-        {Icon:SiDotnet, Name:"Digital Technologies and the Future of Manufacturing Specialization(IIoT, Digital Twins, Additive Manufacturing)",  Institute:"University of Michigan"},
+        {Icon:BiChip, Name:"Digital Technologies and the Future of Manufacturing Specialization(IIoT, Digital Twins, Additive Manufacturing)",  Institute:"University of Michigan"},
         {Icon:FaGoogle, Name:"Industrial IoT on Google Cloud",  Institute:"Google"},
         {Icon:SiRedis, Name:"Redis Certified Developer",  Institute:"Redis"},
         {Icon:SiCouchbase, Name:"Couchbase Certified Associate Architect",  Institute:"Couchbase"},

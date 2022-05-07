@@ -12,6 +12,7 @@ import { BsTranslate } from "react-icons/bs";
 import { BiErrorAlt } from "react-icons/bi";
 import { skillsCmd } from "./commnands/skillsCmd";
 import Flags from 'country-flag-icons/react/3x2'
+import { versionCmd } from "./commnands/versionCmd";
 
 
 export interface CommandParameters{
@@ -49,6 +50,10 @@ export const useCommandExecutor = (p:CommandParameters):commandResult => {
 
     if(["dir","ls"].includes(commandParts[0])){
         return menuCmd();
+        
+    }
+    if(["v","version"].includes(commandParts[0])){
+        return versionCmd();
         
     }
 

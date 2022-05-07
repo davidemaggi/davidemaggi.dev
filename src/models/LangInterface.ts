@@ -36,7 +36,10 @@ interface i18nLang {
         cmdHelp: string,
             cmdHelpDescription:  string,
             cmdShow: string,
-            cmdShowDescription:  string
+            cmdShowDescription:  string,
+            cmdVersion: string,
+            cmdVersionDescription:  string,
+            
     }
   };
 
