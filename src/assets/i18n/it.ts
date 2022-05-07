@@ -31,7 +31,7 @@ const Italian:i18nLang={
         Title: "Ciao! Sono Davide 👋",
         Phone: "<Nascosto>",
         Missing: "",
-        Help:"Se questa  e' la tua prima visita, e non vuoi giocare un po', scrivi help e premi invio per vedere quello che puoi fare",
+        Help:"Se questa  e' la tua prima visita, e non vuoi giocare un po', scrivi 'help' e premi invio per vedere quello che puoi fare",
         About: " Sono un Nerd, un Geek, Amo programmare e trovare soluzioni. Dopo 9 anni come Sviluppatore, 4 anni come QA Manager e Test Automation Enginner, adesso lavoro per una delle piu' grandi aziende del mio paese, trovando soluzione, sviluppandole, e guidando teams di persone  con cui sono orgoglioso di lavorare."
     },
     Commands: {
