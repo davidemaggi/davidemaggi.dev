@@ -85,6 +85,9 @@ const Italian:i18nLang={
             cmdHelpDescription:  "per ri-aprire questo aiuto",
             cmdShow: "show | menu",
             cmdShowDescription:  "per mostrare/nascondere i pulsanti di navigazione",
+            cmdVersion: "v | version.",
+            cmdVersionDescription:  "per mostrare la versione.",
+            
             
         }
     }

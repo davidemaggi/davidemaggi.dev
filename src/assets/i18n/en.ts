@@ -84,7 +84,9 @@ const English:i18nLang={
             cmdHelp: "h | help",
             cmdHelpDescription:  "to reopennthis help view.",
             cmdShow: "show | menu",
-            cmdShowDescription:  "to show/hide  navigation",
+            cmdShowDescription:  "to show/hide  navigation.",
+            cmdVersion: "v | version",
+            cmdVersionDescription:  "display version number.",
         }
 }
 }
