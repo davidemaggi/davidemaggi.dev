@@ -4,9 +4,9 @@ import { commandResultEnum } from "../../models/Enums";
 import { v4 as uuidv4 } from 'uuid';
 import { cageLine, emptyLine, multilineRows } from "./utils";
 import personalData from "../../assets/data/personal";
-import { MdAlternateEmail } from "react-icons/md";
-import { FaBirthdayCake, FaInfoCircle, FaMapMarkerAlt, FaPhoneSquareAlt } from "react-icons/fa";
-
+import { MdAlternateEmail, MdOutlineTranslate } from "react-icons/md";
+import { FaBirthdayCake, FaInfoCircle, FaLanguage, FaMapMarkerAlt, FaPhoneSquareAlt, FaTelegram, FaTelegramPlane } from "react-icons/fa";
+import Flags, { FlagComponent } from 'country-flag-icons/react/3x2'
 export const aboutCmd = (cmd:string[]=[], lang:string="en"):commandResult => {
 
 let ret:commandResult = new commandResult();
@@ -19,6 +19,7 @@ ret.rows.push(<ConsoleRow key={uuidv4()} icon={MdAlternateEmail} iconColor={"Whi
 ret.rows.push(<ConsoleRow key={uuidv4()} icon={FaPhoneSquareAlt} iconColor={"White"} showPrefix={false} content={personalData.phone}/>);
 ret.rows.push(<ConsoleRow key={uuidv4()} icon={FaBirthdayCake} iconColor={"White"} showPrefix={false} content={personalData.birthDay}/>);
 ret.rows.push(<ConsoleRow key={uuidv4()} icon={FaMapMarkerAlt} iconColor={"White"} showPrefix={false} content={personalData.location}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} icon={MdOutlineTranslate} iconColor={"White"} flags={[<Flags.IT className="inline ml-2" height={"12px"} title="Italian" />,<Flags.GB className="inline ml-2" height={"12px"} title="English" />,<Flags.FR className="inline ml-2" height={"12px"} title="French" />,<Flags.ES className="inline ml-2" height={"12px"} title="Spanish" />]} showPrefix={false} content={""}/>);
 
 ret.rows.push(...emptyLine(1));
 
@@ -31,6 +32,11 @@ personalData.social.forEach((s)=>{
 
 
 });
+ret.rows.push(...emptyLine(1));
+ret.rows.push(<ConsoleRow key={uuidv4()} flags={[<Flags.IT className="inline ml-2" height={"12px"} title="Italy" />]} showPrefix={false} content={"Credits.Msg"}/>);
+ret.rows.push(...emptyLine(1));
+ret.rows.push(<ConsoleRow key={uuidv4()} flags={[<Flags.UA className="inline ml-2" height={"12px"} title="Ukraine" />]} link={"https://dona.savethechildren.it/fondo-emergenze-ucraina"} showPrefix={false} content={"Credits.Support"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} flags={[<Flags.UA className="inline ml-2" height={"12px"} title="Ukraine" />]} icon={FaTelegramPlane} iconColor="#1c93e3" link={"https://t.me/s/itarmyofukraine2022"} showPrefix={false} content={"Credits.Support2"}/>);
 
 ret.rows.push(...emptyLine(1));
 ret.rows.push(<ConsoleRow key={uuidv4()} icon={FaInfoCircle} showPrefix={false} content={"About.Help"}/>);

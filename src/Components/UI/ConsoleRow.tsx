@@ -3,6 +3,7 @@ import { IconContext, IconType } from "react-icons";
 import { BsFacebook, BsArrowRight} from "react-icons/bs";
 import { MdOpenInNew} from "react-icons/md";
 import { useTranslation } from "../../Utils/i18nUtil";
+import Flags, { FlagComponent } from 'country-flag-icons/react/3x2'
 
 const ConsoleRow: React.FC<{
   content?: string;
@@ -19,6 +20,7 @@ const ConsoleRow: React.FC<{
   iconSize?: string,
   link?: string,
   linkText?: string,
+  flags?: JSX.Element[],
   icon?: IconType;
 }> = (props) => {
   ConsoleRow.defaultProps = {
@@ -37,6 +39,7 @@ const ConsoleRow: React.FC<{
     link: "",
     linkText: "",
     showPrefix: true,
+    flags:[]
   };
 
   const { translate } = useTranslation();
@@ -82,7 +85,10 @@ const ConsoleRow: React.FC<{
       <p className={[props.contentColor,"flex-1", "typing", "items-center", "pl-2 pr-2", "whitespace-pre-wrap"].join(" ")}>
         {props.icon && <props.icon className="inline"/>}
         {rowText}
+        {props.flags?.map((fla)=>fla )}
         {link ? link : null}
+        
+        
       </p>
     </div>
     </IconContext.Provider>

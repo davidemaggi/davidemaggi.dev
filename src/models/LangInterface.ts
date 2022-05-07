@@ -43,6 +43,9 @@ interface i18nLang {
   Credits: {
     Title: string;
     Description: string;
+    Msg: string;
+    Support: string;
+    Support2: string;
   };
   Translate: {
     Ok: string;

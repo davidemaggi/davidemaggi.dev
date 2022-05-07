@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import { BsTranslate } from "react-icons/bs";
 import { BiErrorAlt } from "react-icons/bi";
 import { skillsCmd } from "./commnands/skillsCmd";
+import Flags, { FlagComponent } from 'country-flag-icons/react/3x2'
 
 
 export interface CommandParameters{
@@ -85,7 +86,7 @@ export const useCommandExecutor = (p:CommandParameters):commandResult => {
 
         if(["it","en"].includes(commandParts[1])){
             p.setLanguage(commandParts[1]);
-            tmp.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} icon={BsTranslate} content={"Translate.Ok"}/>);
+            tmp.rows.push(<ConsoleRow key={uuidv4()}  flags={[commandParts[1]==="it" ? <Flags.IT className="inline ml-2" height={"12px"} title="Italiano" /> : <Flags.GB className="inline ml-2" height={"12px"} title="English" />]} showPrefix={false} icon={BsTranslate} content={"Translate.Ok"}/>);
 
         }else{
             tmp.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} icon={BiErrorAlt} iconColor={"#e60b00"} content={"Translate.Error"}/>);  

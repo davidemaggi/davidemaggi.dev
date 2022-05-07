@@ -14,6 +14,10 @@ const English:i18nLang={
     Credits: {
         Title: "Credits",
         Description: "How this site has been built?",
+        Msg:"Made with ❤️ in ",
+        Support:"Consider a donation to help children",
+        Support2:"If you are an IT professional, consider to join us"
+        
     },
     Translate: {
         Ok: "Language Applied!",
