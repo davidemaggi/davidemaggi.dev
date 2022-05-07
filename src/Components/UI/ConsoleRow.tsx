@@ -1,9 +1,8 @@
 import React from "react";
 import { IconContext, IconType } from "react-icons";
-import { BsFacebook, BsArrowRight} from "react-icons/bs";
-import { MdOpenInNew} from "react-icons/md";
+
 import { useTranslation } from "../../Utils/i18nUtil";
-import Flags, { FlagComponent } from 'country-flag-icons/react/3x2'
+
 
 const ConsoleRow: React.FC<{
   content?: string;

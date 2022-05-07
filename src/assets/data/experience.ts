@@ -1,8 +1,6 @@
 import ExperienceItem from "../../models/ExperienceItemInterface";
-import { colors } from "./Statics";
 import { DiAndroid, DiGoogleCloudPlatform, DiJava, DiMysql } from "react-icons/di";
 import { SiSpring,SiIbm,SiApachekafka,SiMicrosoftsqlserver,SiDotnet, SiMicrosoftazure, SiJava, SiPhp, SiOracle, SiKubernetes, SiRedhatopenshift, SiAzuredevops, SiElastic, SiSplunk, SiSonarqube } from "react-icons/si";
-import { GrDocumentTest, GrJava } from "react-icons/gr";
 import { FaJava,FaAngular,FaCouch,FaAws,FaDatabase, FaReact, FaCloud, FaNodeJs, FaApple, FaCode, FaPython, FaDocker, FaCogs, FaJenkins } from "react-icons/fa";
 import { BiChip, BiNetworkChart } from "react-icons/bi";
 import { AiFillGitlab } from "react-icons/ai";

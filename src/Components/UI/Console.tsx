@@ -5,7 +5,7 @@ import ConsoleButtons from "./ConsoleButtons";
 import ConsoleRow from "./ConsoleRow";
 import { v4 as uuidv4 } from "uuid";
 import { useTranslation } from "../../Utils/i18nUtil";
-import { BrowserView, MobileView, isBrowser, isMobile } from 'react-device-detect';
+import { BrowserView, MobileView} from 'react-device-detect';
 import MobileButtons from "../MobileButtons";
 
 

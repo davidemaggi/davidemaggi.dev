@@ -1,7 +1,5 @@
 import React from "react";
-import { IconContext, IconType } from "react-icons";
-import { BsFacebook, BsArrowRight} from "react-icons/bs";
-import { MdOpenInNew} from "react-icons/md";
+
 import IconRowInterface from "../../models/IconRowInterface";
 import { useTranslation } from "../../Utils/i18nUtil";
 import IconRowItem from "./IconRowItem";

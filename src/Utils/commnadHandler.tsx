@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import { BsTranslate } from "react-icons/bs";
 import { BiErrorAlt } from "react-icons/bi";
 import { skillsCmd } from "./commnands/skillsCmd";
-import Flags, { FlagComponent } from 'country-flag-icons/react/3x2'
+import Flags from 'country-flag-icons/react/3x2'
 
 
 export interface CommandParameters{
