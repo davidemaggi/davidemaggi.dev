@@ -2,11 +2,11 @@ import ConsoleRow from "../../Components/UI/ConsoleRow";
 import commandResult from "../../models/CommandResult";
 import { commandResultEnum } from "../../models/Enums";
 import { v4 as uuidv4 } from 'uuid';
-import { cageLine, emptyLine, multilineRows } from "./utils";
+import { cageLine, emptyLine } from "./utils";
 import personalData from "../../assets/data/personal";
 import { MdAlternateEmail, MdOutlineTranslate } from "react-icons/md";
-import { FaBirthdayCake, FaInfoCircle, FaLanguage, FaMapMarkerAlt, FaPhoneSquareAlt, FaTelegram, FaTelegramPlane } from "react-icons/fa";
-import Flags, { FlagComponent } from 'country-flag-icons/react/3x2'
+import { FaBirthdayCake, FaInfoCircle, FaMapMarkerAlt, FaPhoneSquareAlt, FaTelegramPlane } from "react-icons/fa";
+import Flags from 'country-flag-icons/react/3x2'
 export const aboutCmd = (cmd:string[]=[], lang:string="en"):commandResult => {
 
 let ret:commandResult = new commandResult();

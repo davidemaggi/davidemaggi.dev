@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import English from "../assets/i18n/en";
 import Italian from "../assets/i18n/it";
 import { changeLanguage } from "../Slices/configSlice";
-import { store, RootState } from "../store";
+import {  RootState } from "../store";
 import _ from "lodash";
 
 export const useTranslation = () => {

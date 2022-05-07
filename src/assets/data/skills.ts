@@ -6,7 +6,6 @@ import { GoProject } from "react-icons/go";
 import { FaAngular, FaApple, FaAws, FaBug, FaCode, FaCogs, FaCouch, FaCreditCard, FaDatabase, FaDocker, FaEmpire, FaGlobeEurope, FaGoogle, FaHtml5, FaJava, FaJenkins, FaLanguage, FaNetworkWired, FaNodeJs, FaPizzaSlice, FaPython, FaReact, FaShip, FaVolleyballBall } from "react-icons/fa";
 import { SiDotnet, SiMicrosoftazure, SiKubernetes, SiRedhatopenshift, SiAzuredevops, SiApachekafka, SiIbm, SiJava, SiMicrosoftsqlserver, SiSpring, SiOracle, SiPhp, SiGo, SiCouchbase, SiElastic, SiMongodb, SiIonic, SiRedis, SiSonarqube, SiCss3, SiJavascript, SiTailwindcss } from "react-icons/si";
 import SkillInterface from "../../models/SkillInterface";
-import personalData from "./personal";
 
 const skilllData:SkillInterface={
    
