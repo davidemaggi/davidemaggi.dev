@@ -2,10 +2,14 @@ import { AiFillGitlab } from "react-icons/ai";
 import { BiCameraMovie, BiChip, BiNetworkChart, BiTestTube } from "react-icons/bi";
 import { DiAndroid, DiGoogleCloudPlatform, DiMysql } from "react-icons/di";
 import { GoProject } from "react-icons/go";
+import { TiFlowSwitch } from "react-icons/ti";
+import { RiFlowChart } from "react-icons/ri";
 
 import { FaAngular, FaApple, FaAws, FaBug, FaCode, FaCogs, FaCouch, FaCreditCard, FaDatabase, FaDocker, FaEmpire, FaGlobeEurope, FaGoogle, FaHtml5, FaJava, FaJenkins, FaLanguage, FaNetworkWired, FaNodeJs, FaPizzaSlice, FaPython, FaReact, FaShip, FaVolleyballBall } from "react-icons/fa";
-import { SiDotnet, SiMicrosoftazure, SiKubernetes, SiRedhatopenshift, SiAzuredevops, SiApachekafka, SiIbm, SiJava, SiMicrosoftsqlserver, SiSpring, SiOracle, SiPhp, SiGo, SiCouchbase, SiElastic, SiMongodb, SiIonic, SiRedis, SiSonarqube, SiCss3, SiJavascript, SiTailwindcss } from "react-icons/si";
+import { SiDotnet, SiMicrosoftazure, SiKubernetes, SiRedhatopenshift, SiAzuredevops, SiApachekafka, SiIbm, SiJava, SiMicrosoftsqlserver, SiSpring, SiOracle, SiPhp, SiGo, SiCouchbase, SiElastic, SiMongodb, SiIonic, SiRedis, SiSonarqube, SiCss3, SiJavascript, SiTailwindcss, SiRabbitmq } from "react-icons/si";
 import SkillInterface from "../../models/SkillInterface";
+
+
 
 const skilllData:SkillInterface={
    
@@ -62,6 +66,11 @@ const skilllData:SkillInterface={
         {Color:"text-rose-500", TextColor:"text-gray-100", Name:"MSSQL", GroupCode:"db", Icon:SiMicrosoftsqlserver},
         {Color:"text-blue-300", TextColor:"text-gray-100", Name:"IBM", GroupCode:"cloud",  Icon:SiIbm},
         {Color:"text-gray-100", TextColor:"text-gray-100", Name:"Apache Kafka", GroupCode:"arch", Icon:SiApachekafka},
+        {Color:"text-gray-100", TextColor:"text-gray-100", Name:"AMQP", GroupCode:"arch", Icon:TiFlowSwitch},
+        {Color:"text-gray-100", TextColor:"text-gray-100", Name:"MQTT", GroupCode:"arch", Icon:TiFlowSwitch},
+        {Color:"text-orange-500", TextColor:"text-gray-100", Name:"RabbitMQ", GroupCode:"arch", Icon:SiRabbitmq},
+        {Color:"text-gray-100", TextColor:"text-gray-100", Name:"Apache Kafka", GroupCode:"arch", Icon:SiApachekafka},
+        {Color:"text-gray-100", TextColor:"text-gray-100", Name:"ESB", GroupCode:"arch", Icon:RiFlowChart},
         {Color:"text-gray-100", TextColor:"text-gray-100", Name:"IoT", GroupCode:"arch", Icon:BiChip},
         {Color:"text-red-500", TextColor:"text-gray-100", Name:"Oracle", GroupCode:"db", Icon:SiOracle},
         {Color:"text-gray-100", TextColor:"text-gray-100", Name:"PowerBuilder", GroupCode:"dev",  Icon:FaCode},
