@@ -33,8 +33,8 @@ personalData.social.forEach((s)=>{
 
 });
 ret.rows.push(...emptyLine(1));
-ret.rows.push(<ConsoleRow key={uuidv4()} flags={[<Flags.IT className="inline ml-2" height={"12px"} title="Italy" />]} showPrefix={false} content={"Credits.Msg"}/>);
-ret.rows.push(...emptyLine(1));
+//ret.rows.push(<ConsoleRow key={uuidv4()} flags={[<Flags.IT className="inline ml-2" height={"12px"} title="Italy" />]} showPrefix={false} content={"Credits.Msg"}/>);
+//ret.rows.push(...emptyLine(1));
 ret.rows.push(<ConsoleRow key={uuidv4()} flags={[<Flags.UA className="inline ml-2" height={"12px"} title="Ukraine" />]} link={"https://dona.savethechildren.it/fondo-emergenze-ucraina"} showPrefix={false} content={"Credits.Support"}/>);
 ret.rows.push(<ConsoleRow key={uuidv4()} flags={[<Flags.UA className="inline ml-2" height={"12px"} title="Ukraine" />]} icon={FaTelegramPlane} iconColor="#1c93e3" link={"https://t.me/s/itarmyofukraine2022"} showPrefix={false} content={"Credits.Support2"}/>);
 
