@@ -8,7 +8,7 @@ import { AiFillGitlab } from "react-icons/ai";
 const ExperienceData: ExperienceItem[] = [
   {
     id:"6",
-    Company: "Engineering I.I.",
+    Company: "Engineering Ingegneria Informatica",
     Role: "Head of Java Developments @ THL BU",
     Logo:"eng.png",
     Current: true,
