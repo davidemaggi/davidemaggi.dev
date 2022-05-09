@@ -21,8 +21,8 @@ const IconRowItem:React.FC<{ item:IconRowInterface}> = (props) =>{
         value={{ color: iconColor, size: iconSize }}
       >
         
-      <span className={["inline","mr-2"].join(" ")}>{props.item.Icon && <props.item.Icon className={["inline",iconColor].join(" ")}/>}</span>
-      <span className={["inline","mr-2",textColor].join(" ")}>{props.item.Name} </span>
+      <span className={["inline","mr-2 ml-2"].join(" ")}>{props.item.Icon && <props.item.Icon className={["inline",iconColor].join(" ")}/>}</span>
+      <span className={["inline",textColor].join(" ")}>{props.item.Name} </span>
       
       </IconContext.Provider>
 
