@@ -72,7 +72,7 @@ const Italian:i18nLang={
             cmdCV: "e | cv | exp | experience | job | work",
             cmdCVDescription: "per vedere le mie esperienze lavorative.",
             cmdCredits: "dev | credits",
-            cmdCreditsDescription: "per saperre come ho svluppato questo sito.",
+            cmdCreditsDescription: "per scoprire come ho svluppato questo sito.",
             cmdSkills: "c | s | skill | skills | cert | certs | certifications",
             cmdSkillDescription: "per scoprire le mie competenze ed i miei interessi.",
             cmdTranslate: "tr | translate <it | en>",
