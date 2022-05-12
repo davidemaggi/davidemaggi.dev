@@ -16,7 +16,7 @@ const English:i18nLang={
         Description: "How this site has been built?",
         Msg:"Made with ❤️ in ",
         Support:"Consider a donation to help children",
-        Support2:"If you are an IT professional, consider to join us"
+        Support2:"If you are an IT professional, consider to join"
         
     },
     Translate: {
