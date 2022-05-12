@@ -3,6 +3,7 @@ import React from "react";
 import IconRowInterface from "../../models/IconRowInterface";
 import { useTranslation } from "../../Utils/i18nUtil";
 import IconRowItem from "./IconRowItem";
+import { v4 as uuidv4 } from 'uuid';
 
 const ConsoleIconsRow: React.FC<{
   computerName?: string;
@@ -46,7 +47,7 @@ const ConsoleIconsRow: React.FC<{
       )}
 
       <p className={[props.contentColor,"flex-1", "typing", "items-center", "pl-2", "whitespace-s-wrap","inline"].join(" ")}>
-       {props.icons?.map(i=><IconRowItem item={i}/>)}
+       {props.icons?.map(i=><IconRowItem key={uuidv4()} item={i}/>)}
       </p>
     </div>
   );
