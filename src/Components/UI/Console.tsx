@@ -96,14 +96,14 @@ const ConsoleMain: React.FC<{}> = (props) => {
    
         setHistoryLvl((old) =>(old -1 >0 ? old - 1 : 0));
         setCurrentCommand(history[historyLvl]);
-        setCursorPos(currentCommand.length);
+        setCursorPos(history[historyLvl].length);
       
     }
     if (event.key === "ArrowDown") {
     
         setHistoryLvl((old) => (old + 1 < history.length ? old + 1 : history.length-1));
         setCurrentCommand(history[historyLvl]);
-        setCursorPos(currentCommand.length);
+        setCursorPos(history[historyLvl].length);
       
     }
 
@@ -135,6 +135,8 @@ const ConsoleMain: React.FC<{}> = (props) => {
       setTriggerCommand(false);
     } // This is be executed when `loading` state changes
 }, [triggerCommand])
+
+
   
   const handleButtonCommand = (cmd:string) => {
 console.log(cmd)
