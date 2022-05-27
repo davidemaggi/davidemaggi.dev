@@ -25,6 +25,7 @@ ret.rows.push(...emptyLine(1));
 ret.rows.push(<ConsoleRow key={uuidv4()} showPrefix={false} content={"Help.AvailableCmd"}/>);
 ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Type ' Help.Commands.cmdAbout ' Help.Commands.cmdAboutDescription"}/>);
 ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Type ' Help.Commands.cmdCV ' Help.Commands.cmdCVDescription"}/>);
+ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Type ' Help.Commands.cmdSkills ' Help.Commands.cmdSkillDescription"}/>);
 ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Type ' Help.Commands.cmdCredits ' Help.Commands.cmdCreditsDescription"}/>);
 ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Type ' Help.Commands.cmdTranslate ' Help.Commands.cmdTranslateDescription"}/>);
 ret.rows.push(<ConsoleRow key={uuidv4()} indent={4} showPrefix={false} content={"Help.Type ' Help.Commands.cmdDump ' Help.Commands.cmdDumpDescription"}/>);
