@@ -98,7 +98,7 @@ const skilllData:SkillInterface={
         {Color:"text-gray-100", TextColor:"text-gray-100", Name:"Empire Supporter", GroupCode:"misc",  Icon:FaEmpire},
         {Color:"text-green-500", TextColor:"text-gray-100", Name:"Love to ravel", GroupCode:"misc",  Icon:FaGlobeEurope},
         {Color:"text-gray-200", TextColor:"text-gray-100", Name:"Movies & Series enthusiast", GroupCode:"misc",  Icon:BiCameraMovie},
-        {Color:"text-gray-300", TextColor:"text-gray-300", Name:"Drone Pilot & enthusiast", GroupCode:"misc",  Icon:GiDeliveryDrone}
+        {Color:"text-gray-300", TextColor:"text-gray-100", Name:"Drone Pilot & enthusiast", GroupCode:"misc",  Icon:GiDeliveryDrone}
         
         
         
