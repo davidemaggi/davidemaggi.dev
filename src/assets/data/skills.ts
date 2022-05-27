@@ -4,6 +4,7 @@ import { DiAndroid, DiGoogleCloudPlatform, DiMysql } from "react-icons/di";
 import { GoProject } from "react-icons/go";
 import { TiFlowSwitch } from "react-icons/ti";
 import { RiFlowChart } from "react-icons/ri";
+import { GiDeliveryDrone } from "react-icons/gi";
 
 import { FaAngular, FaApple, FaAws, FaBug, FaCode, FaCogs, FaCouch, FaCreditCard, FaDatabase, FaDocker, FaEmpire, FaGlobeEurope, FaGoogle, FaHtml5, FaJava, FaJenkins, FaLanguage, FaNetworkWired, FaNodeJs, FaPizzaSlice, FaPython, FaReact, FaShip, FaVolleyballBall } from "react-icons/fa";
 import { SiDotnet, SiMicrosoftazure, SiKubernetes, SiRedhatopenshift, SiAzuredevops, SiApachekafka, SiIbm, SiJava, SiMicrosoftsqlserver, SiSpring, SiOracle, SiPhp, SiGo, SiCouchbase, SiElastic, SiMongodb, SiIonic, SiRedis, SiSonarqube, SiCss3, SiJavascript, SiTailwindcss, SiRabbitmq } from "react-icons/si";
@@ -96,7 +97,8 @@ const skilllData:SkillInterface={
         {Color:"text-green-500", TextColor:"text-gray-100", Name:"Expert Bug Maker", GroupCode:"misc",  Icon:FaBug},
         {Color:"text-gray-100", TextColor:"text-gray-100", Name:"Empire Supporter", GroupCode:"misc",  Icon:FaEmpire},
         {Color:"text-green-500", TextColor:"text-gray-100", Name:"Love to ravel", GroupCode:"misc",  Icon:FaGlobeEurope},
-        {Color:"text-gray-200", TextColor:"text-gray-100", Name:"Movies & Series enthusiast", GroupCode:"misc",  Icon:BiCameraMovie}
+        {Color:"text-gray-200", TextColor:"text-gray-100", Name:"Movies & Series enthusiast", GroupCode:"misc",  Icon:BiCameraMovie},
+        {Color:"text-gray-300", TextColor:"text-gray-300", Name:"Drone Pilot & enthusiast", GroupCode:"misc",  Icon:GiDeliveryDrone}
         
         
         
