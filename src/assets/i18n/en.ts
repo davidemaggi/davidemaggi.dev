@@ -33,7 +33,7 @@ const English:i18nLang={
         Phone: "<Hidden>",
         Missing: "",
         Help:"If this is your first visit, and you don't want to play, type 'help' and press ENTER to show the help menu.",
-        About: " I'm a Nerd, a Geek, I love Programming and find solutions. After 9 years as Developer, 4 years in QA as QA Manager and Test Automation Enginner, I'm now part of one of the biggest companies in my country, finding solution, developing things, leading teams of people I'm proud to work with."
+        About: " I'm a Nerd, a Geek, I love Programming and find solutions. A15 years years as Developer, and 4 years in QA as QA Manager and Test Automation Enginner, I'm now part of one of the biggest companies in the world, finding solution, developing things, leading teams of people I'm proud to work with."
     },
     Commands: {
         whoami: "About Me",
