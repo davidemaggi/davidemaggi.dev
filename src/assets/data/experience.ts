@@ -1,20 +1,47 @@
 import ExperienceItem from "../../models/ExperienceItemInterface";
 import { DiAndroid, DiGoogleCloudPlatform, DiJava, DiMysql } from "react-icons/di";
-import { SiSpring,SiIbm,SiApachekafka,SiMicrosoftsqlserver,SiDotnet, SiMicrosoftazure, SiJava, SiPhp, SiOracle, SiKubernetes, SiRedhatopenshift, SiAzuredevops, SiElastic, SiSplunk, SiSonarqube } from "react-icons/si";
-import { FaJava,FaAngular,FaCouch,FaAws,FaDatabase, FaReact, FaCloud, FaNodeJs, FaApple, FaCode, FaPython, FaDocker, FaCogs, FaJenkins } from "react-icons/fa";
+import { SiMongodb,SiRabbitmq,SiSpring,SiIbm,SiApachekafka,SiMicrosoftsqlserver,SiDotnet, SiMicrosoftazure, SiJava, SiPhp, SiOracle, SiKubernetes, SiRedhatopenshift, SiAzuredevops, SiElastic, SiSplunk, SiSonarqube } from "react-icons/si";
+import { FaNetworkWired, FaJava,FaAngular,FaCouch,FaAws,FaDatabase, FaReact, FaCloud, FaNodeJs, FaApple, FaCode, FaPython, FaDocker, FaCogs, FaJenkins } from "react-icons/fa";
 import { BiChip, BiNetworkChart } from "react-icons/bi";
 import { AiFillGitlab } from "react-icons/ai";
 
 const ExperienceData: ExperienceItem[] = [
   {
+    id:"7",
+    Company: "Accenture - Industry X",
+    Role: "Sr. Software Architect - Tech Lead",
+    Logo:"acn.png",
+    Current: true,
+    Location: "Torino",
+    Type: "Full Time",
+    From: "06/2022",
+    Description: "Sono appena arrivato, datemi 5 minuti per capire da che parte sono girato :-)",
+    DescriptionEng: "Give me a break i just joined :-) I'm making my feet wet 🍼",
+    Stack:[
+      {Name:"MicroServices", Color:"text-gray-100", Icon:FaNetworkWired},
+      {Name:"MicroFrontends", Color:"text-gray-100", Icon:BiNetworkChart},
+      {Name:"Kubernetes", Color:"text-blue-300", Icon:SiKubernetes},
+      {Name:".Net", Color:"text-fuchsia-500", Icon:SiDotnet},
+      {Name:"MSSQL", Color:"text-rose-500", Icon:SiMicrosoftsqlserver},
+      {Name:"Azure", Color:"text-blue-600", Icon:SiMicrosoftazure},
+      {Name:"MongoDB", Color:"text-red-500", Icon:SiMongodb},
+      {Name:"ReactJS", Color:"text-blue-300", Icon:FaReact},
+      {Name:"IoT", Color:"text-gray-100", Icon:BiChip},
+      {Name:"RabbitMQ", Color:"text-orange-500", Icon:SiRabbitmq},
+
+      
+    ]
+  },
+  {
     id:"6",
     Company: "Engineering Ingegneria Informatica",
     Role: "Head of Java Developments @ THL BU",
     Logo:"eng.png",
-    Current: true,
+    Current: false,
     Location: "Genova",
     Type: "Full Time",
     From: "04/2020",
+    To: "06/2022",
     Description: "Nel mio ruolo di responsabile per gli sviluppi Java per la Business Unit Travel, Hospitality & Logistics ho la responsabilita' del successo di tutti i progetti con tecnologie Java.\n \nI miei compiti includono l'ingaggio del cliente, il design completo della soluzione, la selezione, gestione e mentoring del team di sviluppo e se il progetto lo richiede adoro continuare a sporcarmi le mani nello sviluppo sia delle parti Back-End che Front-end.",
     DescriptionEng: "In my current position as Head of Java developments for Travel, Hospitality & Logistics business unit I’m responsabile for the success of projects relying on Java technologies.\n \n My duties include the engagement of the customer, the complete design of the solution, the selection, management and mentoring of the dev team, and if the project requires it I still love to make my hands dirty partecipating in the developments of both, Front-End and Back-end, parts of the project.",
   },
@@ -23,10 +50,11 @@ const ExperienceData: ExperienceItem[] = [
     Company: "Engineering Ingegneria Informatica",
     Role: "Solution Architect / Tech. Leader",
     Logo:"eng.png",
-    Current: true,
+    Current: false,
     Location: "Genova",
     Type: "Full Time",
     From: "04/08/2018",
+    To: "06/2022",
     Description: "Occupandomi dell'architettura e sviluppo di progetti all'interno della Business Unit Travel & Hospitality, lavorando con clienti del calibro di Carnival, GNV, MSC & Alpitour",
     DescriptionEng: "Designing solutions and leading dev teams in the Hospitality BU, working together with Customers like Carnival, GNV, MSC & Alpitour",
     Stack:[
@@ -51,10 +79,11 @@ const ExperienceData: ExperienceItem[] = [
     Company: "Alpitour S.p.A.",
     Role: "Solution Architect / Tech. Leader",
     Logo:"alpitour.png",
-    Current: true,
+    Current: false,
     Location: "Torino",
     Type: "Full Time",
     From: "04/2020",
+    To: "06/2022",
     Description: "Riportando direttamente al top Management IT guido gli sviluppi di soluzioni sia trasversali che di Brand.",
     DescriptionEng: "Reporting directly to the IT top management I’m leading the developments for both Group-wide and branded solutions.",
     Stack:[
