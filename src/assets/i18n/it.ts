@@ -32,7 +32,7 @@ const Italian:i18nLang={
         Phone: "<Nascosto>",
         Missing: "",
         Help:"Se questa  e' la tua prima visita, e non vuoi giocare un po', scrivi 'help' e premi invio per vedere quello che puoi fare",
-        About: " Sono un Nerd, un Geek, Amo programmare e trovare soluzioni. Dopo 15 anni come Sviluppatore, e 4 anni come QA Manager e Test Automation Enginner, adesso lavoro per una delle piu' grandi aziende al mondo, trovando soluzione, sviluppandole, e guidando teams di persone  con cui sono orgoglioso di lavorare."
+        About: "Sono un Nerd, un Geek, Amo programmare e trovare soluzioni. Dopo 15 anni come Sviluppatore, e 4 anni come QA Manager e Test Automation Enginner, adesso lavoro come SW Architect / Tech Lead per una delle piu' grandi aziende al mondo, trovando soluzioni, sviluppandole, e guidando teams di persone  con cui sono orgoglioso di lavorare."
     },
     Commands: {
         whoami: "A Proposito di me",
