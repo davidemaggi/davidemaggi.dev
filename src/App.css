@@ -2,20 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-.blink {
-    animation: blink-animation 1s steps(5, start) infinite;
-    -webkit-animation: blink-animation 1s steps(5, start) infinite;
-  }
-  @keyframes blink-animation {
-    to {
-      visibility: hidden;
-    }
-  }
-  @-webkit-keyframes blink-animation {
-    to {
-      visibility: hidden;
-    }
-  }
+
+
+
+
+
 
   body {
     background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
@@ -34,5 +25,7 @@
     100% {
       background-position: 0% 50%;
     }
+
+    
   }
   

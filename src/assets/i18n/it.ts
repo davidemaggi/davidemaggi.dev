@@ -15,8 +15,8 @@ const Italian:i18nLang={
         Title: "Credits",
         Description: "Com'è stato costruito questo sito?",
         Msg: "Fatto con ❤️ in ",
-        Support: "Considera una donazione per aiutare i bambini ",
-        Support2: "Se sei un professionista IT considera di unirti ",
+        Support: "Considera una donazione per aiutare i bambini dell'Ucraina",
+        Support2: "Se sei un professionista IT considera di unirti al gruppo",
     },
     Translate: {
         Ok: "Lingua Applicata!",
@@ -32,7 +32,7 @@ const Italian:i18nLang={
         Phone: "<Nascosto>",
         Missing: "",
         Help:"Se questa  e' la tua prima visita, e non vuoi giocare un po', scrivi 'help' e premi invio per vedere quello che puoi fare",
-        About: "Sono un Nerd, un Geek, Amo programmare e trovare soluzioni. Dopo 15 anni come Sviluppatore, e 4 anni come QA Manager e Test Automation Enginner, adesso lavoro come SW Architect / Tech Lead per una delle piu' grandi aziende al mondo, trovando soluzioni, sviluppandole, e guidando teams di persone  con cui sono orgoglioso di lavorare."
+        About: "Potrei non essere un Jedi, ma la forza di un tech Lead e un architetto scorre potente in me. \n \nCon oltre 15 anni di esperienza nella programmazione, ho le competenze per progettare e guidare un team di sviluppatori nell'ideazione di soluzioni innovative che ti faranno dire \"non è una luna, è una stazione spaziale\". \n \nSono appassionato di coding e adoro creare software che non solo sia funzionale, ma anche elegante e manutenibile. Sono un convinto sostenitore della scrittura di codice leggibile e mi sforzo sempre di ottenere un codice di facile comprensione. Nel mio tempo libero, mi puoi trovare a nerdare su Star Wars e a giocare ai videogiochi. \n \nChe la forza sia con te e con il tuo codice."
     },
     Commands: {
         whoami: "A Proposito di me",

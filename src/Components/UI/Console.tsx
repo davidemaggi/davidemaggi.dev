@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useCommandExecutor } from "../../Utils/commnadHandler";
 import { insertInString } from "../../Utils/stringUtil";
 import ConsoleButtons from "./ConsoleButtons";
@@ -28,6 +28,7 @@ const ConsoleMain: React.FC<{}> = (props) => {
   const rowAreaRef = useRef<HTMLDivElement>(null);
   const consoleRef = useRef<HTMLDivElement>(null);
 
+
   const scrollToBottom = () => {
     rowAreaRef.current?.scrollBy({
       top: rowAreaRef.current?.scrollHeight,
@@ -49,8 +50,28 @@ const ConsoleMain: React.FC<{}> = (props) => {
     //console.log("Click! ");
   };
 
-  const HandleKeyPress = (event: any) => {
-    //console.log("enter press here! ", event.key);
+  const handleValueChanged = (event:ChangeEvent<HTMLInputElement>) => {
+    setCurrentCommand((old) => event.target.value);
+
+  };
+
+  const handleKeyUp = (event: KeyboardEvent) => {
+    //console.log("KeyUp! ", event.key);
+
+    if (event.key === "ArrowUp") {
+   
+        setHistoryLvl((old) =>(old -1 >0 ? old - 1 : 0));
+        setCurrentCommand(history[historyLvl]);
+      
+    }
+    if (event.key === "ArrowDown") {
+    
+        setHistoryLvl((old) => (old + 1 < history.length ? old + 1 : history.length-1));
+        setCurrentCommand(history[historyLvl]);
+      
+    }
+
+    
 
     if (event.key === "Enter") {
       setHistory((oldArray) => [...oldArray, currentCommand]);
@@ -83,47 +104,9 @@ const ConsoleMain: React.FC<{}> = (props) => {
       return;
     }
 
-    setCurrentCommand((old) => insertInString(event.key, old, cursorPos));
-    setCursorPos((old) => old + 1);
+    
     scrollToBottom();
 
-  };
-
-  const handleKeyUp = (event: any) => {
-    //console.log("KeyUp! ", event.key);
-
-    if (event.key === "ArrowUp") {
-   
-        setHistoryLvl((old) =>(old -1 >0 ? old - 1 : 0));
-        setCurrentCommand(history[historyLvl]);
-        setCursorPos(history[historyLvl].length);
-      
-    }
-    if (event.key === "ArrowDown") {
-    
-        setHistoryLvl((old) => (old + 1 < history.length ? old + 1 : history.length-1));
-        setCurrentCommand(history[historyLvl]);
-        setCursorPos(history[historyLvl].length);
-      
-    }
-
-    if (event.key === "Backspace") {
-      setCurrentCommand((old) =>  old.slice(0, cursorPos-1) + old.slice(cursorPos));
-      setCursorPos((old) => (old - 1 >= 0 ? old - 1 : 0));
-    }
-
-    if (event.key === "Delete") {
-      setCurrentCommand((old) =>  old.slice(0, cursorPos) + old.slice(cursorPos+1));
-    }
-
-    if (event.key === "ArrowLeft") {
-      setCursorPos((old) => (old - 1 >= 0 ? old - 1 : 0));
-    }
-    if (event.key === "ArrowRight") {
-      setCursorPos((old) =>
-        old + 1 <= currentCommand.length ? old + 1 : currentCommand.length
-      );
-    }
 
     //console.log(historyLvl, history);
   };
@@ -131,7 +114,7 @@ const ConsoleMain: React.FC<{}> = (props) => {
   useEffect(() => {
 
     if(triggerCommand){
-      HandleKeyPress({key:"Enter"});
+      handleKeyUp({key:"Enter"} as KeyboardEvent);
       setTriggerCommand(false);
     } // This is be executed when `loading` state changes
 }, [triggerCommand])
@@ -153,10 +136,10 @@ setCurrentCommand(cmd);
     <div
     ref={consoleRef}
       className="w-full h-full outline-0"
-      onClick={handleClick}
-      onKeyPress={HandleKeyPress}
-      onKeyUp={handleKeyUp}
-      tabIndex={0}
+      //onClick={handleClick}
+      //onKeyPress={HandleKeyPress}
+      //onKeyUp={handleKeyUp}
+      //tabIndex={0}
     >
       <div
         className="coding inverse-toggle px-5 shadow-lg text-gray-100 text-sm font-mono subpixel-antialiased 
@@ -180,6 +163,10 @@ setCurrentCommand(cmd);
             computerName={currentComputerName}
             path={currentPath}
             content={currentCommand}
+            onClick={handleClick}
+            onKeyUp={handleKeyUp}
+            handleValueChanged={handleValueChanged}
+            //tabIndex={0}
           />
         </div>
       </div>

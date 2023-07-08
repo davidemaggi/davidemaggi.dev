@@ -20,7 +20,11 @@ const ConsoleRow: React.FC<{
   link?: string,
   linkText?: string,
   flags?: JSX.Element[],
-  icon?: IconType;
+  icon?: IconType
+
+  onKeyUp?:any,
+  onClick?:any,
+  handleValueChanged?:any
 }> = (props) => {
   ConsoleRow.defaultProps = {
     content: "",
@@ -60,11 +64,11 @@ const ConsoleRow: React.FC<{
 
   let rowText = props.isInput ? (
     <>
-      <span>{props.content?.substring(0, props.cursorPos)}</span>
-      <span className="blink">|</span>
-      <span>
-        {props.content?.substring(props.cursorPos ? props.cursorPos : 0)}
-      </span>
+    <div id="prompt">
+    
+    <input onChange={props.handleValueChanged} onClick={props.onClick} onKeyUp={props.onKeyUp} value={props.content} type="text" id="input" autoFocus />
+  </div>
+
     </>
   ) : (
     <span className="whitespace-pre-wrap">{ouputContent}</span>

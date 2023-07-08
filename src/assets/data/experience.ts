@@ -1,6 +1,6 @@
 import ExperienceItem from "../../models/ExperienceItemInterface";
 import { DiAndroid, DiGoogleCloudPlatform, DiJava, DiMysql } from "react-icons/di";
-import { SiMongodb,SiRabbitmq,SiSpring,SiIbm,SiApachekafka,SiMicrosoftsqlserver,SiDotnet, SiMicrosoftazure, SiJava, SiPhp, SiOracle, SiKubernetes, SiRedhatopenshift, SiAzuredevops, SiElastic, SiSplunk, SiSonarqube } from "react-icons/si";
+import { SiMongodb,SiRabbitmq,SiSpring,SiIbm,SiApachekafka,SiMicrosoftsqlserver,SiDotnet, SiMicrosoftazure, SiJava, SiPhp, SiOracle, SiKubernetes, SiRedhatopenshift, SiAzuredevops, SiElastic, SiSplunk, SiSonarqube, SiGraphql } from "react-icons/si";
 import { FaNetworkWired, FaJava,FaAngular,FaCouch,FaAws,FaDatabase, FaReact, FaCloud, FaNodeJs, FaApple, FaCode, FaPython, FaDocker, FaCogs, FaJenkins } from "react-icons/fa";
 import { BiChip, BiNetworkChart } from "react-icons/bi";
 import { AiFillGitlab } from "react-icons/ai";
@@ -28,7 +28,9 @@ const ExperienceData: ExperienceItem[] = [
       {Name:"ReactJS", Color:"text-blue-300", Icon:FaReact},
       {Name:"IoT", Color:"text-gray-100", Icon:BiChip},
       {Name:"RabbitMQ", Color:"text-orange-500", Icon:SiRabbitmq},
+      {Name:"GraphQL", Color:"text-orange-500", Icon:SiGraphql},
 
+      
       
     ]
   },

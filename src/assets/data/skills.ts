@@ -7,7 +7,7 @@ import { RiFlowChart } from "react-icons/ri";
 import { GiDeliveryDrone } from "react-icons/gi";
 
 import { FaAngular, FaApple, FaAws, FaBug, FaCode, FaCogs, FaCouch, FaCreditCard, FaDatabase, FaDocker, FaEmpire, FaGlobeEurope, FaGoogle, FaHtml5, FaJava, FaJenkins, FaLanguage, FaNetworkWired, FaNodeJs, FaPizzaSlice, FaPython, FaReact, FaShip, FaVolleyballBall } from "react-icons/fa";
-import { SiDotnet, SiMicrosoftazure, SiKubernetes, SiRedhatopenshift, SiAzuredevops, SiApachekafka, SiIbm, SiJava, SiMicrosoftsqlserver, SiSpring, SiOracle, SiPhp, SiGo, SiCouchbase, SiElastic, SiMongodb, SiIonic, SiRedis, SiSonarqube, SiCss3, SiJavascript, SiTailwindcss, SiRabbitmq } from "react-icons/si";
+import { SiDotnet, SiMicrosoftazure, SiKubernetes, SiRedhatopenshift, SiApollographql,SiAzuredevops, SiApachekafka, SiIbm, SiJava, SiMicrosoftsqlserver, SiSpring, SiOracle, SiPhp, SiGo, SiCouchbase, SiElastic, SiMongodb, SiIonic, SiRedis, SiSonarqube, SiCss3, SiJavascript, SiTailwindcss, SiRabbitmq, SiGraphql } from "react-icons/si";
 import SkillInterface from "../../models/SkillInterface";
 
 
@@ -15,6 +15,9 @@ import SkillInterface from "../../models/SkillInterface";
 const skilllData:SkillInterface={
    
     Certifications:[
+        {Icon:SiApollographql, Name:"Graph Developer - Professional",  Institute:"Apollo GraphQL"},
+        {Icon:SiApollographql, Name:"Graph Developer - Associate",  Institute:"Apollo GraphQL"},
+        {Icon:FaAws, Name:"AWS Learning: Architecting",  Institute:"AWS"},
         {Icon:BiChip, Name:"Digital Technologies and the Future of Manufacturing Specialization(IIoT, Digital Twins, Additive Manufacturing)",  Institute:"University of Michigan"},
         {Icon:FaGoogle, Name:"Industrial IoT on Google Cloud",  Institute:"Google"},
         {Icon:SiRedis, Name:"Redis Certified Developer",  Institute:"Redis"},
@@ -66,7 +69,6 @@ const skilllData:SkillInterface={
         {Color:"text-green-700", TextColor:"text-gray-100", Name:"DB2", GroupCode:"db", Icon:FaDatabase},
         {Color:"text-rose-500", TextColor:"text-gray-100", Name:"MSSQL", GroupCode:"db", Icon:SiMicrosoftsqlserver},
         {Color:"text-blue-300", TextColor:"text-gray-100", Name:"IBM", GroupCode:"cloud",  Icon:SiIbm},
-        {Color:"text-gray-100", TextColor:"text-gray-100", Name:"Apache Kafka", GroupCode:"arch", Icon:SiApachekafka},
         {Color:"text-gray-100", TextColor:"text-gray-100", Name:"AMQP", GroupCode:"arch", Icon:TiFlowSwitch},
         {Color:"text-gray-100", TextColor:"text-gray-100", Name:"MQTT", GroupCode:"arch", Icon:TiFlowSwitch},
         {Color:"text-orange-500", TextColor:"text-gray-100", Name:"RabbitMQ", GroupCode:"arch", Icon:SiRabbitmq},
@@ -80,12 +82,18 @@ const skilllData:SkillInterface={
         {Color:"text-green-400", TextColor:"text-gray-100", Name:"Android",  GroupCode:"mobile", Icon:DiAndroid},
         {Color:"text-blue-300", TextColor:"text-gray-100", Name:"Ionic",  GroupCode:"mobile", Icon:SiIonic},
         {Color:"text-gray-100", TextColor:"text-gray-100", Name:"iOS",  GroupCode:"mobile", Icon:FaApple},
+        {Color:"text-blue-300", TextColor:"text-gray-100", Name:"React Native", GroupCode:"mobile", Icon:FaReact},
+
         {Color:"text-yellow-500", TextColor:"text-gray-100", Name:"Python", GroupCode:"dev", Icon:FaPython},
 
         {Color:"text-orange-500", TextColor:"text-gray-100", Name:"Html", GroupCode:"dev",  Icon:FaHtml5},
         {Color:"text-yellow-500", TextColor:"text-gray-100", Name:"Javascript", GroupCode:"dev",  Icon:SiJavascript},
         {Color:"text-blue-500", TextColor:"text-gray-100", Name:"Css", GroupCode:"dev",  Icon:SiCss3},
         {Color:"text-blue-300", TextColor:"text-gray-100", Name:"Tailwind", GroupCode:"dev",  Icon:SiTailwindcss},
+
+        {Color:"text-pink-500", TextColor:"text-gray-100", Name:"GraphQL", GroupCode:"dev",  Icon:SiGraphql},
+
+
 
         {Color:"text-violet-500", TextColor:"text-gray-100", Name:"Php", GroupCode:"dev", Icon:SiPhp},
         {Color:"text-blue-300", TextColor:"text-gray-100", Name:"GO", GroupCode:"dev", Icon:SiGo},

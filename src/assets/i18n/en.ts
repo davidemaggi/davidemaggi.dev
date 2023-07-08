@@ -15,8 +15,8 @@ const English:i18nLang={
         Title: "Credits",
         Description: "How this site has been built?",
         Msg:"Made with ❤️ in ",
-        Support:"Consider a donation to help children",
-        Support2:"If you are an IT professional, consider to join"
+        Support:"Consider a donation to help children from Ukraine",
+        Support2:"If you are an IT professional, consider to join the group"
         
     },
     Translate: {
@@ -33,7 +33,7 @@ const English:i18nLang={
         Phone: "<Hidden>",
         Missing: "",
         Help:"If this is your first visit, and you don't want to play, type 'help' and press ENTER to show the help menu.",
-        About: "I'm a Nerd, a Geek, I love Programming and find solutions. After 15 years years as Developer, and 4 years in QA as QA Manager and Test Automation Enginner, I'm now part of one of the biggest companies in the world as a SW Architect / tech Lead, finding solutions, developing them, leading teams of people I'm proud to work with."
+        About: "I may not be a Jedi, but I have the force of a powerful tech lead and architect. \n \nWith over 15 years of programming experience, I have the skills to design and lead a team of developers to create innovative solutions that will make you say \"that's no moon, it's a space station\". \n \nI'm passionate about coding and I love to create software that's not just functional, but also elegant and maintainable. I'm a firm believer in writing readable code and I always strive for code that's easy to understand. In my free time, I can be found nerding out over Star Wars and playing video games. \n \nMay the force be with you and your code."
     },
     Commands: {
         whoami: "About Me",
