@@ -6,7 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { BrowserRouter } from "react-router-dom";
-//Test Actions
+//Test Actions 2
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
