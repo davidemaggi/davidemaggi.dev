@@ -1,5 +1,5 @@
 import ExperienceItem from "../../models/ExperienceItemInterface";
-import { DiAndroid, DiGoogleCloudPlatform, DiJava, DiMysql } from "react-icons/di";
+import { DiAndroid, DiGoogleCloudPlatform, DiMysql } from "react-icons/di";
 import {
   SiMongodb,
   SiRabbitmq,
@@ -21,7 +21,7 @@ import {
   SiGraphql,
   SiRedis, SiPostgresql
 } from "react-icons/si";
-import { FaNetworkWired, FaJava,FaAngular,FaCouch,FaAws,FaDatabase, FaReact, FaCloud, FaNodeJs, FaApple, FaCode, FaPython, FaDocker, FaCogs, FaJenkins } from "react-icons/fa";
+import { FaNetworkWired, FaJava,FaAngular,FaCouch,FaAws,FaDatabase, FaReact, FaNodeJs, FaApple, FaCode, FaPython, FaDocker, FaCogs, FaJenkins } from "react-icons/fa";
 import { BiChip, BiNetworkChart } from "react-icons/bi";
 import { AiFillGitlab } from "react-icons/ai";
 
