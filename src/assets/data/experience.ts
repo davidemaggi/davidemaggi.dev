@@ -1,6 +1,26 @@
 import ExperienceItem from "../../models/ExperienceItemInterface";
 import { DiAndroid, DiGoogleCloudPlatform, DiJava, DiMysql } from "react-icons/di";
-import { SiMongodb,SiRabbitmq,SiSpring,SiIbm,SiApachekafka,SiMicrosoftsqlserver,SiDotnet, SiMicrosoftazure, SiJava, SiPhp, SiOracle, SiKubernetes, SiRedhatopenshift, SiAzuredevops, SiElastic, SiSplunk, SiSonarqube, SiGraphql } from "react-icons/si";
+import {
+  SiMongodb,
+  SiRabbitmq,
+  SiSpring,
+  SiIbm,
+  SiApachekafka,
+  SiMicrosoftsqlserver,
+  SiDotnet,
+  SiMicrosoftazure,
+  SiJava,
+  SiPhp,
+  SiOracle,
+  SiKubernetes,
+  SiRedhatopenshift,
+  SiAzuredevops,
+  SiElastic,
+  SiSplunk,
+  SiSonarqube,
+  SiGraphql,
+  SiRedis, SiPostgresql
+} from "react-icons/si";
 import { FaNetworkWired, FaJava,FaAngular,FaCouch,FaAws,FaDatabase, FaReact, FaCloud, FaNodeJs, FaApple, FaCode, FaPython, FaDocker, FaCogs, FaJenkins } from "react-icons/fa";
 import { BiChip, BiNetworkChart } from "react-icons/bi";
 import { AiFillGitlab } from "react-icons/ai";
@@ -9,26 +29,28 @@ const ExperienceData: ExperienceItem[] = [
   {
     id:"7",
     Company: "Accenture - Industry X",
-    Role: "Sr. Software Architect - Tech Lead",
+    Role: "System Architect - Tech Lead",
     Logo:"acn.png",
     Current: true,
     Location: "Torino",
     Type: "Full Time",
     From: "06/2022",
-    Description: "Sono appena arrivato, datemi 5 minuti per capire da che parte sono girato :-)",
-    DescriptionEng: "Give me a break i just joined :-) I'm making my feet wet 🍼",
+    Description: "Sono un System Architect presso Accenture Industry X, dove coordino lo sviluppo di una soluzione per la gestione della qualità. Nel mio ruolo, mi occupo della progettazione dell'architettura complessiva del sistema, ricoprendo anche il ruolo di tech lead e guidando il team di sviluppo nell'implementazione. Lavoro a stretto contatto con la direzione per garantire che gli obiettivi del progetto siano allineati e che la soluzione soddisfi i requisiti sia aziendali che tecnici.",
+    DescriptionEng: "I am a System Architect at Accenture Industry X, leading the development of a quality management solution. In my role, I design the overall architecture of the system while also acting as a technical lead, guiding the development team through the implementation process. I collaborate closely with management to ensure alignment on project goals and deliverables, ensuring the solution meets both business and technical requirements.",
     Stack:[
       {Name:"MicroServices", Color:"text-gray-100", Icon:FaNetworkWired},
       {Name:"MicroFrontends", Color:"text-gray-100", Icon:BiNetworkChart},
       {Name:"Kubernetes", Color:"text-blue-300", Icon:SiKubernetes},
       {Name:".Net", Color:"text-fuchsia-500", Icon:SiDotnet},
+      {Name:"PostgreSQL", Color:"text-blue-500", Icon:SiPostgresql},
       {Name:"MSSQL", Color:"text-rose-500", Icon:SiMicrosoftsqlserver},
       {Name:"Azure", Color:"text-blue-600", Icon:SiMicrosoftazure},
-      {Name:"MongoDB", Color:"text-red-500", Icon:SiMongodb},
+      {Name:"MongoDB", Color:"text-green-500", Icon:SiMongodb},
       {Name:"ReactJS", Color:"text-blue-300", Icon:FaReact},
       {Name:"IoT", Color:"text-gray-100", Icon:BiChip},
       {Name:"RabbitMQ", Color:"text-orange-500", Icon:SiRabbitmq},
       {Name:"GraphQL", Color:"text-orange-500", Icon:SiGraphql},
+      {Name:"Redis", Color:"text-red-500", Icon:SiRedis},
 
       
       
