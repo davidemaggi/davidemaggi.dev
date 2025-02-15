@@ -7,7 +7,7 @@ import { RiFlowChart } from "react-icons/ri";
 import { GiDeliveryDrone } from "react-icons/gi";
 
 import { FaAngular, FaApple, FaAws, FaBug, FaCode, FaCogs, FaCouch, FaCreditCard, FaDatabase, FaDocker, FaEmpire, FaGlobeEurope, FaGoogle, FaHtml5, FaJava, FaJenkins, FaLanguage, FaNetworkWired, FaNodeJs, FaPizzaSlice, FaPython, FaReact, FaShip, FaVolleyballBall } from "react-icons/fa";
-import { SiDotnet, SiMicrosoftazure, SiKubernetes, SiRedhatopenshift, SiApollographql,SiAzuredevops, SiApachekafka, SiIbm, SiJava, SiMicrosoftsqlserver, SiSpring, SiOracle, SiPhp, SiGo, SiCouchbase, SiElastic, SiMongodb, SiIonic, SiRedis, SiSonarqube, SiCss3, SiJavascript, SiTailwindcss, SiRabbitmq, SiGraphql } from "react-icons/si";
+import { SiDotnet, SiMicrosoftazure, SiKubernetes, SiRedhatopenshift, SiApollographql,SiAzuredevops, SiApachekafka, SiIbm, SiJava, SiMicrosoftsqlserver, SiSpring, SiOracle, SiPhp, SiGo, SiCouchbase, SiElastic, SiMongodb, SiIonic, SiRedis, SiSonarqube, SiCss3, SiJavascript, SiTailwindcss, SiRabbitmq, SiGraphql, SiAccenture } from "react-icons/si";
 import SkillInterface from "../../models/SkillInterface";
 
 
@@ -15,6 +15,8 @@ import SkillInterface from "../../models/SkillInterface";
 const skilllData:SkillInterface={
    
     Certifications:[
+        {Icon:SiMicrosoftazure, Name:"Microsoft Certified: Azure AI Fundamentals",  Institute:"Microsoft"},
+        {Icon:SiAccenture, Name:"People Leadership",  Institute:"Accenture"},
         {Icon:SiApollographql, Name:"Graph Developer - Professional",  Institute:"Apollo GraphQL"},
         {Icon:SiApollographql, Name:"Graph Developer - Associate",  Institute:"Apollo GraphQL"},
         {Icon:FaAws, Name:"AWS Learning: Architecting",  Institute:"AWS"},
