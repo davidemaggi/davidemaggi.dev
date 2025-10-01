@@ -32,7 +32,7 @@ const Italian:i18nLang={
         Phone: "<Nascosto>",
         Missing: "",
         Help:"Se questa  e' la tua prima visita, e non vuoi giocare un po', scrivi 'help' e premi invio per vedere quello che puoi fare",
-        About: "Potrei non essere un Jedi, ma la forza di un tech Lead e un architetto scorre potente in me. \n \nCon oltre 15 anni di esperienza nella programmazione, ho le competenze per progettare e guidare un team di sviluppatori nell'ideazione di soluzioni innovative che ti faranno dire \"non è una luna, è una stazione spaziale\". \n \nSono appassionato di coding e adoro creare software che non solo sia funzionale, ma anche elegante e manutenibile. Sono un convinto sostenitore della scrittura di codice leggibile e mi sforzo sempre di ottenere un codice di facile comprensione. Nel mio tempo libero, mi puoi trovare a nerdare su Star Wars e a giocare ai videogiochi. \n \nChe la forza sia con te e con il tuo codice."
+        About: "Potrei non essere un Jedi, ma la forza di un tech Lead e un architetto scorre potente in me. \n \nCon oltre 20 anni di esperienza nella programmazione, ho le competenze per progettare e guidare un team di sviluppatori nell'ideazione di soluzioni innovative che ti faranno dire \"non è una luna, è una stazione spaziale\". \n \nSono appassionato di coding e adoro creare software che non solo sia funzionale, ma anche elegante e manutenibile. Sono un convinto sostenitore della scrittura di codice leggibile e mi sforzo sempre di ottenere un codice di facile comprensione. Nel mio tempo libero, mi puoi trovare a nerdare su Star Wars e a giocare ai videogiochi. \n \nChe la forza sia con te e con il tuo codice."
     },
     Commands: {
         whoami: "A Proposito di me",

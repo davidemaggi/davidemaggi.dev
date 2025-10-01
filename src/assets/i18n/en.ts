@@ -33,7 +33,7 @@ const English:i18nLang={
         Phone: "<Hidden>",
         Missing: "",
         Help:"If this is your first visit, and you don't want to play, type 'help' and press ENTER to show the help menu.",
-        About: "I may not be a Jedi, but I have the force of a powerful tech lead and architect. \n \nWith over 15 years of programming experience, I have the skills to design and lead a team of developers to create innovative solutions that will make you say \"that's no moon, it's a space station\". \n \nI'm passionate about coding and I love to create software that's not just functional, but also elegant and maintainable. I'm a firm believer in writing readable code and I always strive for code that's easy to understand. In my free time, I can be found nerding out over Star Wars and playing video games. \n \nMay the force be with you and your code."
+        About: "I may not be a Jedi, but I have the force of a powerful tech lead and architect. \n \nWith over 20 years of programming experience, I have the skills to design and lead a team of developers to create innovative solutions that will make you say \"that's no moon, it's a space station\". \n \nI'm passionate about coding and I love to create software that's not just functional, but also elegant and maintainable. I'm a firm believer in writing readable code and I always strive for code that's easy to understand. In my free time, I can be found nerding out over Star Wars and playing video games. \n \nMay the force be with you and your code."
     },
     Commands: {
         whoami: "About Me",
