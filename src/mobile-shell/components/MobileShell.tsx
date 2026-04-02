@@ -1,0 +1,358 @@
+import { useMemo, useRef, useState } from 'react'
+import type { PointerEvent as ReactPointerEvent } from 'react'
+import type {
+  AppId,
+  DesktopCommandApi,
+  DesktopI18nApi,
+  DesktopLaunchIntent,
+  DesktopPlugin,
+  DesktopPreferences,
+  DesktopPreferencesApi,
+  WindowState,
+} from '../../desktop/types'
+import { renderAppIcon, resolveAppIcon } from '../../desktop-shell/utils/icons'
+
+type MobileShellProps = {
+  now: Date
+  t: (key: string, vars?: Record<string, string>) => string
+  windows: Record<AppId, WindowState>
+  discoverablePlugins: DesktopPlugin[]
+  preferences: DesktopPreferences
+  desktopApi: DesktopCommandApi
+  i18nApi: DesktopI18nApi
+  preferencesApi: DesktopPreferencesApi
+  launchIntent: DesktopLaunchIntent | null
+  onOpenApp: (id: AppId) => void
+  onCloseApp: (id: AppId) => void
+  onMinimizeApp: (id: AppId) => void
+}
+
+const formatMobileTime = (now: Date) => {
+  return new Intl.DateTimeFormat('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(now)
+}
+
+const EDGE_SWIPE_START = 28
+const SWIPE_CLOSE_THRESHOLD = 90
+const SWIPE_SWITCH_THRESHOLD = 72
+
+export function MobileShell({
+  now,
+  t,
+  windows,
+  discoverablePlugins,
+  preferences,
+  desktopApi,
+  i18nApi,
+  preferencesApi,
+  launchIntent,
+  onOpenApp,
+  onCloseApp,
+  onMinimizeApp,
+}: MobileShellProps) {
+  const [isSwitcherOpen, setIsSwitcherOpen] = useState(false)
+  const [swipeOffset, setSwipeOffset] = useState(0)
+  const swipeStartXRef = useRef<number | null>(null)
+  const isSwipeActiveRef = useRef(false)
+  const headerSwipeStartXRef = useRef<number | null>(null)
+  const isHeaderSwipeActiveRef = useRef(false)
+
+  const recentApps = useMemo(() => {
+    return discoverablePlugins
+      .filter((plugin) => windows[plugin.id].isOpen)
+      .sort((a, b) => windows[b.id].zIndex - windows[a.id].zIndex)
+  }, [discoverablePlugins, windows])
+
+  const foregroundApps = useMemo(() => {
+    return recentApps.filter((plugin) => !windows[plugin.id].isMinimized)
+  }, [recentApps, windows])
+
+  const activeApp = foregroundApps[0] ?? null
+
+  const resetSwipe = () => {
+    swipeStartXRef.current = null
+    isSwipeActiveRef.current = false
+    setSwipeOffset(0)
+  }
+
+  const handleAppPointerDown = (event: ReactPointerEvent<HTMLElement>) => {
+    if (!activeApp) return
+    if (event.pointerType === 'mouse') return
+    if (event.clientX > EDGE_SWIPE_START) return
+
+    swipeStartXRef.current = event.clientX
+    isSwipeActiveRef.current = true
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  const handleAppPointerMove = (event: ReactPointerEvent<HTMLElement>) => {
+    if (!isSwipeActiveRef.current || swipeStartXRef.current === null) return
+    const delta = Math.max(0, event.clientX - swipeStartXRef.current)
+    setSwipeOffset(Math.min(220, delta))
+  }
+
+  const handleAppPointerEnd = (event: ReactPointerEvent<HTMLElement>) => {
+    if (!isSwipeActiveRef.current || !activeApp) {
+      resetSwipe()
+      return
+    }
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+
+    if (swipeOffset >= SWIPE_CLOSE_THRESHOLD) {
+      handleBackAction()
+    }
+
+    resetSwipe()
+  }
+
+  const handleHeaderPointerDown = (event: ReactPointerEvent<HTMLElement>) => {
+    if (!activeApp) return
+    if (event.pointerType === 'mouse') return
+
+    headerSwipeStartXRef.current = event.clientX
+    isHeaderSwipeActiveRef.current = true
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  const handleHeaderPointerMove = (event: ReactPointerEvent<HTMLElement>) => {
+    if (!isHeaderSwipeActiveRef.current || headerSwipeStartXRef.current === null) return
+    const delta = event.clientX - headerSwipeStartXRef.current
+    setSwipeOffset(Math.max(-180, Math.min(180, delta)))
+  }
+
+  const handleHeaderPointerEnd = (event: ReactPointerEvent<HTMLElement>) => {
+    if (!isHeaderSwipeActiveRef.current || headerSwipeStartXRef.current === null || !activeApp) {
+      isHeaderSwipeActiveRef.current = false
+      headerSwipeStartXRef.current = null
+      setSwipeOffset(0)
+      return
+    }
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+
+    const delta = swipeOffset
+    const activeIndex = foregroundApps.findIndex((plugin) => plugin.id === activeApp.id)
+
+    if (Math.abs(delta) >= SWIPE_SWITCH_THRESHOLD && activeIndex >= 0) {
+      if (delta < 0 && activeIndex < foregroundApps.length - 1) {
+        onOpenApp(foregroundApps[activeIndex + 1].id)
+      } else if (delta > 0 && activeIndex > 0) {
+        onOpenApp(foregroundApps[activeIndex - 1].id)
+      }
+    }
+
+    isHeaderSwipeActiveRef.current = false
+    headerSwipeStartXRef.current = null
+    setSwipeOffset(0)
+  }
+
+  const handleBackAction = () => {
+    if (isSwitcherOpen) {
+      setIsSwitcherOpen(false)
+      return
+    }
+
+    if (!activeApp) return
+
+    const activeIndex = foregroundApps.findIndex((plugin) => plugin.id === activeApp.id)
+    const previousApp = activeIndex >= 0 ? foregroundApps[activeIndex + 1] : null
+
+    if (previousApp) {
+      onOpenApp(previousApp.id)
+      return
+    }
+
+    onCloseApp(activeApp.id)
+  }
+
+  return (
+    <div className="mobile-safe-root relative flex h-dvh min-h-dvh flex-col overflow-hidden text-(--window-text)">
+      <header className="mobile-safe-header flex items-center justify-between px-4 py-2 text-xs text-(--desktop-icon-color)">
+        <span>{formatMobileTime(now)}</span>
+        <span>{isSwitcherOpen ? t('mobile.switcher.title') : t('mobile.home.title')}</span>
+      </header>
+
+      <section className="mobile-safe-content px-4">
+        <p className="mb-4 text-sm text-(--desktop-icon-color)">{t('mobile.home.subtitle')}</p>
+        <div className="grid grid-cols-4 gap-3">
+          {discoverablePlugins.map((plugin) => (
+            <button
+              key={plugin.id}
+              className="flex flex-col items-center gap-1 rounded-xl border border-white/10 bg-black/15 p-2 text-(--desktop-icon-color)"
+              onClick={() => onOpenApp(plugin.id)}
+            >
+              <span className="grid h-9 w-9 place-items-center">
+                {renderAppIcon(resolveAppIcon(plugin.id, preferences), 'h-full w-full object-contain')}
+              </span>
+              <span className="max-w-full truncate text-[11px]">{t(plugin.titleKey)}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <footer
+        className="mobile-safe-dock absolute flex items-center gap-2 rounded-2xl border border-white/10 bg-black/35 px-3 py-2 backdrop-blur"
+        aria-label={t('mobile.dock.label')}
+      >
+        {discoverablePlugins.slice(0, 5).map((plugin) => (
+          <button
+            key={plugin.id}
+            className={`grid h-10 w-10 place-items-center rounded-lg ${windows[plugin.id].isOpen ? 'bg-white/20' : 'bg-white/10'}`}
+            onClick={() => onOpenApp(plugin.id)}
+            aria-label={t(plugin.titleKey)}
+          >
+            {renderAppIcon(resolveAppIcon(plugin.id, preferences), 'h-6 w-6 object-contain')}
+          </button>
+        ))}
+        <button
+          type="button"
+          className="ml-auto rounded-lg border border-white/20 bg-white/10 px-2.5 py-2 text-xs text-(--desktop-icon-color)"
+          onClick={() => setIsSwitcherOpen((prev) => !prev)}
+        >
+          {t('mobile.action.switcher')}
+        </button>
+      </footer>
+
+      {isSwitcherOpen ? (
+        <section className="mobile-safe-overlay fixed inset-0 z-40 flex flex-col bg-black/60 backdrop-blur-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-white">{t('mobile.switcher.title')}</h2>
+            <button
+              type="button"
+              className="rounded-md border border-white/25 bg-white/10 px-2 py-1 text-xs text-white"
+              onClick={() => setIsSwitcherOpen(false)}
+            >
+              {t('mobile.action.home')}
+            </button>
+          </div>
+          <div className="mobile-switcher-track flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4">
+            {recentApps.length ? (
+              recentApps.map((plugin) => (
+                <article
+                  key={`switcher-${plugin.id}`}
+                  className="min-w-[82%] snap-center rounded-xl border border-white/15 bg-black/35 p-3 text-white"
+                >
+                  <div className="mobile-switcher-preview mb-2.5">
+                    <div className="mobile-switcher-preview-scale">
+                      <plugin.Component
+                        desktopApi={desktopApi}
+                        i18nApi={i18nApi}
+                        preferencesApi={preferencesApi}
+                        launchIntent={null}
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="mb-2 inline-flex w-full items-center gap-2 text-left"
+                    onClick={() => {
+                      onOpenApp(plugin.id)
+                      setIsSwitcherOpen(false)
+                    }}
+                  >
+                    {renderAppIcon(resolveAppIcon(plugin.id, preferences), 'h-5 w-5 object-contain')}
+                    <span className="text-sm font-semibold">{t(plugin.titleKey)}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-md border border-white/20 bg-white/10 px-2 py-1 text-xs"
+                    onClick={() => onCloseApp(plugin.id)}
+                  >
+                    {t('window.action.close', { title: t(plugin.titleKey) })}
+                  </button>
+                </article>
+              ))
+            ) : (
+              <p className="text-sm text-white/80">{t('mobile.switcher.empty')}</p>
+            )}
+          </div>
+          {recentApps.length > 1 ? (
+            <div className="mb-20 mt-1 inline-flex items-center justify-center gap-1.5">
+              {recentApps.map((plugin) => (
+                <span
+                  key={`switcher-dot-${plugin.id}`}
+                  className={`h-1.5 w-1.5 rounded-full ${plugin.id === activeApp?.id ? 'bg-white' : 'bg-white/40'}`}
+                />
+              ))}
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+
+      {activeApp ? (
+        <section
+          className="mobile-app-frame fixed inset-0 z-30 flex flex-col bg-(--window-bg)"
+          style={{ transform: `translateX(${swipeOffset}px)` }}
+          onPointerDown={handleAppPointerDown}
+          onPointerMove={handleAppPointerMove}
+          onPointerUp={handleAppPointerEnd}
+          onPointerCancel={handleAppPointerEnd}
+        >
+          <header
+            className="mobile-safe-app-header flex items-center justify-between border-b border-(--app-border) bg-(--app-surface-2) px-3 py-2"
+            onPointerDown={handleHeaderPointerDown}
+            onPointerMove={handleHeaderPointerMove}
+            onPointerUp={handleHeaderPointerEnd}
+            onPointerCancel={handleHeaderPointerEnd}
+          >
+            <p className="inline-flex items-center gap-2 text-sm font-semibold text-(--window-text)">
+              {renderAppIcon(resolveAppIcon(activeApp.id, preferences), 'h-4.5 w-4.5 object-contain')}
+              {t(activeApp.titleKey)}
+            </p>
+            <span className="text-xs text-(--app-muted)">{t('mobile.nav.hint')}</span>
+          </header>
+          <div className="mobile-app-content min-h-0 flex-1 overflow-auto">
+            <activeApp.Component
+              desktopApi={desktopApi}
+              i18nApi={i18nApi}
+              preferencesApi={preferencesApi}
+              launchIntent={launchIntent}
+            />
+          </div>
+          <nav className="mobile-nav" aria-label={t('mobile.nav.label')}>
+            <button
+              type="button"
+              className="mobile-nav-btn"
+              onClick={handleBackAction}
+              aria-label={t('mobile.action.back')}
+            >
+              <span aria-hidden="true">&lt;</span>
+            </button>
+            <button
+              type="button"
+              className="mobile-nav-btn mobile-nav-btn--home"
+              onClick={() => onMinimizeApp(activeApp.id)}
+              aria-label={t('mobile.action.home')}
+            />
+            <button
+              type="button"
+              className="mobile-nav-btn"
+              onClick={() => setIsSwitcherOpen(true)}
+              aria-label={t('mobile.action.switcher')}
+            >
+              <span className="mobile-nav-recents" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </span>
+            </button>
+          </nav>
+        </section>
+      ) : null}
+    </div>
+  )
+}
+
+
+
+
+
+
+

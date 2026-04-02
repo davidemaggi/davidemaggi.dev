@@ -1,0 +1,24 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Blue bloom wallpaper inspired by Windows 11 style">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a3aa8"/>
+      <stop offset="50%" stop-color="#1556d9"/>
+      <stop offset="100%" stop-color="#38a3ff"/>
+    </linearGradient>
+    <radialGradient id="petal" cx="0.5" cy="0.5" r="0.6">
+      <stop offset="0%" stop-color="#d8ecff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#9fd1ff" stop-opacity="0.2"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+
+  <g transform="translate(960 560)">
+    <ellipse rx="520" ry="170" fill="url(#petal)" transform="rotate(0)"/>
+    <ellipse rx="500" ry="165" fill="url(#petal)" transform="rotate(45)"/>
+    <ellipse rx="520" ry="170" fill="url(#petal)" transform="rotate(90)"/>
+    <ellipse rx="500" ry="165" fill="url(#petal)" transform="rotate(135)"/>
+    <ellipse rx="360" ry="120" fill="#eff7ff" fill-opacity="0.65"/>
+  </g>
+</svg>
+
