@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent, KeyboardEvent, ReactNode } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
@@ -94,8 +94,19 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
   const [history, setHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState<number | null>(null)
   const [draftInput, setDraftInput] = useState('')
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const outputRef = useRef<HTMLDivElement | null>(null)
   const contentLocale: Locale = i18nApi?.locale === 'en' ? 'en' : 'it'
   const calendarLocale = contentLocale === 'en' ? 'en-US' : 'it-IT'
+
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    if (!outputRef.current) return
+    outputRef.current.scrollTop = outputRef.current.scrollHeight
+  }, [lines])
 
   const commands = useMemo<Record<string, TerminalCommand>>(
     () => ({
@@ -283,6 +294,8 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
       applicazioni: 'apps',
       calendar: 'calendar',
       calendario: 'calendar',
+      cv: 'calendar',
+      curriculum: 'calendar',
       open: 'open',
       apri: 'open',
       minimize: 'minimize',
@@ -410,7 +423,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
 
   return (
     <div className="flex h-full flex-col bg-slate-950 font-mono text-sm text-gray-300">
-      <div className="terminal-output flex-1 overflow-auto p-3.5">
+      <div ref={outputRef} className="terminal-output flex-1 overflow-auto p-3.5">
         {lines.map((line, index) => (
           typeof line.text === 'string' ? (
             <p
@@ -436,6 +449,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
         <div className="relative flex-1">
           <input
             id="terminal-input"
+            ref={inputRef}
             autoComplete="off"
             spellCheck={false}
             value={input}
