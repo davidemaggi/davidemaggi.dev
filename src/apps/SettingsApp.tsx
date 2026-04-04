@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import type { ChangeEvent } from 'react'
+import { useIsPhone } from '../mobile-shell/hooks/useIsPhone'
 import type {
-  AppIcon,
   ClockDateFormat,
   ClockHourFormat,
   DesktopAppProps,
@@ -10,13 +11,7 @@ import type {
   WallpaperPreset,
 } from '../desktop/types'
 
-const renderIcon = (icon: AppIcon, className: string) => {
-  if (icon.kind === 'image') {
-    return <img className={className} src={icon.src} alt={icon.alt} />
-  }
-
-  return <span className={className}>{icon.value}</span>
-}
+type SettingsPage = 'theme' | 'localization'
 
 const ICON_SIZE_PREVIEW_CLASSES: Record<DesktopIconSize, { icon: string; label: string }> = {
   small: { icon: 'h-8 w-8', label: 'text-[11px]' },
@@ -25,10 +20,14 @@ const ICON_SIZE_PREVIEW_CLASSES: Record<DesktopIconSize, { icon: string; label: 
   xl: { icon: 'h-14 w-14', label: 'text-[15px]' },
 }
 
-export function SettingsApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppProps) {
+export function SettingsApp({ i18nApi, preferencesApi }: DesktopAppProps) {
   if (!i18nApi || !preferencesApi) {
     return <div className="p-5 text-left text-(--window-text)">Settings APIs unavailable.</div>
   }
+
+  const [activePage, setActivePage] = useState<SettingsPage>('theme')
+  const [isNavOpen, setIsNavOpen] = useState(false)
+  const isPhone = useIsPhone()
 
   const handleLocaleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     i18nApi.setLocale(event.target.value as Locale)
@@ -53,200 +52,211 @@ export function SettingsApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
   const handleClockDateFormatChange = (event: ChangeEvent<HTMLSelectElement>) => {
     preferencesApi.setClockDateFormat(event.target.value as ClockDateFormat)
   }
-
-  const apps = desktopApi?.listApps() ?? []
-  const previewSourceIcon = preferencesApi.appIconChoices[0]?.icon ?? { kind: 'text', value: 'Aa' }
-
   return (
-    <div className="p-5 text-left text-(--window-text)">
-      <h1 className="mb-3.5 text-[22px] font-semibold">{i18nApi.t('settings.heading')}</h1>
+    <div className="relative flex h-full bg-(--app-surface-1) text-(--window-text)">
+      {isPhone && isNavOpen ? (
+        <button
+          type="button"
+          className="absolute inset-0 z-10 bg-black/30"
+          aria-label={i18nApi.t('settings.nav.close')}
+          onClick={() => setIsNavOpen(false)}
+        />
+      ) : null}
 
-      <label className="mb-3 flex max-w-55 flex-col gap-1.5">
-        <span>{i18nApi.t('settings.language.label')}</span>
-        <select
-          className="h-8.5 rounded-lg border border-[var(--app-border)] bg-(--app-surface-2) px-2.5 text-(--window-text)"
-          value={i18nApi.locale}
-          onChange={handleLocaleChange}
-        >
-          {i18nApi.locales.map((locale) => (
-            <option key={locale} value={locale}>
-              {locale.toUpperCase()}
-            </option>
-          ))}
-        </select>
-      </label>
+      <aside className={`${isPhone ? 'absolute inset-y-0 left-0 z-20 transition-transform duration-200' : 'relative shrink-0'} w-64 border-r border-(--app-border) bg-(--app-surface-2) p-3 ${isPhone ? (isNavOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0'}`}>
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <h1 className="text-lg font-semibold">{i18nApi.t('settings.heading')}</h1>
+          <button
+            type="button"
+            className={`rounded border border-(--app-border) px-2 py-1 text-xs ${isPhone ? '' : 'hidden'}`}
+            onClick={() => setIsNavOpen(false)}
+          >
+            {i18nApi.t('settings.nav.close')}
+          </button>
+        </div>
+        <nav className="space-y-1" aria-label={i18nApi.t('settings.heading')}>
+          <button
+            type="button"
+            className={`flex w-full items-center gap-2 rounded px-2.5 py-2 text-left text-sm ${activePage === 'theme' ? 'bg-(--app-surface-3) font-semibold' : 'hover:bg-(--app-surface-3)'}`}
+            onClick={() => {
+              setActivePage('theme')
+              setIsNavOpen(false)
+            }}
+          >
+            <img src="/icons/gear.svg" alt="Theme section icon" className="h-4 w-4 object-contain" />
+            {i18nApi.t('settings.nav.theme')}
+          </button>
+          <button
+            type="button"
+            className={`flex w-full items-center gap-2 rounded px-2.5 py-2 text-left text-sm ${activePage === 'localization' ? 'bg-(--app-surface-3) font-semibold' : 'hover:bg-(--app-surface-3)'}`}
+            onClick={() => {
+              setActivePage('localization')
+              setIsNavOpen(false)
+            }}
+          >
+            <img src="/icons/translate.svg" alt="Localization section icon" className="h-4 w-4 object-contain" />
+            {i18nApi.t('settings.nav.localization')}
+          </button>
+        </nav>
+      </aside>
 
-      <p>{i18nApi.t('settings.language.help')}</p>
+      <section className="min-w-0 flex-1 overflow-auto p-5 text-left">
+        <div className={`mb-3 ${isPhone ? '' : 'hidden'}`}>
+          <button
+            type="button"
+            className="rounded border border-(--app-border) bg-(--app-surface-2) px-2.5 py-1.5 text-xs"
+            onClick={() => setIsNavOpen(true)}
+          >
+            {i18nApi.t('settings.nav.open')}
+          </button>
+        </div>
 
-      <label className="mb-3 mt-4 flex max-w-55 flex-col gap-1.5">
-        <span>{i18nApi.t('settings.theme.label')}</span>
-        <select
-          className="h-8.5 rounded-lg border border-[var(--app-border)] bg-(--app-surface-2) px-2.5 text-(--window-text)"
-          value={preferencesApi.preferences.theme}
-          onChange={handleThemeChange}
-        >
-          {preferencesApi.themes.map((theme) => (
-            <option key={theme} value={theme}>
-              {i18nApi.t(`theme.${theme}`)}
-            </option>
-          ))}
-        </select>
-      </label>
+        {activePage === 'theme' ? (
+          <>
+            <h2 className="mb-1 text-xl font-semibold">{i18nApi.t('settings.page.theme.title')}</h2>
+            <p className="mb-4 text-(--app-muted)">{i18nApi.t('settings.page.theme.subtitle')}</p>
 
-      <p>{i18nApi.t('settings.theme.help')}</p>
-
-      <label className="mb-3 mt-4 flex max-w-55 flex-col gap-1.5">
-        <span>{i18nApi.t('settings.wallpaper.label')}</span>
-        <select
-          className="h-8.5 rounded-lg border border-[var(--app-border)] bg-(--app-surface-2) px-2.5 text-(--window-text)"
-          value={preferencesApi.preferences.wallpaper}
-          onChange={handleWallpaperChange}
-        >
-          {preferencesApi.wallpapers.map((wallpaper) => (
-            <option key={wallpaper} value={wallpaper}>
-              {i18nApi.t(`wallpaper.${wallpaper}`)}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <p>{i18nApi.t('settings.wallpaper.help')}</p>
-
-      <label className="mb-3 mt-4 flex max-w-55 flex-col gap-1.5">
-        <span>{i18nApi.t('settings.desktopIconSize.label')}</span>
-        <select
-          className="h-8.5 rounded-lg border border-[var(--app-border)] bg-(--app-surface-2) px-2.5 text-(--window-text)"
-          value={preferencesApi.preferences.desktopIconSize}
-          onChange={handleDesktopIconSizeChange}
-        >
-          {preferencesApi.desktopIconSizes.map((size) => (
-            <option key={size} value={size}>
-              {i18nApi.t(`settings.desktopIconSize.${size}`)}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <p>{i18nApi.t('settings.desktopIconSize.help')}</p>
-
-      <label className="mb-3 mt-4 flex max-w-55 flex-col gap-1.5">
-        <span>{i18nApi.t('settings.clock.hourFormat.label')}</span>
-        <select
-          className="h-8.5 rounded-lg border border-[var(--app-border)] bg-(--app-surface-2) px-2.5 text-(--window-text)"
-          value={preferencesApi.preferences.clockHourFormat}
-          onChange={handleClockHourFormatChange}
-        >
-          {preferencesApi.clockHourFormats.map((format) => (
-            <option key={format} value={format}>
-              {i18nApi.t(`settings.clock.hourFormat.${format}`)}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <p>{i18nApi.t('settings.clock.hourFormat.help')}</p>
-
-      <label className="mb-3 mt-4 flex max-w-55 flex-col gap-1.5">
-        <span>{i18nApi.t('settings.clock.dateFormat.label')}</span>
-        <select
-          className="h-8.5 rounded-lg border border-[var(--app-border)] bg-(--app-surface-2) px-2.5 text-(--window-text)"
-          value={preferencesApi.preferences.clockDateFormat}
-          onChange={handleClockDateFormatChange}
-        >
-          {preferencesApi.clockDateFormats.map((format) => (
-            <option key={format} value={format}>
-              {i18nApi.t(`settings.clock.dateFormat.${format}`)}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <p>{i18nApi.t('settings.clock.dateFormat.help')}</p>
-
-      <div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-2.5">
-        {preferencesApi.desktopIconSizes.map((size) => {
-          const previewClasses = ICON_SIZE_PREVIEW_CLASSES[size]
-          const isActive = preferencesApi.preferences.desktopIconSize === size
-
-          return (
-            <button
-              type="button"
-              key={size}
-              className={`rounded-lg border p-3 text-left transition ${
-                isActive
-                  ? 'border-blue-500 bg-blue-500/15'
-                  : 'border-[var(--app-border)] bg-(--app-surface-2) hover:bg-(--app-surface-3)'
-              }`}
-              onClick={() => preferencesApi.setDesktopIconSize(size)}
-              aria-pressed={isActive}
-            >
-              <span className="mb-2 flex items-center justify-between gap-2 text-xs text-(--app-muted)">
-                <span>{i18nApi.t(`settings.desktopIconSize.${size}`)}</span>
-                {isActive ? (
-                  <span className="rounded-full border border-blue-400/60 bg-blue-500/20 px-2 py-0.5 text-[10px] font-semibold text-blue-200">
-                    {i18nApi.t('settings.desktopIconSize.active')}
-                  </span>
-                ) : null}
-              </span>
-              <span className="flex w-full flex-col items-center gap-1.5 rounded-md border border-transparent p-1 text-(--window-text)">
-                <span className={`grid place-items-center ${previewClasses.icon}`}>
-                  {renderIcon(previewSourceIcon, 'h-full w-full object-contain text-center leading-none')}
-                </span>
-                <span className={`max-w-full break-words text-center leading-tight ${previewClasses.label}`}>
-                  {i18nApi.t('app.about.title')}
-                </span>
-              </span>
-            </button>
-          )
-        })}
-      </div>
-
-      <h2 className="mb-2 mt-[18px] text-lg font-semibold">{i18nApi.t('settings.icons.heading')}</h2>
-      <p>{i18nApi.t('settings.icons.help')}</p>
-
-      <div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2.5">
-        {apps.map((app) => {
-          const selectedIconId = preferencesApi.preferences.appIcons[app.id] ?? ''
-          const previewIcon = selectedIconId
-            ? preferencesApi.appIconChoices.find((choice) => choice.id === selectedIconId)?.icon
-            : null
-
-          return (
-            <label
-              className="flex flex-col gap-1.5 rounded-lg border border-[var(--app-border)] bg-(--app-surface-2) p-2.5"
-              key={app.id}
-            >
-              <span>{app.title}</span>
-              <div className="grid h-10.5 w-10.5 place-items-center rounded-[10px] border border-[var(--app-border)] bg-(--app-surface-1)">
-                {previewIcon ? (
-                  renderIcon(previewIcon, 'h-6 w-6 object-contain')
-                ) : (
-                  <span className="text-xs text-(--app-muted)">Aa</span>
-                )}
-              </div>
+            <label className="mb-3 flex max-w-64 flex-col gap-1.5">
+              <span>{i18nApi.t('settings.theme.label')}</span>
               <select
-                className="h-8.5 rounded-lg border border-[var(--app-border)] bg-(--app-surface-1) px-2.5 text-(--window-text)"
-                value={selectedIconId}
-                onChange={(event) =>
-                  preferencesApi.setAppIcon(
-                    app.id,
-                    event.target.value || null,
-                  )
-                }
+                className="h-8.5 rounded-lg border border-(--app-border) bg-(--app-surface-2) px-2.5 text-(--window-text)"
+                value={preferencesApi.preferences.theme}
+                onChange={handleThemeChange}
               >
-                <option value="">{i18nApi.t('settings.icons.default')}</option>
-                {preferencesApi.appIconChoices.map((choice) => (
-                  <option key={choice.id} value={choice.id}>
-                    {i18nApi.t(choice.labelKey)}
+                {preferencesApi.themes.map((theme) => (
+                  <option key={theme} value={theme}>
+                    {i18nApi.t(`theme.${theme}`)}
                   </option>
                 ))}
               </select>
             </label>
-          )
-        })}
-      </div>
+            <p>{i18nApi.t('settings.theme.help')}</p>
 
-      <p className="mt-3">{i18nApi.t('settings.more')}</p>
+            <label className="mb-3 mt-4 flex max-w-64 flex-col gap-1.5">
+              <span>{i18nApi.t('settings.wallpaper.label')}</span>
+              <select
+                className="h-8.5 rounded-lg border border-(--app-border) bg-(--app-surface-2) px-2.5 text-(--window-text)"
+                value={preferencesApi.preferences.wallpaper}
+                onChange={handleWallpaperChange}
+              >
+                {preferencesApi.wallpapers.map((wallpaper) => (
+                  <option key={wallpaper} value={wallpaper}>
+                    {i18nApi.t(`wallpaper.${wallpaper}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p>{i18nApi.t('settings.wallpaper.help')}</p>
+
+            <label className="mb-3 mt-4 flex max-w-64 flex-col gap-1.5">
+              <span>{i18nApi.t('settings.desktopIconSize.label')}</span>
+              <select
+                className="h-8.5 rounded-lg border border-(--app-border) bg-(--app-surface-2) px-2.5 text-(--window-text)"
+                value={preferencesApi.preferences.desktopIconSize}
+                onChange={handleDesktopIconSizeChange}
+              >
+                {preferencesApi.desktopIconSizes.map((size) => (
+                  <option key={size} value={size}>
+                    {i18nApi.t(`settings.desktopIconSize.${size}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p>{i18nApi.t('settings.desktopIconSize.help')}</p>
+
+            <div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-2.5">
+              {preferencesApi.desktopIconSizes.map((size) => {
+                const previewClasses = ICON_SIZE_PREVIEW_CLASSES[size]
+                const isActive = preferencesApi.preferences.desktopIconSize === size
+
+                return (
+                  <button
+                    type="button"
+                    key={size}
+                    className={`rounded-lg border p-3 text-left transition ${
+                      isActive
+                        ? 'border-blue-500 bg-blue-500/15'
+                        : 'border-(--app-border) bg-(--app-surface-2) hover:bg-(--app-surface-3)'
+                    }`}
+                    onClick={() => preferencesApi.setDesktopIconSize(size)}
+                    aria-pressed={isActive}
+                  >
+                    <span className="mb-2 flex items-center justify-between gap-2 text-xs text-(--app-muted)">
+                      <span>{i18nApi.t(`settings.desktopIconSize.${size}`)}</span>
+                      {isActive ? (
+                        <span className="rounded-full border border-blue-400/60 bg-blue-500/20 px-2 py-0.5 text-[10px] font-semibold text-blue-200">
+                          {i18nApi.t('settings.desktopIconSize.active')}
+                        </span>
+                      ) : null}
+                    </span>
+                    <span className="flex w-full flex-col items-center gap-1.5 rounded-md border border-transparent p-1 text-(--window-text)">
+                      <span className={`grid place-items-center ${previewClasses.icon}`}>
+                        <img src="/icons/about.svg" alt="Desktop icon preview" className="h-full w-full object-contain" />
+                      </span>
+                      <span className={`max-w-full break-words text-center leading-tight ${previewClasses.label}`}>
+                        {i18nApi.t('app.about.title')}
+                      </span>
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 className="mb-1 text-xl font-semibold">{i18nApi.t('settings.page.localization.title')}</h2>
+            <p className="mb-4 text-(--app-muted)">{i18nApi.t('settings.page.localization.subtitle')}</p>
+
+            <label className="mb-3 flex max-w-64 flex-col gap-1.5">
+              <span>{i18nApi.t('settings.language.label')}</span>
+              <select
+                className="h-8.5 rounded-lg border border-(--app-border) bg-(--app-surface-2) px-2.5 text-(--window-text)"
+                value={i18nApi.locale}
+                onChange={handleLocaleChange}
+              >
+                {i18nApi.locales.map((locale) => (
+                  <option key={locale} value={locale}>
+                    {locale.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p>{i18nApi.t('settings.language.help')}</p>
+
+            <label className="mb-3 mt-4 flex max-w-64 flex-col gap-1.5">
+              <span>{i18nApi.t('settings.clock.hourFormat.label')}</span>
+              <select
+                className="h-8.5 rounded-lg border border-(--app-border) bg-(--app-surface-2) px-2.5 text-(--window-text)"
+                value={preferencesApi.preferences.clockHourFormat}
+                onChange={handleClockHourFormatChange}
+              >
+                {preferencesApi.clockHourFormats.map((format) => (
+                  <option key={format} value={format}>
+                    {i18nApi.t(`settings.clock.hourFormat.${format}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p>{i18nApi.t('settings.clock.hourFormat.help')}</p>
+
+            <label className="mb-3 mt-4 flex max-w-64 flex-col gap-1.5">
+              <span>{i18nApi.t('settings.clock.dateFormat.label')}</span>
+              <select
+                className="h-8.5 rounded-lg border border-(--app-border) bg-(--app-surface-2) px-2.5 text-(--window-text)"
+                value={preferencesApi.preferences.clockDateFormat}
+                onChange={handleClockDateFormatChange}
+              >
+                {preferencesApi.clockDateFormats.map((format) => (
+                  <option key={format} value={format}>
+                    {i18nApi.t(`settings.clock.dateFormat.${format}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p>{i18nApi.t('settings.clock.dateFormat.help')}</p>
+          </>
+        )}
+      </section>
     </div>
   )
 }

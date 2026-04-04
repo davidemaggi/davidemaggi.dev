@@ -16,7 +16,7 @@ const itCalendarEvents: WorkExperienceEvent[] = [
     startYear: 2022,
     ongoing: true,
 
-    tagIds: ['frontend', 'react', 'accessibility'],
+    tagIds: ['microservice', 'microfrontend', 'kubernetes','dotnet','pgsql','mssql','azure','mongo','react','iot','rabbitmq','gql','redis'],
   },
   {
     id: 'engineering_20',
@@ -35,45 +35,95 @@ const itCalendarEvents: WorkExperienceEvent[] = [
     },
     startMonth: 4,
     startYear: 2020,
-    endMonth: 6,
+    endMonth: 5,
     endYear: 2022,
-    tagIds: ['frontend', 'react', 'accessibility'],
-  }
-  ,
+    tagIds: [],
+  },
   {
-    id: 'engineering_18',
-    role: 'Solution Architect / Tech. Leader',
-    companyName: 'Engineering S.p.A.aa',
+    id: 'alpitour_18',
+    role: 'Solution Architect / Tech Lead',
+    companyName: 'Alpitour S.p.A.',
+    description:
+        'Riportando direttamente al top Management IT guido gli sviluppi di soluzioni sia trasversali che di Brand.',
+    barColor: '#4490CA',
+    icon: {
+      src: '/icons/alpitour.svg',
+      alt: 'alpitour',
+    },
+    startMonth: 4,
+    startYear: 2020,
+    endMonth: 5,
+    endYear: 2022,
+    tagIds: ['java', 'spring', 'angular', 'node','electron', 'couchdb','db2','mssql','ibm','aws', 'kafka', 'elastic', 'devops'],
+  },
+  {
+    id: 'engineering_188',
+    role: 'Solution Architect / BA',
+    companyName: 'Engineering S.p.A.',
     description:
         'Occupandomi dell\'architettura e sviluppo di progetti all\'interno della Business Unit Travel & Hospitality, lavorando con clienti del calibro di Carnival, GNV, MSC & Alpitour',
-    barColor: '#440044',
+    barColor: '#d1005b',
+    icon: {
+      src: '/icons/engineering.svg',
+      alt: 'Architect',
+    },
+    startMonth: 8,
+    startYear: 2018,
+    endMonth: 3,
+    endYear: 2020,
+    tagIds: ['microservice', 'microfrontend', 'aws', 'azure','gcloud', 'docker','kubernetes','openshift','devops','gitlab','sonarqube'],
+  },
+  {
+    id: 'engineering_18',
+    role: 'Solution Architect / BA',
+    companyName: 'Carnival Corporation',
+    description:
+        'Ho cominciato la mia esperienza in Engineering come BA in Carnival(Costa Crociere) per la mia esperienza nel settore dell\'asset management, ma sono tornato quasi immediatamente a ricoprire un ruolo tecnico proponendo, disegnando, e sviluppando un sistema trasversale di asset management.',
+    barColor: '#DFB149',
     icon: {
       src: '/icons/costa.svg',
       alt: 'Architect',
     },
-    startMonth: 2,
+    startMonth: 8,
     startYear: 2018,
-    endMonth: 2,
+    endMonth: 3,
     endYear: 2020,
-    tagIds: ['frontend', 'react', 'accessibility'],
-  }
-  ,
+    tagIds: ['dotnet', 'mssql', 'angular', 'azure','react', 'couchdb','iot','splunk'],
+  },
   {
     id: 'spectec_15',
-    role: 'Solution Architect / Tech. Leader',
+    role: 'Senior Software Tester / Senior Test Automation Engineer',
     companyName: 'SpecTec S.p.A.',
     description:
-        'Occupandomi dell\'architettura e sviluppo di progetti all\'interno della Business Unit Travel & Hospitality, lavorando con clienti del calibro di Carnival, GNV, MSC & Alpitour',
+        'Cominciato da Tester ho preso poi in carico la gestione del Dipartimento QA ed ho introdotto la Test Automation in azienda.\n' +
+        '',
     barColor: '#447799',
     icon: {
-      src: '/icons/costa.svg',
-      alt: 'Architect',
+      src: '/icons/spectec.svg',
+      alt: 'spectec',
     },
     startMonth: 1,
     startYear: 2015,
     endMonth: 7,
     endYear: 2018,
-    tagIds: ['frontend', 'react', 'accessibility'],
+    tagIds: ['dotnet', 'mssql', 'sybase', 'oracle', 'pb', 'testautomation', 'jenkins'],
+  },
+  {
+    id: 'me_1987',
+    role: 'Programmer / Consultant / Founder',
+    companyName: 'Bhalu',
+    description:
+        'Subito dopo aver terminato la scuola ho cominciato la mia vita da programmatore, concentrandomi su sviluppo Web e Mobile, ma da buon smanettone ho continuato a studiare e a sporcarmi le mani con molte tecnologie diverse.',
+    barColor: '#ED702E',
+    icon: {
+      src: '/icons/self.svg',
+      alt: 'self',
+    },
+    startMonth: 6,
+    startYear: 2006,
+    endMonth: 12,
+    endYear: 2014,
+    tagIds: ['dotnet', 'java', 'android', 'ios', 'python', 'php', 'mysql'],
   }
 ]
 

@@ -1,8 +1,8 @@
 import { AboutApp } from '../apps/AboutApp'
 import { CalendarApp } from '../apps/CalendarApp'
+import { CertManagerApp } from '../apps/CertManagerApp'
 import { EasterEggApp } from '../apps/EasterEggApp'
 import { SettingsApp } from '../apps/SettingsApp'
-import { SkillsApp } from '../apps/SkillsApp'
 import { TerminalApp } from '../apps/TerminalApp'
 import type { AppId, DesktopPlugin } from './types'
 
@@ -54,22 +54,6 @@ export const DESKTOP_PLUGINS: Record<AppId, DesktopPlugin> = {
     },
     Component: SettingsApp,
   },
-  skills: {
-    id: 'skills',
-    titleKey: 'app.skills.title',
-    icon: {
-      kind: 'image',
-      src: '/icons/skills.svg',
-      alt: 'Skills icon',
-    },
-    defaultBounds: {
-      x: 140,
-      y: 90,
-      width: 760,
-      height: 460,
-    },
-    Component: SkillsApp,
-  },
   calendar: {
     id: 'calendar',
     titleKey: 'app.calendar.title',
@@ -85,6 +69,22 @@ export const DESKTOP_PLUGINS: Record<AppId, DesktopPlugin> = {
       height: 520,
     },
     Component: CalendarApp,
+  },
+  certManager: {
+    id: 'certManager',
+    titleKey: 'app.certManager.title',
+    icon: {
+      kind: 'image',
+      src: '/icons/certificate.svg',
+      alt: 'Certificate manager icon',
+    },
+    defaultBounds: {
+      x: 150,
+      y: 80,
+      width: 900,
+      height: 540,
+    },
+    Component: CertManagerApp,
   },
   easterEgg: {
     id: 'easterEgg',

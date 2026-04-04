@@ -5,7 +5,7 @@ export { getCalendarTagById, getCalendarTags } from './tags'
 import type { WorkExperienceEvent } from './types'
 
 /** Primo anno visualizzato nella timeline Gantt */
-export const CALENDAR_START_YEAR = 2015
+export const CALENDAR_START_YEAR = 2014
 
 const eventsByLocale: Record<Locale, WorkExperienceEvent[]> = {
   it: itCalendarEvents,

@@ -190,7 +190,7 @@ function App() {
   }
 
   const launchApp = (id: AppId, query?: string) => {
-    if ((id === 'skills' || id === 'calendar') && query?.trim()) {
+    if (id === 'calendar' && query?.trim()) {
       setLaunchIntent({
         appId: id,
         query: query.trim(),

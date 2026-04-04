@@ -238,6 +238,19 @@ export function MobileShell({
                 <article
                   key={`switcher-${plugin.id}`}
                   className="min-w-[82%] snap-center rounded-xl border border-white/15 bg-black/35 p-3 text-white"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
+                    onOpenApp(plugin.id)
+                    setIsSwitcherOpen(false)
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      onOpenApp(plugin.id)
+                      setIsSwitcherOpen(false)
+                    }
+                  }}
                 >
                   <div className="mobile-switcher-preview mb-2.5">
                     <div className="mobile-switcher-preview-scale">
@@ -263,7 +276,10 @@ export function MobileShell({
                   <button
                     type="button"
                     className="rounded-md border border-white/20 bg-white/10 px-2 py-1 text-xs"
-                    onClick={() => onCloseApp(plugin.id)}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      onCloseApp(plugin.id)
+                    }}
                   >
                     {t('window.action.close', { title: t(plugin.titleKey) })}
                   </button>

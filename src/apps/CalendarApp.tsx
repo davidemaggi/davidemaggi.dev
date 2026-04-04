@@ -58,8 +58,9 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
   const now = useMemo(() => new Date(), [])
 
   const [selectedId, setSelectedId] = useState<string | null>(events[0]?.id ?? null)
+  const [selectedMobileOccurrence, setSelectedMobileOccurrence] = useState<string | null>(null)
   const [selectedTag, setSelectedTag] = useState<string>('all')
-  const [sortOrder, setSortOrder] = useState<SortOrder>('asc')
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false)
   const [activeTagIndex, setActiveTagIndex] = useState(0)
   const tagMenuRef = useRef<HTMLDivElement | null>(null)
@@ -299,7 +300,8 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
 
                   <div className="flex flex-col gap-2">
                     {yearEvents.map((event) => {
-                      const isSelected = event.id === selectedEvent?.id
+                      const occurrenceId = `${year}-${event.id}`
+                      const isSelected = selectedMobileOccurrence === occurrenceId
                       const color = getEventColor(event)
                       const role = getEventRole(event)
                       const companyName = getEventCompanyName(event)
@@ -309,7 +311,10 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
                           key={`mobile-event-${event.id}`}
                           type="button"
                           className={`rounded-lg border p-2 text-left ${isSelected ? 'border-blue-400/60 bg-blue-500/15' : 'border-(--app-border) bg-(--app-surface-1)'}`}
-                          onClick={() => setSelectedId(event.id)}
+                          onClick={() => {
+                            setSelectedId(event.id)
+                            setSelectedMobileOccurrence((prev) => (prev === occurrenceId ? null : occurrenceId))
+                          }}
                         >
                           <span className="mb-1 inline-flex items-center gap-2 text-sm font-semibold text-(--window-text)">
                             <img src={event.icon.src} alt={event.icon.alt} className="h-4 w-4 object-contain" />
@@ -322,9 +327,24 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
                             {periodLabel(event, locale, t)}
                           </span>
                           {isSelected ? (
-                            <span className="mt-1.5 block text-xs leading-5 text-(--window-text)">
-                              {event.description}
-                            </span>
+                            <>
+                              <span className="mt-1.5 block text-xs leading-5 text-(--window-text)">
+                                {event.description}
+                              </span>
+                              {getEventTagIds(event).length > 0 ? (
+                                <span className="mt-1.5 flex flex-wrap gap-1.5">
+                                  {getEventTagIds(event).map((tagId) => {
+                                    const tag = resolveTag(tagId)
+                                    return (
+                                      <span key={`mobile-tag-${event.id}-${tag.id}`} className="inline-flex items-center gap-1 rounded-full border border-(--app-border) bg-(--app-surface-2) px-2 py-0.5 text-[11px] text-(--app-muted)">
+                                        {tag.icon ? <img src={tag.icon.src} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
+                                        {tag.label}
+                                      </span>
+                                    )
+                                  })}
+                                </span>
+                              ) : null}
+                            </>
                           ) : null}
                         </button>
                       )
