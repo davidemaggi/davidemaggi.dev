@@ -30,6 +30,7 @@ const en = {
 
   'app.terminal.title': 'Terminal',
   'app.about.title': 'About',
+  'app.help.title': 'Help',
   'app.settings.title': 'Settings',
   'app.skills.title': 'Skills Player',
   'app.calendar.title': 'Calendar',

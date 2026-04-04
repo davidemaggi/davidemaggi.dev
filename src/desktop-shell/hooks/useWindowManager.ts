@@ -37,6 +37,7 @@ const SNAP_TOP_THRESHOLD = 18
 const createEmptyPerAppMap = <T>(initial: T): Record<AppId, T> => ({
   terminal: initial,
   about: initial,
+  help: initial,
   settings: initial,
   calendar: initial,
   certManager: initial,

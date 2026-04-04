@@ -35,6 +35,17 @@ May the force be with you and your code.
 Consider a donation to help children from Ukraine ![md-flag](/flags/ukraine.svg)  → https://dona.savethechildren.it/fondo-emergenze-ucraina 
 
 ![md-icon-color](/icons/telegram.svg) If you are an IT professional, consider to join the group ![md-flag](/flags/ukraine.svg)  → https://t.me/s/itarmyofukraine2022 
+
+## Other interests
+
+![md-icon-color](/icons/waterpolo.svg) Former National Waterpolo player & referee 
+![md-icon-color](/icons/pizza.svg) Pizza Lover 
+![md-icon-color](/icons/bug .svg)Expert Bug Maker 
+![md-icon-color](/icons/empire.svg) Empire Supporter 
+![md-icon-color](/icons/travel.svg) Love to travel 
+![md-icon-color](/icons/movie.svg) Movies & Series enthusiast 
+![md-icon-color](/icons/drone.svg) Drone Pilot & enthusiast
+
 `,
 }
 

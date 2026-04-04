@@ -35,7 +35,18 @@ Che la forza sia con te e con il tuo codice.
 Considera una donazione per aiutare i bambini dell'Ucraina ![md-flag](/flags/ukraine.svg) → https://dona.savethechildren.it/fondo-emergenze-ucraina 
 
 ![md-icon-color](/icons/telegram.svg) Se sei un professionista IT considera di unirti al gruppo ![md-flag](/flags/ukraine.svg) → https://t.me/s/itarmyofukraine2022 
- `,
+ 
+## Altri interessei
+
+![md-icon-color](/icons/waterpolo.svg) Ex Giocatore e Arbitro di Serie A di pallanuoto 
+![md-icon-color](/icons/pizza.svg) Amante della Pizza 
+![md-icon-color](/icons/bug.svg) Creatore di Bug senior 
+![md-icon](/icons/empire.svg) Supporter dell'impero 
+![md-icon-color](/icons/travel.svg) Amo Viaggiare 
+![md-icon-color](/icons/movie.svg) Amante di Film e Serie TV 
+![md-icon-color](/icons/drone.svg) Pilota di Droni Certificato
+
+`,
 }
 
 export default itAboutContent

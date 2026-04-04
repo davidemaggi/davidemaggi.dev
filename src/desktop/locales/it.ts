@@ -30,6 +30,7 @@ const it = {
 
   'app.terminal.title': 'Terminale',
   'app.about.title': 'About',
+  'app.help.title': 'Help',
   'app.settings.title': 'Impostazioni',
   'app.skills.title': 'Skills Player',
   'app.calendar.title': 'Calendario',

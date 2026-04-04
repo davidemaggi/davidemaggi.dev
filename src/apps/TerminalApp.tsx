@@ -122,10 +122,124 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
 
   const commands = useMemo<Record<string, TerminalCommand>>(
     () => ({
-      help: () => [
-        terminalContent.helpLine,
-      ],
+      help: () => (
+        contentLocale === 'en'
+          ? [
+              'DavideMaggi.dev Help System v. 1.1.4',
+              '',
+              'TOPIC',
+              '    How to navigate this website',
+              '',
+              'DESCRIPTION',
+              "    This is my Personal WebPage, it's not a regular website, so it's fine to look for help",
+              '',
+              'AVAILABLE COMMANDS',
+              "    Type ' i | im | whoami | about | info ' to show an about me page.",
+              "    Type ' e | cv | exp | experience | job | work | calendar ' to see my work experiences.",
+              "    Type ' c | s | skill | skills | cert | certs | certifications | certmanager ' to discover my Skills & Interests.",
+              "    Type ' dev | credits ' to discover how this website has been made.",
+              "    Type ' tr | translate <it | en> | lang ' to translate the website in the desired language.",
+              "    Type ' dump ' to show Everything!!!",
+              "    Type ' clear | cls ' to clear the console.",
+              "    Type ' show | menu ' to show/hide navigation.",
+              "    Type ' v | version ' display version number.",
+              "    Type ' h | help ' to reopen this help view.",
+              '----------------------------------------------------------------------------------------------------',
+            ]
+          : [
+              'DavideMaggi.dev Help System v. 1.1.4',
+              '',
+              'TOPIC',
+              '    Come navigare questo sito',
+              '',
+              'DESCRIPTION',
+              '    Questa e una pagina personale, non un sito classico, quindi e normale usare help',
+              '',
+              'AVAILABLE COMMANDS',
+              "    Digita ' i | im | whoami | about | info ' per mostrare una pagina about me.",
+              "    Digita ' e | cv | exp | experience | job | work | calendar ' per vedere le esperienze lavorative.",
+              "    Digita ' c | s | skill | skills | cert | certs | certifications | certmanager ' per scoprire Skills & Interests.",
+              "    Digita ' dev | credits ' per scoprire come e stato realizzato questo sito.",
+              "    Digita ' tr | translate <it | en> | lang ' per cambiare lingua.",
+              "    Digita ' dump ' per mostrare tutto.",
+              "    Digita ' clear | cls ' per pulire la console.",
+              "    Digita ' show | menu ' per mostrare/nascondere la navigazione.",
+              "    Digita ' v | version ' per mostrare la versione.",
+              "    Digita ' h | help ' per riaprire questa vista help.",
+              '----------------------------------------------------------------------------------------------------',
+            ]
+      ),
       credits: () => terminalContent.creditsLines,
+      version: () => ['DavideMaggi.dev v1.1.4'],
+      dump: () => {
+        const markdown = getAboutContent(contentLocale).markdown
+        const experiences = getCalendarEvents(contentLocale)
+        const certificates = getCertificateFolders(contentLocale).flatMap((folder) => folder.certificates)
+
+        const experienceBlocks = experiences.map((event) => {
+          const role = event.role?.trim() || event.name?.trim() || event.id
+          const company = event.companyName?.trim() || '-'
+          const period = buildPeriodLabel(event, calendarLocale, t)
+          const tags = (event.tagIds ?? event.tags ?? []).map((tagId) => {
+            const resolved = getCalendarTagById(contentLocale, tagId)
+            return {
+              id: tagId,
+              label: resolved?.label ?? tagId,
+              icon: resolved?.icon,
+            }
+          })
+
+          return (
+            <div key={`terminal-exp-dump-${event.id}`} className="mb-4 rounded border border-slate-800 bg-slate-900/40 p-2.5">
+              <p className="mb-1 text-slate-100">{role}</p>
+              <p className="mb-1 inline-flex items-center gap-1.5 text-slate-300">
+                <img src={event.icon.src} alt={event.icon.alt} className="h-4 w-4 object-contain" />
+                {company}
+              </p>
+              <p className="mb-2 text-slate-400">📅 {period}</p>
+              <p className="mb-2 text-slate-200">{event.description}</p>
+              {tags.length ? (
+                <span className="inline-flex flex-wrap items-center gap-1.5">
+                  {tags.map((tag) => (
+                    <span key={`terminal-tag-dump-${event.id}-${tag.id}`} className="inline-flex items-center gap-1 rounded-full border border-slate-700 bg-slate-800 px-1.5 py-0.5 text-[11px] text-slate-200">
+                      {tag.icon ? <img src={tag.icon.src} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
+                      {tag.label}
+                    </span>
+                  ))}
+                </span>
+              ) : null}
+            </div>
+          )
+        })
+
+        const certificateBlocks = certificates.map((cert) => (
+          <div key={`terminal-cert-dump-${cert.id}`} className="mb-4 rounded border border-slate-800 bg-slate-900/40 p-2.5">
+            <p className="mb-1 text-slate-100">{cert.commonName}</p>
+            <p className="mb-1 inline-flex items-center gap-1.5 text-slate-300">
+              {cert.issuedByLogo ? (
+                <img src={cert.issuedByLogo.src} alt={cert.issuedByLogo.alt} className="h-4 w-4 object-contain" />
+              ) : null}
+              {cert.issuedBy}
+            </p>
+            <p className="text-slate-400">📅 {formatCertificateDate(cert.validFrom, calendarLocale)}</p>
+          </div>
+        ))
+
+        return [
+          '==================================',
+          contentLocale === 'en' ? '📦 Full Dump' : '📦 Dump Completo',
+          '==================================',
+          '',
+          renderTerminalMarkdown(markdown),
+          '',
+          contentLocale === 'en' ? '--- Experiences ---' : '--- Esperienze ---',
+          ...experienceBlocks,
+          contentLocale === 'en' ? '--- Certifications ---' : '--- Certificazioni ---',
+          ...certificateBlocks,
+        ]
+      },
+      menu: () => ['Navigation toggle is not available in this desktop mode.'],
+      show: () => ['Navigation toggle is not available in this desktop mode.'],
       whoami: () => ['davide@portfolio'],
       about: () => {
         const markdown = getAboutContent(contentLocale).markdown
@@ -323,8 +437,13 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
   const aliases = useMemo<AliasMap>(
     () => ({
       help: 'help',
+      h: 'help',
       aiuto: 'help',
+      i: 'about',
+      im: 'about',
+      info: 'about',
       credits: 'credits',
+      dev: 'credits',
       crediti: 'credits',
       whoami: 'whoami',
       about: 'about',
@@ -334,13 +453,29 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
       apps: 'apps',
       applicazioni: 'apps',
       calendar: 'calendar',
+      e: 'calendar',
+      exp: 'calendar',
+      experience: 'calendar',
+      job: 'calendar',
+      work: 'calendar',
       calendario: 'calendar',
       cv: 'calendar',
       curriculum: 'calendar',
+      c: 'certmanager',
+      s: 'certmanager',
+      cert: 'certmanager',
+      skill: 'certmanager',
+      skills: 'certmanager',
       certmanager: 'certmanager',
       certificates: 'certmanager',
       certs: 'certmanager',
+      certifications: 'certmanager',
       certificati: 'certmanager',
+      version: 'version',
+      v: 'version',
+      dump: 'dump',
+      show: 'show',
+      menu: 'menu',
       open: 'open',
       apri: 'open',
       minimize: 'minimize',
@@ -348,12 +483,15 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
       close: 'close',
       chiudi: 'close',
       lang: 'lang',
+      tr: 'lang',
+      translate: 'lang',
       lingua: 'lang',
       theme: 'theme',
       tema: 'theme',
       wallpaper: 'wallpaper',
       sfondo: 'wallpaper',
       clear: 'clear',
+      cls: 'clear',
       pulisci: 'clear',
     }),
     [],
@@ -473,7 +611,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
           typeof line.text === 'string' ? (
             <p
               key={`${line.type}-${index}`}
-              className={`mb-1.5 text-left leading-[1.35] ${line.type === 'input' ? 'text-gray-50' : ''}`}
+              className={`mb-1.5 whitespace-pre-wrap text-left leading-[1.35] ${line.type === 'input' ? 'text-gray-50' : ''}`}
             >
               {line.type === 'input' ? (
                 <span className="text-green-500">{t('terminal.prompt')} </span>
