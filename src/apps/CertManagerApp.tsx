@@ -180,22 +180,34 @@ export function CertManagerApp({ i18nApi }: DesktopAppProps) {
               <dt className="text-(--app-muted)">{t('certManager.field.validFrom')}</dt>
               <dd>{formatDate(selectedCert.validFrom)}</dd>
 
-              <dt className="text-(--app-muted)">{t('certManager.field.validTo')}</dt>
-              <dd>{formatDate(selectedCert.validTo)}</dd>
+              {selectedCert.validTo ? (
+                <>
+                  <dt className="text-(--app-muted)">{t('certManager.field.validTo')}</dt>
+                  <dd>{formatDate(selectedCert.validTo)}</dd>
+                </>
+              ) : null}
 
-              <dt className="text-(--app-muted)">{t('certManager.field.serialNumber')}</dt>
-              <dd className="truncate">{selectedCert.serialNumber}</dd>
+              {selectedCert.serialNumber ? (
+                <>
+                  <dt className="text-(--app-muted)">{t('certManager.field.serialNumber')}</dt>
+                  <dd className="truncate">{selectedCert.serialNumber}</dd>
+                </>
+              ) : null}
 
-              <dt className="text-(--app-muted)">{t('certManager.field.thumbprint')}</dt>
-              <dd className="break-all">{selectedCert.thumbprint}</dd>
+              {selectedCert.thumbprint ? (
+                <>
+                  <dt className="text-(--app-muted)">{t('certManager.field.thumbprint')}</dt>
+                  <dd className="break-all">{selectedCert.thumbprint}</dd>
+                </>
+              ) : null}
             </dl>
 
-            <div className="mt-6 rounded border border-(--app-border) bg-(--app-surface-2) p-3">
-              <h3 className="mb-2 text-sm font-semibold">{t('certManager.description')}</h3>
-              <p className="text-sm leading-6 text-(--window-text)">
-                {selectedCert.description?.trim() || t('certManager.noDescription')}
-              </p>
-            </div>
+            {selectedCert.description?.trim() ? (
+              <div className="mt-6 rounded border border-(--app-border) bg-(--app-surface-2) p-3">
+                <h3 className="mb-2 text-sm font-semibold">{t('certManager.description')}</h3>
+                <p className="text-sm leading-6 text-(--window-text)">{selectedCert.description.trim()}</p>
+              </div>
+            ) : null}
           </>
         ) : (
           <p className="text-(--app-muted)">{t('certManager.empty')}</p>

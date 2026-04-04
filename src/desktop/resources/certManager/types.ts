@@ -7,9 +7,9 @@ export type CertificateItem = {
     alt: string
   }
   validFrom: string
-  validTo: string
-  serialNumber: string
-  thumbprint: string
+  validTo?: string
+  serialNumber?: string
+  thumbprint?: string
   description?: string
 }
 

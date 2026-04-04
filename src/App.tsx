@@ -203,7 +203,7 @@ function App() {
     const normalized = name.trim().toLowerCase()
     if (!normalized) return null
 
-    const byId = discoverablePlugins.find((plugin) => plugin.id === normalized)
+    const byId = discoverablePlugins.find((plugin) => plugin.id.toLowerCase() === normalized)
     if (byId) return byId.id
 
     const byTitle = discoverablePlugins.find(

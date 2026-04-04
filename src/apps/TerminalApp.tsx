@@ -5,6 +5,7 @@ import remarkBreaks from 'remark-breaks'
 import remarkGfm from 'remark-gfm'
 import { getAboutContent } from '../desktop/resources/about'
 import { getCalendarEvents, getCalendarTagById } from '../desktop/resources/calendar'
+import { getCertificateFolders } from '../desktop/resources/certManager'
 import type { WorkExperienceEvent } from '../desktop/resources/calendar/types'
 import type { DesktopAppProps, Locale } from '../desktop/types'
 import { getTerminalContent } from '../desktop/resources/terminal'
@@ -45,6 +46,17 @@ const buildPeriodLabel = (
   )
   const end = new Intl.DateTimeFormat(locale, { month: 'short', year: 'numeric' }).format(endDate)
   return `${start} - ${end}`
+}
+
+const formatCertificateDate = (raw: string | undefined, locale: string) => {
+  if (!raw?.trim()) return '-'
+  const date = new Date(raw)
+  if (Number.isNaN(date.getTime())) return raw
+  return new Intl.DateTimeFormat(locale, {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(date)
 }
 
 const renderTerminalMarkdown = (markdown: string) => {
@@ -123,7 +135,9 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
         const experiences = getCalendarEvents(contentLocale)
         if (!experiences.length) return [t('calendar.empty')]
 
-        return experiences.flatMap((event, index) => {
+        const heading = contentLocale === 'en' ? '📅 Experience Timeline' : '📅 Timeline Esperienze'
+
+        const experienceBlocks = experiences.map((event) => {
           const role = event.role?.trim() || event.name?.trim() || event.id
           const company = event.companyName?.trim() || '-'
           const period = buildPeriodLabel(event, calendarLocale, t)
@@ -136,37 +150,64 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
             }
           })
 
-          const tagLine = tags.length ? (
-            <span className="inline-flex flex-wrap items-center gap-1.5">
-              {tags.map((tag) => (
-                <span key={`terminal-tag-${event.id}-${tag.id}`} className="inline-flex items-center gap-1 rounded-full border border-slate-700 bg-slate-800 px-1.5 py-0.5 text-[11px] text-slate-200">
-                  {tag.icon ? <img src={tag.icon.src} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
-                  {tag.label}
+          return (
+            <div key={`terminal-exp-${event.id}`} className="mb-4 rounded border border-slate-800 bg-slate-900/40 p-2.5">
+              <p className="mb-1 text-slate-100">{role}</p>
+              <p className="mb-1 inline-flex items-center gap-1.5 text-slate-300">
+                <img src={event.icon.src} alt={event.icon.alt} className="h-4 w-4 object-contain" />
+                {company}
+              </p>
+              <p className="mb-2 text-slate-400">📅 {period}</p>
+              <p className="mb-2 text-slate-200">{event.description}</p>
+              {tags.length ? (
+                <span className="inline-flex flex-wrap items-center gap-1.5">
+                  {tags.map((tag) => (
+                    <span key={`terminal-tag-${event.id}-${tag.id}`} className="inline-flex items-center gap-1 rounded-full border border-slate-700 bg-slate-800 px-1.5 py-0.5 text-[11px] text-slate-200">
+                      {tag.icon ? <img src={tag.icon.src} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
+                      {tag.label}
+                    </span>
+                  ))}
                 </span>
-              ))}
-            </span>
-          ) : null
-
-          const companyLine = (
-            <span className="inline-flex items-center gap-1.5">
-              <img src={event.icon.src} alt={event.icon.alt} className="h-4 w-4 object-contain" />
-              <span>{company}</span>
-            </span>
+              ) : null}
+            </div>
           )
-
-          return [
-            index === 0 ? '------------------------------------------------' : '',
-            role,
-            companyLine,
-            `📅 ${period}`,
-            '',
-            event.description,
-            '',
-            tagLine,
-            '------------------------------------------------',
-            '',
-          ].filter(Boolean)
         })
+
+        return [
+          '==================================',
+          heading,
+          '==================================',
+          '',
+          ...experienceBlocks,
+        ]
+      },
+      certmanager: () => {
+        const folders = getCertificateFolders(contentLocale)
+        const certificates = folders.flatMap((folder) => folder.certificates)
+        if (!certificates.length) return [t('certManager.empty')]
+
+        const heading = contentLocale === 'en' ? '📜 My Certifications' : '📜 Le mie certificazioni'
+
+        const certificateBlocks = certificates.map((cert) => (
+          <div key={`terminal-cert-${cert.id}`} className="mb-4 rounded border border-slate-800 bg-slate-900/40 p-2.5">
+            <p className="mb-1 text-slate-100">{cert.commonName}</p>
+            <p className="mb-1 inline-flex items-center gap-1.5 text-slate-300">
+              {cert.issuedByLogo ? (
+                <img src={cert.issuedByLogo.src} alt={cert.issuedByLogo.alt} className="h-4 w-4 object-contain" />
+              ) : null}
+              {cert.issuedBy}
+            </p>
+            <p className="text-slate-400">📅 {formatCertificateDate(cert.validFrom, calendarLocale)}</p>
+          </div>
+        ))
+
+        return [
+          '==================================',
+          heading,
+          '==================================',
+          '',
+          ...certificateBlocks,
+        ]
       },
       date: () => {
         const { formattedDate, formattedTime } = formatDesktopDateTime({
@@ -296,6 +337,10 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
       calendario: 'calendar',
       cv: 'calendar',
       curriculum: 'calendar',
+      certmanager: 'certmanager',
+      certificates: 'certmanager',
+      certs: 'certmanager',
+      certificati: 'certmanager',
       open: 'open',
       apri: 'open',
       minimize: 'minimize',
