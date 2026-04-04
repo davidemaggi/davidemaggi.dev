@@ -7,6 +7,7 @@ import { DESKTOP_PLUGINS } from './desktop/plugins'
 import type {
   AppId,
   DesktopCommandApi,
+  DesktopIconSize,
   DesktopI18nApi,
   DesktopLaunchIntent,
   DesktopPreferences,
@@ -60,6 +61,28 @@ const DESKTOP_ICON_SIZE_CLASSES = {
     label: 'text-[15px]',
   },
 } as const
+
+const CALENDAR_ICON_TEXT_CLASSES: Record<DesktopIconSize, { weekday: string; day: string }> = {
+  small: { weekday: 'text-[7px]', day: 'text-[22px]' },
+  normal: { weekday: 'text-[8px]', day: 'text-[26px]' },
+  large: { weekday: 'text-[10px]', day: 'text-[31px]' },
+  xl: { weekday: 'text-[11px]', day: 'text-[36px]' },
+}
+
+const renderDynamicCalendarDesktopIcon = (now: Date, locale: Locale, iconSize: DesktopIconSize) => {
+  const intlLocale = locale === 'en' ? 'en-US' : 'it-IT'
+  const weekdayRaw = new Intl.DateTimeFormat(intlLocale, { weekday: 'short' }).format(now)
+  const weekday = weekdayRaw.charAt(0).toUpperCase() + weekdayRaw.slice(1)
+  const day = new Intl.DateTimeFormat(intlLocale, { day: 'numeric' }).format(now)
+  const textClasses = CALENDAR_ICON_TEXT_CLASSES[iconSize]
+
+  return (
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-[22%] bg-[#ececec] text-black shadow-[inset_0_0_0_1px_#0000001f]">
+      <span className={`truncate px-1 pt-[8%] text-center leading-none text-red-500 ${textClasses.weekday}`}>{weekday}</span>
+      <span className={`grid flex-1 place-items-center leading-none ${textClasses.day}`}>{day}</span>
+    </div>
+  )
+}
 
 function App() {
   const isPhone = useIsPhone()
@@ -326,10 +349,12 @@ function App() {
             onDoubleClick={() => openWindow(plugin.id)}
           >
             <span className={`grid place-items-center ${desktopIconClasses.iconWrap}`}>
-              {renderAppIcon(
-                resolveAppIcon(plugin.id, preferences),
-                'h-full w-full object-contain text-center leading-none',
-              )}
+              {plugin.id === 'calendar'
+                ? renderDynamicCalendarDesktopIcon(now, locale, preferences.desktopIconSize)
+                : renderAppIcon(
+                    resolveAppIcon(plugin.id, preferences),
+                    'h-full w-full object-contain text-center leading-none',
+                  )}
             </span>
             <span
               className={`max-w-full whitespace-normal break-words text-center leading-tight ${desktopIconClasses.label}`}
