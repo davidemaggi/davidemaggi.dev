@@ -11,6 +11,12 @@ Il progetto e' configurato per pubblicare automaticamente su GitHub Pages tramit
 
 Nota: la `base` di Vite viene calcolata automaticamente per GitHub Pages usando il nome repository.
 
+### Coerenza lockfile (npm)
+
+Per evitare errori `npm ci` in GitHub Actions, il repository e' fissato a `npm@10.9.4` (vedi `package.json` e workflow).
+Quando aggiorni dipendenze o lockfile, usa npm 10.9.4.
+Inoltre e' presente un check dedicato (`.github/workflows/ci-lockfile.yml`) che valida `npm ci` su ogni push e pull request.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 ## Debug da altro dispositivo (stessa rete)
