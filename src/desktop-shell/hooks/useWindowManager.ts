@@ -28,7 +28,9 @@ type UseWindowManagerParams = {
   initialZCounter: number
 }
 
-const TASKBAR_HEIGHT = 44
+const MENU_BAR_HEIGHT = 32
+const MENU_BAR_GAP = 4
+const WINDOW_TOP_OFFSET = MENU_BAR_HEIGHT + MENU_BAR_GAP
 const MIN_WINDOW_WIDTH = 320
 const MIN_WINDOW_HEIGHT = 220
 const SNAP_EDGE_THRESHOLD = 28
@@ -63,10 +65,10 @@ export function useWindowManager({
 
   const clampPosition = (x: number, y: number, width: number, height: number) => {
     const maxX = Math.max(0, window.innerWidth - width)
-    const maxY = Math.max(0, window.innerHeight - TASKBAR_HEIGHT - height)
+    const maxY = Math.max(WINDOW_TOP_OFFSET, window.innerHeight - height)
     return {
       x: Math.min(Math.max(0, x), maxX),
-      y: Math.min(Math.max(0, y), maxY),
+      y: Math.min(Math.max(WINDOW_TOP_OFFSET, y), maxY),
     }
   }
 
@@ -186,7 +188,7 @@ export function useWindowManager({
         }
 
         const viewportWidth = window.innerWidth
-        const viewportHeight = window.innerHeight - TASKBAR_HEIGHT
+        const viewportHeight = window.innerHeight - WINDOW_TOP_OFFSET
         const halfWidth = Math.max(MIN_WINDOW_WIDTH, Math.floor(viewportWidth / 2))
         const x = side === 'left' ? 0 : Math.max(0, viewportWidth - halfWidth)
 
@@ -195,7 +197,7 @@ export function useWindowManager({
         return {
           ...current,
           x,
-          y: 0,
+          y: WINDOW_TOP_OFFSET,
           width: halfWidth,
           height: viewportHeight,
           isMaximized: false,
@@ -308,7 +310,7 @@ export function useWindowManager({
     const dx = event.clientX - state.startClientX
     const dy = event.clientY - state.startClientY
     const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight - TASKBAR_HEIGHT
+    const viewportHeight = window.innerHeight
 
     let nextX = state.startX
     let nextY = state.startY
@@ -334,7 +336,10 @@ export function useWindowManager({
 
     if (state.direction.includes('n')) {
       const maxTop = bottomEdge - MIN_WINDOW_HEIGHT
-      nextY = Math.min(Math.max(0, state.startY + dy), Math.max(0, maxTop))
+      nextY = Math.min(
+        Math.max(WINDOW_TOP_OFFSET, state.startY + dy),
+        Math.max(WINDOW_TOP_OFFSET, maxTop),
+      )
       nextHeight = bottomEdge - nextY
     }
 

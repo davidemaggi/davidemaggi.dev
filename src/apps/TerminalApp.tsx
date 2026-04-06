@@ -19,6 +19,15 @@ type TerminalLine = {
 type TerminalCommand = (args: string[]) => ReactNode[]
 type AliasMap = Record<string, string>
 
+const FAKE_LS_ENTRIES = [
+  'Desktop',
+  'Documents',
+  'Downloads',
+  'apps.json',
+  'notes.md',
+  'password.txt',
+]
+
 const buildInitialLines = (t: (key: string) => string): TerminalLine[] => [
   {
     type: 'output',
@@ -95,7 +104,7 @@ const renderTerminalMarkdown = (markdown: string) => {
   )
 }
 
-export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppProps) {
+export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent }: DesktopAppProps) {
   const t = useMemo(() => i18nApi?.t ?? ((key: string) => key), [i18nApi])
   const terminalContent = useMemo(
     () => getTerminalContent(i18nApi?.locale ?? 'it'),
@@ -112,8 +121,9 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
   const calendarLocale = contentLocale === 'en' ? 'en-US' : 'it-IT'
 
   useEffect(() => {
+    if (launchIntent?.query === 'preview') return
     inputRef.current?.focus()
-  }, [])
+  }, [launchIntent])
 
   useEffect(() => {
     if (!outputRef.current) return
@@ -170,7 +180,9 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
             ]
       ),
       credits: () => terminalContent.creditsLines,
-      version: () => ['DavideMaggi.dev v1.1.4'],
+      version: () => [
+        `DavideMaggi.dev v${typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '0.0.0'}`,
+      ],
       dump: () => {
         const markdown = getAboutContent(contentLocale).markdown
         const experiences = getCalendarEvents(contentLocale)
@@ -240,7 +252,6 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
       },
       menu: () => ['Navigation toggle is not available in this desktop mode.'],
       show: () => ['Navigation toggle is not available in this desktop mode.'],
-      whoami: () => ['davide@portfolio'],
       about: () => {
         const markdown = getAboutContent(contentLocale).markdown
         return [renderTerminalMarkdown(markdown)]
@@ -429,6 +440,77 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
         preferencesApi.setWallpaper(next as (typeof preferencesApi.wallpapers)[number])
         return [t('terminal.wallpaper.changed', { wallpaper: next })]
       },
+      ping: (args: string[]) => {
+        const host = args[0]?.trim()
+        if (!host) return [t('terminal.command.usage.ping')]
+
+        if (host.toLowerCase().includes('alderaan')) {
+          return [t('terminal.ping.special.alderaan')]
+        }
+
+        const transmitted = 4
+        const lines: string[] = [t('terminal.ping.start', { host })]
+        let received = 0
+        let totalTime = 0
+        const sampleTimes: number[] = []
+
+        for (let seq = 0; seq < transmitted; seq += 1) {
+          const packetOk = Math.random() < 0.72
+          if (!packetOk) {
+            lines.push(t('terminal.ping.fail.timeout', { seq: String(seq) }))
+            continue
+          }
+
+          const time = Number((8 + Math.random() * 42).toFixed(1))
+          received += 1
+          totalTime += time
+          sampleTimes.push(time)
+          lines.push(t('terminal.ping.reply', { host, seq: String(seq), time: String(time) }))
+        }
+
+        const loss = Number((((transmitted - received) / transmitted) * 100).toFixed(1))
+        lines.push(
+          t('terminal.ping.stats', {
+            tx: String(transmitted),
+            rx: String(received),
+            loss: String(loss),
+          }),
+        )
+
+        if (received > 0) {
+          const min = Math.min(...sampleTimes)
+          const max = Math.max(...sampleTimes)
+          const avg = Number((totalTime / received).toFixed(1))
+          lines.push(
+            t('terminal.ping.roundTrip', {
+              min: String(min),
+              avg: String(avg),
+              max: String(max),
+            }),
+          )
+        }
+
+        return lines
+      },
+      ls: () => [t('terminal.ls.header'), FAKE_LS_ENTRIES.join('  ')],
+      cat: (args: string[]) => {
+        const fileName = args[0]?.trim()
+        if (!fileName) return [t('terminal.command.usage.cat')]
+
+        if (fileName.toLowerCase() === 'password.txt') {
+          return [t('terminal.cat.password')]
+        }
+
+        if (fileName === 'notes.md') {
+          return [
+            contentLocale === 'en'
+              ? '# Notes\n- Keep coding\n- Drink water\n- Trust no plain text passwords'
+              : '# Note\n- Continua a codare\n- Bevi acqua\n- Mai fidarsi delle password in chiaro',
+          ]
+        }
+
+        return [t('terminal.cat.notFound', { file: fileName })]
+      },
       clear: () => [],
     }),
     [desktopApi, i18nApi, preferencesApi, t, terminalContent],
@@ -445,7 +527,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
       credits: 'credits',
       dev: 'credits',
       crediti: 'credits',
-      whoami: 'whoami',
+      whoami: 'about',
       about: 'about',
       chisono: 'about',
       date: 'date',
@@ -490,6 +572,9 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
       tema: 'theme',
       wallpaper: 'wallpaper',
       sfondo: 'wallpaper',
+      ping: 'ping',
+      ls: 'ls',
+      cat: 'cat',
       clear: 'clear',
       cls: 'clear',
       pulisci: 'clear',
@@ -518,6 +603,18 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
         type: 'output' as const,
         text,
       }))
+
+      // Simulate real ping output by streaming lines progressively.
+      if (canonical === 'ping') {
+        setLines(nextLines)
+        output.forEach((line, index) => {
+          window.setTimeout(() => {
+            setLines((prev) => [...prev, line])
+          }, index * 340)
+        })
+        return
+      }
+
       setLines([...nextLines, ...output])
       return
     }
@@ -638,7 +735,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full border-none bg-transparent font-inherit text-gray-200 outline-none caret-gray-50"
+            className="w-full border-none bg-transparent text-base font-inherit text-gray-200 outline-none caret-gray-50 md:text-sm"
           />
         </div>
       </form>

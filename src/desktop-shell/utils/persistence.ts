@@ -20,15 +20,11 @@ export const PREFERENCES_STATE_KEY = 'desktop.preferences.v1'
 export const AVAILABLE_THEMES: readonly ThemeMode[] = ['dark', 'light'] as const
 export const AVAILABLE_WALLPAPERS: readonly WallpaperPreset[] = [
   'aurora',
-  'dusk',
-  'slate',
-  'xpHill',
-  'elCapitan',
-  'ubuntuPurple',
-  'win11Bloom',
-  'tardis',
-  'dalek',
-  'matrix',
+  'graphite',
+  'cobalt',
+  'ember',
+  'prism',
+  'pearl',
 ] as const
 export const AVAILABLE_DESKTOP_ICON_SIZES: readonly DesktopIconSize[] = ['small', 'normal', 'large', 'xl'] as const
 export const AVAILABLE_CLOCK_HOUR_FORMATS: readonly ClockHourFormat[] = ['locale', '12h', '24h'] as const

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { useIsPhone } from '../mobile-shell/hooks/useIsPhone'
 import type {
@@ -11,7 +11,7 @@ import type {
   WallpaperPreset,
 } from '../desktop/types'
 
-type SettingsPage = 'theme' | 'localization'
+type SettingsPage = 'theme' | 'localization' | 'softwareUpdate'
 
 const ICON_SIZE_PREVIEW_CLASSES: Record<DesktopIconSize, { icon: string; label: string }> = {
   small: { icon: 'h-8 w-8', label: 'text-[11px]' },
@@ -20,14 +20,22 @@ const ICON_SIZE_PREVIEW_CLASSES: Record<DesktopIconSize, { icon: string; label: 
   xl: { icon: 'h-14 w-14', label: 'text-[15px]' },
 }
 
-export function SettingsApp({ i18nApi, preferencesApi }: DesktopAppProps) {
-  if (!i18nApi || !preferencesApi) {
-    return <div className="p-5 text-left text-(--window-text)">Settings APIs unavailable.</div>
-  }
-
+export function SettingsApp({ i18nApi, preferencesApi, launchIntent }: DesktopAppProps) {
   const [activePage, setActivePage] = useState<SettingsPage>('theme')
   const [isNavOpen, setIsNavOpen] = useState(false)
   const isPhone = useIsPhone()
+
+  useEffect(() => {
+    if (launchIntent?.appId !== 'settings') return
+    if (launchIntent.query === 'software-update') {
+      setActivePage('softwareUpdate')
+      setIsNavOpen(false)
+    }
+  }, [launchIntent])
+
+  if (!i18nApi || !preferencesApi) {
+    return <div className="p-5 text-left text-(--window-text)">Settings APIs unavailable.</div>
+  }
 
   const handleLocaleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     i18nApi.setLocale(event.target.value as Locale)
@@ -96,6 +104,17 @@ export function SettingsApp({ i18nApi, preferencesApi }: DesktopAppProps) {
           >
             <img src="/icons/translate.svg" alt="Localization section icon" className="h-4 w-4 object-contain" />
             {i18nApi.t('settings.nav.localization')}
+          </button>
+          <button
+            type="button"
+            className={`flex w-full items-center gap-2 rounded px-2.5 py-2 text-left text-sm ${activePage === 'softwareUpdate' ? 'bg-(--app-surface-3) font-semibold' : 'hover:bg-(--app-surface-3)'}`}
+            onClick={() => {
+              setActivePage('softwareUpdate')
+              setIsNavOpen(false)
+            }}
+          >
+            <img src="/icons/spark.svg" alt="Software update section icon" className="h-4 w-4 object-contain" />
+            {i18nApi.t('settings.nav.softwareUpdate')}
           </button>
         </nav>
       </aside>
@@ -202,7 +221,7 @@ export function SettingsApp({ i18nApi, preferencesApi }: DesktopAppProps) {
               })}
             </div>
           </>
-        ) : (
+        ) : activePage === 'localization' ? (
           <>
             <h2 className="mb-1 text-xl font-semibold">{i18nApi.t('settings.page.localization.title')}</h2>
             <p className="mb-4 text-(--app-muted)">{i18nApi.t('settings.page.localization.subtitle')}</p>
@@ -254,6 +273,25 @@ export function SettingsApp({ i18nApi, preferencesApi }: DesktopAppProps) {
               </select>
             </label>
             <p>{i18nApi.t('settings.clock.dateFormat.help')}</p>
+          </>
+        ) : (
+          <>
+            <h2 className="mb-1 text-xl font-semibold">{i18nApi.t('settings.page.softwareUpdate.title')}</h2>
+            <p className="mb-4 text-(--app-muted)">{i18nApi.t('settings.page.softwareUpdate.subtitle')}</p>
+
+            <div className="max-w-xl rounded-xl border border-(--app-border) bg-(--app-surface-2) p-4">
+              <div className="flex items-center gap-3">
+                <img src="/icons/daveos.svg" alt="DaveOS icon" className="h-10 w-10 rounded-lg object-contain" />
+                <div>
+                  <p className="m-0 font-semibold">DaveOS {typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '0.0.0'}</p>
+                  <p className="m-0 text-sm text-(--app-muted)">{i18nApi.t('settings.page.softwareUpdate.latest')}</p>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-(--app-border) bg-(--app-surface-1) p-3 text-sm">
+                <span>{i18nApi.t('settings.page.softwareUpdate.lastCheck')}</span>
+                <strong>{new Date().toLocaleString(i18nApi.locale === 'it' ? 'it-IT' : 'en-US')}</strong>
+              </div>
+            </div>
           </>
         )}
       </section>

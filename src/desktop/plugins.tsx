@@ -1,8 +1,8 @@
 import { AboutApp } from '../apps/AboutApp'
+import { AppStoreApp } from '../apps/AppStoreApp'
 import { CalendarApp } from '../apps/CalendarApp'
 import { CertManagerApp } from '../apps/CertManagerApp'
 import { EasterEggApp } from '../apps/EasterEggApp'
-import { HelpApp } from '../apps/HelpApp'
 import { SettingsApp } from '../apps/SettingsApp'
 import { TerminalApp } from '../apps/TerminalApp'
 import type { AppId, DesktopPlugin } from './types'
@@ -41,11 +41,11 @@ export const DESKTOP_PLUGINS: Record<AppId, DesktopPlugin> = {
   },
   help: {
     id: 'help',
-    titleKey: 'app.help.title',
+    titleKey: 'app.appStore.title',
     icon: {
       kind: 'image',
-      src: '/icons/help.svg',
-      alt: 'Help icon',
+      src: '/icons/app-store.svg',
+      alt: 'App Store icon',
     },
     defaultBounds: {
       x: 220,
@@ -53,7 +53,7 @@ export const DESKTOP_PLUGINS: Record<AppId, DesktopPlugin> = {
       width: 760,
       height: 500,
     },
-    Component: HelpApp,
+    Component: AppStoreApp,
   },
   settings: {
     id: 'settings',

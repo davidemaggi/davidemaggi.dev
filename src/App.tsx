@@ -111,11 +111,8 @@ function App() {
   })
   const [locale, setLocale] = useState<Locale>(loadPersistedLocale)
   const [preferences, setPreferences] = useState<DesktopPreferences>(loadPersistedPreferences)
-  const [isStartMenuOpen, setIsStartMenuOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
   const [now, setNow] = useState(() => new Date())
   const [launchIntent, setLaunchIntent] = useState<DesktopLaunchIntent | null>(null)
-  const startAreaRef = useRef<HTMLDivElement | null>(null)
   const jsConfettiRef = useRef<JSConfetti | null>(null)
   const isConfettiRunningRef = useRef(false)
   const t = useMemo(() => createTranslator(locale), [locale])
@@ -151,20 +148,6 @@ function App() {
     const timer = window.setInterval(() => setNow(new Date()), 1000)
     return () => window.clearInterval(timer)
   }, [])
-
-  useEffect(() => {
-    if (!isStartMenuOpen) return
-
-    const onPointerDown = (event: PointerEvent) => {
-      const target = event.target as Node
-      if (startAreaRef.current && !startAreaRef.current.contains(target)) {
-        setIsStartMenuOpen(false)
-      }
-    }
-
-    window.addEventListener('pointerdown', onPointerDown)
-    return () => window.removeEventListener('pointerdown', onPointerDown)
-  }, [isStartMenuOpen])
 
   const launchKonamiConfettiWaves = useCallback(async () => {
     if (typeof window === 'undefined' || isConfettiRunningRef.current) return
@@ -213,7 +196,7 @@ function App() {
   }
 
   const launchApp = (id: AppId, query?: string) => {
-    if (id === 'calendar' && query?.trim()) {
+    if (query?.trim()) {
       setLaunchIntent({
         appId: id,
         query: query.trim(),
@@ -287,20 +270,8 @@ function App() {
 
   const desktopIconClasses = DESKTOP_ICON_SIZE_CLASSES[preferences.desktopIconSize]
 
-  const startMenuApps = discoverablePlugins
-    .map((plugin) => ({
-      id: plugin.id,
-      title: t(plugin.titleKey),
-    }))
-    .filter((app) => {
-      if (!searchQuery.trim()) return true
-      return app.title.toLowerCase().includes(searchQuery.trim().toLowerCase())
-    })
-
-  const launchFromStart = (id: AppId) => {
-    launchApp(id)
-    setIsStartMenuOpen(false)
-    setSearchQuery('')
+  const launchFromAppleMenu = (id: AppId, query?: string) => {
+    launchApp(id, query)
   }
 
   const shellClassName = `desktop-shell desktop-shell--theme-${preferences.theme} desktop-shell--wallpaper-${preferences.wallpaper}`
@@ -339,7 +310,7 @@ function App() {
       }}
     >
       <aside
-        className={`flex flex-col gap-2 p-4 ${desktopIconClasses.column}`}
+        className={`flex flex-col gap-2 p-4 pt-10 ${desktopIconClasses.column}`}
         aria-label={t('desktop.icons.label')}
       >
         {discoverablePlugins.map((plugin) => (
@@ -357,7 +328,7 @@ function App() {
                   )}
             </span>
             <span
-              className={`max-w-full whitespace-normal break-words text-center leading-tight ${desktopIconClasses.label}`}
+              className={`desktop-icon-label max-w-full whitespace-normal break-words text-center leading-tight ${desktopIconClasses.label}`}
             >
               {t(plugin.titleKey)}
             </span>
@@ -395,25 +366,9 @@ function App() {
         t={t}
         preferences={preferences}
         windows={Object.values(windows)}
-        startMenuApps={startMenuApps}
-        isStartMenuOpen={isStartMenuOpen}
-        searchQuery={searchQuery}
-        startAreaRef={startAreaRef}
-        onToggleStartMenu={() => setIsStartMenuOpen((prev) => !prev)}
-        onSearchFocus={() => setIsStartMenuOpen(true)}
-        onSearchChange={(value) => {
-          setSearchQuery(value)
-          setIsStartMenuOpen(true)
-        }}
-        onSearchSubmit={() => {
-          if (startMenuApps[0]) {
-            launchFromStart(startMenuApps[0].id)
-          }
-        }}
-        onLaunchFromStart={launchFromStart}
-        onCloseStart={() => setIsStartMenuOpen(false)}
-        onTaskbarAppClick={(id, isMinimized) => {
-          if (isMinimized) {
+        onLaunchFromAppleMenu={launchFromAppleMenu}
+        onTaskbarAppClick={(id, isOpen, isMinimized) => {
+          if (!isOpen || isMinimized) {
             openWindow(id)
             return
           }
