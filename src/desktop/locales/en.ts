@@ -52,7 +52,7 @@ const en = {
   'app.skills.title': 'Skills Player',
   'app.calendar.title': 'Calendar',
   'app.certManager.title': 'Certificate Manager',
-  'app.easter.title': 'Secret access',
+  'app.easter.title': 'Down the Rabbit Hole',
 
   'certManager.folders': 'Certificate folders',
   'certManager.description': 'Description',
@@ -73,7 +73,7 @@ const en = {
   'certManager.nav.close': 'Close',
 
   'calendar.heading': 'Experience calendar',
-  'calendar.subheading': 'Monthly timeline of work experiences with event details.',
+  'calendar.subheading': 'My Work Experience.',
   'calendar.timeline.label': 'Experience timeline',
   'calendar.filters.year': 'Year',
   'calendar.filters.tag': 'Tag',

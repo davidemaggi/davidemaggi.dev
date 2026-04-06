@@ -52,7 +52,7 @@ const it = {
   'app.skills.title': 'Skills Player',
   'app.calendar.title': 'Calendario',
   'app.certManager.title': 'Gestione certificati',
-  'app.easter.title': 'Accesso segreto',
+  'app.easter.title': 'La tana del Bianconiglio',
 
   'certManager.folders': 'Cartelle certificati',
   'certManager.description': 'Descrizione',
@@ -73,7 +73,7 @@ const it = {
   'certManager.nav.close': 'Chiudi',
 
   'calendar.heading': 'Calendario esperienze',
-  'calendar.subheading': 'Timeline mensile delle esperienze lavorative con dettaglio evento.',
+  'calendar.subheading': 'Le mie esperienze lavorative.',
   'calendar.timeline.label': 'Timeline esperienze',
   'calendar.filters.year': 'Anno',
   'calendar.filters.tag': 'Tag',

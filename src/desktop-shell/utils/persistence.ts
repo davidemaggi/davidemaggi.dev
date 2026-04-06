@@ -41,7 +41,7 @@ export const DEFAULT_PREFERENCES: DesktopPreferences = {
   theme: 'dark',
   wallpaper: 'aurora',
   appIcons: {},
-  desktopIconSize: 'normal',
+  desktopIconSize: 'large',
   clockHourFormat: 'locale',
   clockDateFormat: 'locale',
 }

@@ -9,7 +9,7 @@ const translations: Record<Locale, Record<string, string>> = {
   en,
 }
 
-export const DEFAULT_LOCALE: Locale = 'it'
+export const DEFAULT_LOCALE: Locale = 'en'
 
 export const interpolate = (message: string, vars?: Record<string, string>) => {
   if (!vars) return message
