@@ -1,0 +1,27 @@
+<svg role="img" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-labelledby="engineeringTitle">
+  <title id="engineeringTitle">Engineering</title>
+  <defs>
+    <clipPath id="engineeringClip">
+      <circle cx="256" cy="256" r="246" />
+    </clipPath>
+  </defs>
+  <g clip-path="url(#engineeringClip)">
+    <path
+      fill="#00355F"
+      d="M20 326c5-36 18-70 42-101L164 98c20-24 49-38 79-40v166L108 390H20Z"
+    />
+    <path
+      fill="#D1005B"
+      d="M492 326c-5-36-18-70-42-101L348 98c-20-24-49-38-79-40v166l135 166h88Z"
+    />
+
+    <rect x="20" y="334" width="224" height="30" fill="#00355F" />
+    <rect x="20" y="376" width="224" height="30" fill="#00355F" />
+    <rect x="20" y="418" width="224" height="34" fill="#00355F" />
+
+    <rect x="268" y="334" width="224" height="30" fill="#D1005B" />
+    <rect x="268" y="376" width="224" height="30" fill="#D1005B" />
+    <rect x="268" y="418" width="224" height="34" fill="#D1005B" />
+  </g>
+</svg>
+

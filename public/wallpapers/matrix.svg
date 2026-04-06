@@ -1,0 +1,44 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Green digital rain inspired wallpaper">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#010801"/>
+      <stop offset="100%" stop-color="#001a00"/>
+    </linearGradient>
+    <linearGradient id="rain" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9bff9b" stop-opacity="0"/>
+      <stop offset="30%" stop-color="#7fff7f" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#2aff2a" stop-opacity="0.12"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+
+  <g stroke="url(#rain)" stroke-width="6" stroke-linecap="round">
+    <line x1="140" y1="-80" x2="140" y2="980"/>
+    <line x1="300" y1="-40" x2="300" y2="1040"/>
+    <line x1="470" y1="-120" x2="470" y2="960"/>
+    <line x1="650" y1="-30" x2="650" y2="1030"/>
+    <line x1="820" y1="-70" x2="820" y2="990"/>
+    <line x1="980" y1="-20" x2="980" y2="1040"/>
+    <line x1="1140" y1="-110" x2="1140" y2="970"/>
+    <line x1="1320" y1="-50" x2="1320" y2="1030"/>
+    <line x1="1490" y1="-90" x2="1490" y2="990"/>
+    <line x1="1660" y1="-20" x2="1660" y2="1060"/>
+    <line x1="1820" y1="-60" x2="1820" y2="1020"/>
+  </g>
+
+  <g fill="#b9ffb9" font-family="monospace" font-size="26" opacity="0.75">
+    <text x="128" y="120">01A7</text>
+    <text x="288" y="220">X9Z2</text>
+    <text x="458" y="170">5F1C</text>
+    <text x="638" y="300">K4P0</text>
+    <text x="808" y="250">7L3M</text>
+    <text x="968" y="180">C2R8</text>
+    <text x="1128" y="320">N6Q1</text>
+    <text x="1308" y="210">T0V5</text>
+    <text x="1478" y="280">H3D9</text>
+    <text x="1648" y="230">E8S4</text>
+    <text x="1808" y="300">B1Y7</text>
+  </g>
+</svg>
+
