@@ -61,7 +61,7 @@ export const DESKTOP_PLUGINS: Record<AppId, DesktopPlugin> = {
     titleKey: 'app.settings.title',
     icon: {
       kind: 'image',
-      src: '/gear.svg',
+      src: '/icons/gear.svg',
       alt: 'Settings icon',
     },
     defaultBounds: {
