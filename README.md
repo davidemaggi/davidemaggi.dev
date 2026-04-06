@@ -1,46 +1,103 @@
-# Getting Started with Create React App 
+# React + TypeScript + Vite
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Deploy su GitHub Pages
 
-## Available Scripts
+Il progetto e' configurato per pubblicare automaticamente su GitHub Pages tramite GitHub Actions.
 
-In the project directory, you can run: 
+1. Fai push su `main` (il workflow e' in `.github/workflows/deploy.yml`).
+2. In GitHub apri `Settings > Pages`.
+3. In `Build and deployment`, imposta `Source: GitHub Actions`.
+4. Attendi il completamento del workflow `Deploy to GitHub Pages` nella tab `Actions`.
 
-### `npm start`
+Nota: la `base` di Vite viene calcolata automaticamente per GitHub Pages usando il nome repository.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console. 
+## Debug da altro dispositivo (stessa rete)
 
-### `npm test`
+1. Avvia Vite in LAN:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm run dev:lan
+```
 
-### `npm run build`
+2. Trova l'IP locale del tuo computer (es. `192.168.1.24`).
+3. Dal telefono/tablet collegato alla stessa rete apri:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```text
+http://<IP_LOCALE>:5173
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Note rapide:
+- PC e dispositivo devono essere sulla stessa rete Wi-Fi/LAN.
+- Se non si apre, controlla firewall/VPN o isolamento client del router.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Currently, two official plugins are available:
 
-### `npm run eject`
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## React Compiler
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Expanding the ESLint configuration
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## Learn More
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```

@@ -1,0 +1,32 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Blue time box in a vortex, sci-fi inspired wallpaper">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#040a2a"/>
+      <stop offset="55%" stop-color="#1a2f7a"/>
+      <stop offset="100%" stop-color="#3f6ad8"/>
+    </linearGradient>
+    <radialGradient id="vortex" cx="0.5" cy="0.5" r="0.55">
+      <stop offset="0%" stop-color="#cde3ff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#cde3ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <rect width="1920" height="1080" fill="url(#vortex)"/>
+
+  <g fill="none" stroke="#9fc4ff" stroke-opacity="0.18" stroke-width="3">
+    <ellipse cx="960" cy="540" rx="620" ry="260" transform="rotate(-14 960 540)"/>
+    <ellipse cx="960" cy="540" rx="760" ry="340" transform="rotate(-14 960 540)"/>
+    <ellipse cx="960" cy="540" rx="900" ry="420" transform="rotate(-14 960 540)"/>
+  </g>
+
+  <g transform="translate(910 430)">
+    <rect x="0" y="0" width="100" height="220" rx="5" fill="#113d96"/>
+    <rect x="8" y="20" width="84" height="50" fill="#1a4fb3"/>
+    <rect x="8" y="84" width="84" height="50" fill="#1a4fb3"/>
+    <rect x="8" y="148" width="84" height="60" fill="#1a4fb3"/>
+    <rect x="30" y="-12" width="40" height="12" fill="#245fca"/>
+    <rect x="45" y="-28" width="10" height="16" fill="#9fd4ff"/>
+  </g>
+</svg>
+
