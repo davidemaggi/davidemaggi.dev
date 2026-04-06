@@ -12,8 +12,9 @@ export const DESKTOP_PLUGINS: Record<AppId, DesktopPlugin> = {
     id: 'terminal',
     titleKey: 'app.terminal.title',
     icon: {
-      kind: 'text',
-      value: '>_',
+      kind: 'image',
+      src: '/icons/terminal.svg',
+      alt: 'About icon',
     },
     defaultBounds: {
       x: 92,
@@ -60,7 +61,7 @@ export const DESKTOP_PLUGINS: Record<AppId, DesktopPlugin> = {
     titleKey: 'app.settings.title',
     icon: {
       kind: 'image',
-      src: '/favicon.svg',
+      src: '/gear.svg',
       alt: 'Settings icon',
     },
     defaultBounds: {
