@@ -10,6 +10,7 @@ import type { WorkExperienceEvent } from '../desktop/resources/calendar/types'
 import type { DesktopAppProps, Locale } from '../desktop/types'
 import { getTerminalContent } from '../desktop/resources/terminal'
 import { formatDesktopDateTime } from '../desktop/utils/dateTimeFormat'
+import { resolveAssetPath } from '../desktop/utils/assetPath'
 
 type TerminalLine = {
   type: 'input' | 'output'
@@ -90,7 +91,7 @@ const renderTerminalMarkdown = (markdown: string) => {
             const isInlineIcon = alt === 'md-icon' || alt === 'md-icon-color' || alt === 'md-flag'
             return (
               <img
-                src={src ?? ''}
+                src={resolveAssetPath(src ?? '')}
                 alt={alt ?? ''}
                 className={isInlineIcon ? 'inline-block h-[1.2em] w-auto align-middle' : 'my-2 max-w-full'}
               />
@@ -205,7 +206,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
             <div key={`terminal-exp-dump-${event.id}`} className="mb-4 rounded border border-slate-800 bg-slate-900/40 p-2.5">
               <p className="mb-1 text-slate-100">{role}</p>
               <p className="mb-1 inline-flex items-center gap-1.5 text-slate-300">
-                <img src={event.icon.src} alt={event.icon.alt} className="h-4 w-4 object-contain" />
+                <img src={resolveAssetPath(event.icon.src)} alt={event.icon.alt} className="h-4 w-4 object-contain" />
                 {company}
               </p>
               <p className="mb-2 text-slate-400">📅 {period}</p>
@@ -214,7 +215,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
                 <span className="inline-flex flex-wrap items-center gap-1.5">
                   {tags.map((tag) => (
                     <span key={`terminal-tag-dump-${event.id}-${tag.id}`} className="inline-flex items-center gap-1 rounded-full border border-slate-700 bg-slate-800 px-1.5 py-0.5 text-[11px] text-slate-200">
-                      {tag.icon ? <img src={tag.icon.src} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
+                      {tag.icon ? <img src={resolveAssetPath(tag.icon.src)} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
                       {tag.label}
                     </span>
                   ))}
@@ -229,7 +230,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
             <p className="mb-1 text-slate-100">{cert.commonName}</p>
             <p className="mb-1 inline-flex items-center gap-1.5 text-slate-300">
               {cert.issuedByLogo ? (
-                <img src={cert.issuedByLogo.src} alt={cert.issuedByLogo.alt} className="h-4 w-4 object-contain" />
+                <img src={resolveAssetPath(cert.issuedByLogo.src)} alt={cert.issuedByLogo.alt} className="h-4 w-4 object-contain" />
               ) : null}
               {cert.issuedBy}
             </p>
@@ -279,7 +280,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
             <div key={`terminal-exp-${event.id}`} className="mb-4 rounded border border-slate-800 bg-slate-900/40 p-2.5">
               <p className="mb-1 text-slate-100">{role}</p>
               <p className="mb-1 inline-flex items-center gap-1.5 text-slate-300">
-                <img src={event.icon.src} alt={event.icon.alt} className="h-4 w-4 object-contain" />
+                <img src={resolveAssetPath(event.icon.src)} alt={event.icon.alt} className="h-4 w-4 object-contain" />
                 {company}
               </p>
               <p className="mb-2 text-slate-400">📅 {period}</p>
@@ -288,7 +289,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
                 <span className="inline-flex flex-wrap items-center gap-1.5">
                   {tags.map((tag) => (
                     <span key={`terminal-tag-${event.id}-${tag.id}`} className="inline-flex items-center gap-1 rounded-full border border-slate-700 bg-slate-800 px-1.5 py-0.5 text-[11px] text-slate-200">
-                      {tag.icon ? <img src={tag.icon.src} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
+                      {tag.icon ? <img src={resolveAssetPath(tag.icon.src)} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
                       {tag.label}
                     </span>
                   ))}
@@ -318,7 +319,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
             <p className="mb-1 text-slate-100">{cert.commonName}</p>
             <p className="mb-1 inline-flex items-center gap-1.5 text-slate-300">
               {cert.issuedByLogo ? (
-                <img src={cert.issuedByLogo.src} alt={cert.issuedByLogo.alt} className="h-4 w-4 object-contain" />
+                <img src={resolveAssetPath(cert.issuedByLogo.src)} alt={cert.issuedByLogo.alt} className="h-4 w-4 object-contain" />
               ) : null}
               {cert.issuedBy}
             </p>

@@ -3,6 +3,7 @@ import { useIsPhone } from '../mobile-shell/hooks/useIsPhone'
 import { getCertificateFolders } from '../desktop/resources/certManager'
 import type { CertificateItem } from '../desktop/resources/certManager/types'
 import type { DesktopAppProps, Locale } from '../desktop/types'
+import { resolveAssetPath } from '../desktop/utils/assetPath'
 
 const CERT_ICON_SRC = '/icons/certificate.svg'
 
@@ -72,7 +73,7 @@ export function CertManagerApp({ i18nApi }: DesktopAppProps) {
                   onClick={() => setExpandedFolderId(isExpanded ? null : folder.id)}
                 >
                   <span className="flex min-w-0 items-center gap-1.5">
-                    <img src="/icons/folder.svg" alt="Folder icon" className="h-4 w-4 shrink-0 object-contain" />
+                    <img src={resolveAssetPath('/icons/folder.svg')} alt="Folder icon" className="h-4 w-4 shrink-0 object-contain" />
                     <span className="truncate">{folder.label}</span>
                   </span>
                   <span className="text-(--app-muted)">{isExpanded ? '-' : '+'}</span>
@@ -92,7 +93,7 @@ export function CertManagerApp({ i18nApi }: DesktopAppProps) {
                             setIsNavOpen(false)
                           }}
                         >
-                          <img src={CERT_ICON_SRC} alt="Certificate icon" className="h-3.5 w-3.5 shrink-0 object-contain" />
+                          <img src={resolveAssetPath(CERT_ICON_SRC)} alt="Certificate icon" className="h-3.5 w-3.5 shrink-0 object-contain" />
                           <span className="truncate">{cert.commonName}</span>
                         </button>
                       )
@@ -157,7 +158,7 @@ export function CertManagerApp({ i18nApi }: DesktopAppProps) {
         {selectedCert ? (
           <>
             <div className="mb-4 flex items-start gap-3 border-b border-(--app-border) pb-3">
-              <img src={CERT_ICON_SRC} alt="Certificate icon" className="h-14 w-14 shrink-0 object-contain" />
+              <img src={resolveAssetPath(CERT_ICON_SRC)} alt="Certificate icon" className="h-14 w-14 shrink-0 object-contain" />
               <div className="min-w-0">
                 <h2 className="truncate text-lg font-semibold">{selectedCert.commonName}</h2>
                 <p className="text-sm text-(--app-muted)">{selectedFolder?.label}</p>
@@ -169,7 +170,7 @@ export function CertManagerApp({ i18nApi }: DesktopAppProps) {
               <dd className="inline-flex min-w-0 items-center gap-1.5 truncate">
                 {selectedCert.issuedByLogo ? (
                   <img
-                    src={selectedCert.issuedByLogo.src}
+                    src={resolveAssetPath(selectedCert.issuedByLogo.src)}
                     alt={selectedCert.issuedByLogo.alt}
                     className="h-4 w-4 shrink-0 object-contain"
                   />

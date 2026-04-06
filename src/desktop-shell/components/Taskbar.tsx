@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { DESKTOP_PLUGINS } from '../../desktop/plugins'
 import type { AppId, DesktopPreferences, Locale } from '../../desktop/types'
 import { formatDesktopDateTime } from '../../desktop/utils/dateTimeFormat'
+import { resolveAssetPath } from '../../desktop/utils/assetPath'
 import { renderAppIcon, resolveAppIcon } from '../utils/icons'
 
 type TaskbarWindowItem = {
@@ -309,7 +310,7 @@ export function Taskbar({
         <section className="system-about-backdrop absolute inset-0 z-29 grid place-items-center px-4">
           <div ref={aboutPanelRef} className="system-about-card w-[min(92vw,520px)] rounded-2xl border p-5">
             <header className="flex items-center gap-3">
-              <img src="/icons/daveos.svg" alt="" aria-hidden="true" className="system-about-logo h-9 w-9 rounded-lg" />
+              <img src={resolveAssetPath('/icons/daveos.svg')} alt="" aria-hidden="true" className="system-about-logo h-9 w-9 rounded-lg" />
               <div>
                 <h2 className="m-0 text-lg font-semibold">{t('about.system.title')}</h2>
                 <p className="m-0 text-sm opacity-80">

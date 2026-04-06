@@ -1,10 +1,11 @@
 import type { AppIcon, AppId, DesktopPreferences } from '../../desktop/types'
 import { APP_ICON_CHOICES_BY_ID } from '../../desktop/appIcons'
 import { DESKTOP_PLUGINS } from '../../desktop/plugins'
+import { resolveAssetPath } from '../../desktop/utils/assetPath'
 
 export const renderAppIcon = (icon: AppIcon, className: string) => {
   if (icon.kind === 'image') {
-    return <img className={className} src={icon.src} alt={icon.alt} />
+    return <img className={className} src={resolveAssetPath(icon.src)} alt={icon.alt} />
   }
 
   return <span className={className}>{icon.value}</span>

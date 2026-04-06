@@ -7,6 +7,7 @@ import {
 } from '../desktop/resources/calendar'
 import type { WorkExperienceEvent } from '../desktop/resources/calendar/types'
 import type { DesktopAppProps, Locale } from '../desktop/types'
+import { resolveAssetPath } from '../desktop/utils/assetPath'
 import { useIsPhone } from '../mobile-shell/hooks/useIsPhone'
 
 const EVENT_COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6']
@@ -235,7 +236,7 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
               >
                 <span className="inline-flex items-center gap-1.5 truncate">
                   {selectedTagOption.icon ? (
-                    <img src={selectedTagOption.icon.src} alt={selectedTagOption.icon.alt} className="h-3.5 w-3.5 shrink-0 object-contain" />
+                    <img src={resolveAssetPath(selectedTagOption.icon.src)} alt={selectedTagOption.icon.alt} className="h-3.5 w-3.5 shrink-0 object-contain" />
                   ) : null}
                   {selectedTagOption.label}
                 </span>
@@ -263,7 +264,7 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
                       className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm ${selectedTag === tag.id ? 'bg-(--app-surface-3)' : 'hover:bg-(--app-surface-2)'}`}
                       onClick={() => selectTagOption(tag.id)}
                     >
-                      {tag.icon ? <img src={tag.icon.src} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
+                      {tag.icon ? <img src={resolveAssetPath(tag.icon.src)} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
                       {tag.label}
                     </button>
                   ))}
@@ -317,7 +318,7 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
                           }}
                         >
                           <span className="mb-1 inline-flex items-center gap-2 text-sm font-semibold text-(--window-text)">
-                            <img src={event.icon.src} alt={event.icon.alt} className="h-4 w-4 object-contain" />
+                            <img src={resolveAssetPath(event.icon.src)} alt={event.icon.alt} className="h-4 w-4 object-contain" />
                             <span className="truncate">{companyName || role}</span>
                           </span>
                           <span className="mb-1 inline-block rounded-sm px-1.5 py-0.5 text-[11px] font-semibold text-white" style={{ backgroundColor: color }}>
@@ -337,7 +338,7 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
                                     const tag = resolveTag(tagId)
                                     return (
                                       <span key={`mobile-tag-${event.id}-${tag.id}`} className="inline-flex items-center gap-1 rounded-full border border-(--app-border) bg-(--app-surface-2) px-2 py-0.5 text-[11px] text-(--app-muted)">
-                                        {tag.icon ? <img src={tag.icon.src} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
+                                        {tag.icon ? <img src={resolveAssetPath(tag.icon.src)} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
                                         {tag.label}
                                       </span>
                                     )
@@ -400,7 +401,7 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
                           className="flex items-center gap-1.5 overflow-hidden px-2 py-1 text-xs text-(--window-text)"
                           style={{ gridColumn: '1 / 2', gridRow: 1 }}
                         >
-                          <img src={event.icon.src} alt={event.icon.alt} className="h-4 w-4 shrink-0 object-contain" />
+                          <img src={resolveAssetPath(event.icon.src)} alt={event.icon.alt} className="h-4 w-4 shrink-0 object-contain" />
                           <span className="truncate whitespace-nowrap">{companyName || role}</span>
                         </div>
 
@@ -436,7 +437,7 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
               style={{ borderTopColor: getEventColor(selectedEvent) } as React.CSSProperties}
             >
               <img
-                src={selectedEvent.icon.src}
+                src={resolveAssetPath(selectedEvent.icon.src)}
                 alt={selectedEvent.icon.alt}
                 className="h-18 w-18 rounded-[10px] border-2 border-transparent object-cover"
                 style={{ borderColor: getEventColor(selectedEvent) } as React.CSSProperties}
@@ -444,7 +445,7 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
               <h2 className="mt-3 mb-1.5 text-base">{selectedRole}</h2>
               {selectedCompany ? (
                 <p className="mb-2 inline-flex items-center gap-1.5 text-[13px] text-(--app-muted)">
-                  <img src={selectedEvent.icon.src} alt={selectedEvent.icon.alt} className="h-3.5 w-3.5 object-contain" />
+                  <img src={resolveAssetPath(selectedEvent.icon.src)} alt={selectedEvent.icon.alt} className="h-3.5 w-3.5 object-contain" />
                   {selectedCompany}
                 </p>
               ) : null}
@@ -461,7 +462,7 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
                     const tag = resolveTag(tagId)
                     return (
                       <span key={tag.id} className="inline-flex items-center gap-1 rounded-full border border-[var(--app-border)] bg-(--app-surface-2) px-2 py-0.5 text-[11px] text-(--app-muted)">
-                        {tag.icon ? <img src={tag.icon.src} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
+                        {tag.icon ? <img src={resolveAssetPath(tag.icon.src)} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
                         {tag.label}
                       </span>
                     )

@@ -10,6 +10,7 @@ import type {
   ThemeMode,
   WallpaperPreset,
 } from '../desktop/types'
+import { resolveAssetPath } from '../desktop/utils/assetPath'
 
 type SettingsPage = 'theme' | 'localization' | 'softwareUpdate'
 
@@ -91,7 +92,7 @@ export function SettingsApp({ i18nApi, preferencesApi, launchIntent }: DesktopAp
               setIsNavOpen(false)
             }}
           >
-            <img src="/icons/gear.svg" alt="Theme section icon" className="h-4 w-4 object-contain" />
+            <img src={resolveAssetPath('/icons/gear.svg')} alt="Theme section icon" className="h-4 w-4 object-contain" />
             {i18nApi.t('settings.nav.theme')}
           </button>
           <button
@@ -102,7 +103,7 @@ export function SettingsApp({ i18nApi, preferencesApi, launchIntent }: DesktopAp
               setIsNavOpen(false)
             }}
           >
-            <img src="/icons/translate.svg" alt="Localization section icon" className="h-4 w-4 object-contain" />
+            <img src={resolveAssetPath('/icons/translate.svg')} alt="Localization section icon" className="h-4 w-4 object-contain" />
             {i18nApi.t('settings.nav.localization')}
           </button>
           <button
@@ -113,7 +114,7 @@ export function SettingsApp({ i18nApi, preferencesApi, launchIntent }: DesktopAp
               setIsNavOpen(false)
             }}
           >
-            <img src="/icons/spark.svg" alt="Software update section icon" className="h-4 w-4 object-contain" />
+            <img src={resolveAssetPath('/icons/spark.svg')} alt="Software update section icon" className="h-4 w-4 object-contain" />
             {i18nApi.t('settings.nav.softwareUpdate')}
           </button>
         </nav>
@@ -210,7 +211,7 @@ export function SettingsApp({ i18nApi, preferencesApi, launchIntent }: DesktopAp
                     </span>
                     <span className="flex w-full flex-col items-center gap-1.5 rounded-md border border-transparent p-1 text-(--window-text)">
                       <span className={`grid place-items-center ${previewClasses.icon}`}>
-                        <img src="/icons/about.svg" alt="Desktop icon preview" className="h-full w-full object-contain" />
+                        <img src={resolveAssetPath('/icons/about.svg')} alt="Desktop icon preview" className="h-full w-full object-contain" />
                       </span>
                       <span className={`max-w-full break-words text-center leading-tight ${previewClasses.label}`}>
                         {i18nApi.t('app.about.title')}
@@ -281,7 +282,7 @@ export function SettingsApp({ i18nApi, preferencesApi, launchIntent }: DesktopAp
 
             <div className="max-w-xl rounded-xl border border-(--app-border) bg-(--app-surface-2) p-4">
               <div className="flex items-center gap-3">
-                <img src="/icons/daveos.svg" alt="DaveOS icon" className="h-10 w-10 rounded-lg object-contain" />
+                <img src={resolveAssetPath('/icons/daveos.svg')} alt="DaveOS icon" className="h-10 w-10 rounded-lg object-contain" />
                 <div>
                   <p className="m-0 font-semibold">DaveOS {typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '0.0.0'}</p>
                   <p className="m-0 text-sm text-(--app-muted)">{i18nApi.t('settings.page.softwareUpdate.latest')}</p>

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { DESKTOP_PLUGINS } from '../desktop/plugins'
 import type { AppId, DesktopAppProps } from '../desktop/types'
+import { resolveAssetPath } from '../desktop/utils/assetPath'
 import { renderAppIcon, resolveAppIcon } from '../desktop-shell/utils/icons'
 
 type CatalogApp = {
@@ -84,7 +85,7 @@ export function AppStoreApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
               <div className="mb-2 flex items-start gap-3">
                 <span className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-(--app-surface-1)">
                   {item.id === 'gradius' || item.iconSrc
-                    ? <img src={item.iconSrc ?? '/icons/gradius.svg'} alt={`${item.title} icon`} className="h-10 w-10 object-contain" />
+                    ? <img src={resolveAssetPath(item.iconSrc ?? '/icons/gradius.svg')} alt={`${item.title} icon`} className="h-10 w-10 object-contain" />
                     : renderAppIcon(resolveAppIcon(item.id, preferencesApi.preferences), 'h-10 w-10 object-contain')}
                 </span>
                 <div className="min-w-0">

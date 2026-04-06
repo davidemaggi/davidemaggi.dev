@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
 import remarkGfm from 'remark-gfm'
 import { getAboutContent } from '../desktop/resources/about'
+import { resolveAssetPath } from '../desktop/utils/assetPath'
 
 export function AboutApp({ i18nApi }: DesktopAppProps) {
   const t = i18nApi?.t ?? ((key: string) => key)
@@ -49,7 +50,7 @@ export function AboutApp({ i18nApi }: DesktopAppProps) {
                     {children}
                   </a>
                 ),
-                img: ({ src, alt }) => <img src={src ?? ''} alt={alt ?? ''} className="inline-block align-middle" />,
+                img: ({ src, alt }) => <img src={resolveAssetPath(src ?? '')} alt={alt ?? ''} className="inline-block align-middle" />,
               }}
             >
               {aboutContent.markdown}
