@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="GtiOut icon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#111827" />
+    </linearGradient>
+    <linearGradient id="paddle" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#cbd5e1" />
+    </linearGradient>
+    <linearGradient id="ball" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7dd3fc" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+  </defs>
+
+  <rect x="4" y="4" width="120" height="120" rx="22" fill="url(#bg)" />
+  <rect x="14" y="14" width="100" height="100" rx="14" fill="#020617" stroke="#334155" />
+
+  <g>
+    <rect x="20" y="22" width="10" height="8" rx="2" fill="#14532d" />
+    <rect x="34" y="22" width="10" height="8" rx="2" fill="#166534" />
+    <rect x="48" y="22" width="10" height="8" rx="2" fill="#15803d" />
+    <rect x="62" y="22" width="10" height="8" rx="2" fill="#16a34a" />
+    <rect x="76" y="22" width="10" height="8" rx="2" fill="#22c55e" />
+    <rect x="90" y="22" width="10" height="8" rx="2" fill="#4ade80" />
+
+    <rect x="20" y="34" width="10" height="8" rx="2" fill="#166534" />
+    <rect x="34" y="34" width="10" height="8" rx="2" fill="#15803d" />
+    <rect x="48" y="34" width="10" height="8" rx="2" fill="#16a34a" />
+    <rect x="62" y="34" width="10" height="8" rx="2" fill="#22c55e" />
+    <rect x="76" y="34" width="10" height="8" rx="2" fill="#4ade80" />
+    <rect x="90" y="34" width="10" height="8" rx="2" fill="#86efac" />
+  </g>
+
+  <rect x="39" y="92" width="50" height="8" rx="4" fill="url(#paddle)" />
+  <circle cx="82" cy="79" r="6" fill="url(#ball)" />
+
+  <text
+    x="64"
+    y="113"
+    text-anchor="middle"
+    fill="#e2e8f0"
+    font-size="11"
+    font-family="ui-sans-serif, -apple-system, Segoe UI, sans-serif"
+    font-weight="700"
+  >
+    GTIOUT
+  </text>
+</svg>
