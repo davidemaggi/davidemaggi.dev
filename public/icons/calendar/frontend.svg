@@ -1,6 +1,334 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <rect x="8" y="10" width="48" height="44" rx="8" fill="#0f172a"/>
-  <path d="M18 28l8 7-8 7" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M46 28l-8 7 8 7" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 460" width="980" height="460" role="img" aria-label="Arkanoid in stile GitHub contributions">
+  <defs>
+    <style>
+      .bg { fill: #0d1117; }
+      .panel { fill: #0d1117; stroke: #30363d; }
+      .title { fill: #c9d1d9; font: 600 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; }
+      .meta { fill: #8b949e; font: 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; }
+      .month, .day { fill: #7d8590; font: 10px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; }
+      .legend { fill: #7d8590; font: 11px -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; }
+      .cell { shape-rendering: geometricPrecision; }
+      .ball {
+      fill: #58a6ff;
+      filter: drop-shadow(0 0 4px rgba(88,166,255,0.5));
+      }
+      .trail {
+      fill: none;
+      stroke: rgba(88,166,255,0.18);
+      stroke-width: 2;
+      }
+      .paddle {
+      fill: #f2cc60;
+      filter: drop-shadow(0 0 6px rgba(242,204,96,0.30));
+      }
+      .hud { fill: #8b949e; font: 12px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    </style>
+  </defs>
 
+  <rect class="bg" x="0" y="0" width="980" height="460"/>
+
+  <!-- main card -->
+  <rect class="panel" x="24" y="24" width="932" height="412" rx="10"/>
+  <text class="title" x="48" y="52">github-arkanoid</text>
+  <text class="meta" x="48" y="72">Arkanoid built on top of a GitHub-style contributions graph</text>
+
+  <!-- contribution panel -->
+  <g id="chart" transform="translate(48,92)">
+    <text class="meta" x="0" y="-14">1,284 contributions in the last year</text>
+
+    <!-- month labels -->
+    <g id="months"></g>
+
+    <!-- day labels -->
+    <g id="days"></g>
+
+    <!-- cells -->
+    <g id="grid"></g>
+
+    <!-- legend -->
+    <g id="legend" transform="translate(692,134)">
+      <text class="legend" x="0" y="10">Less</text>
+      <rect x="34" y="0" width="10" height="10" rx="2" fill="#161b22"/>
+      <rect x="48" y="0" width="10" height="10" rx="2" fill="#0e4429"/>
+      <rect x="62" y="0" width="10" height="10" rx="2" fill="#006d32"/>
+      <rect x="76" y="0" width="10" height="10" rx="2" fill="#26a641"/>
+      <rect x="90" y="0" width="10" height="10" rx="2" fill="#39d353"/>
+      <text class="legend" x="108" y="10">More</text>
+    </g>
+  </g>
+
+  <!-- play area overlay -->
+  <g id="game-layer">
+    <path id="ballTrail" class="trail"/>
+    <circle id="ball" class="ball" r="6.5" cx="0" cy="0"/>
+    <rect id="paddle" class="paddle" x="0" y="0" width="92" height="10" rx="5"/>
+  </g>
+
+  <!-- bottom hud -->
+  <text class="hud" x="48" y="416">score: <tspan id="scoreText">0000</tspan></text>
+  <text class="hud" x="160" y="416">lives: 3</text>
+  <text class="hud" x="236" y="416">level: github graph</text>
+
+  <script><![CDATA[
+    (function () {
+      const svg = document.documentElement;
+
+      // --- GitHub-like grid setup
+      const cols = 53;
+      const rows = 7;
+      const cell = 11;
+      const gap = 4;
+      const gridX = 32;
+      const gridY = 10;
+
+      const palette = ["#161b22", "#0e4429", "#006d32", "#26a641", "#39d353"];
+
+      const grid = svg.getElementById("grid");
+      const months = svg.getElementById("months");
+      const days = svg.getElementById("days");
+      const scoreText = svg.getElementById("scoreText");
+
+      function cellPos(c, r) {
+        return {
+          x: 48 + gridX + c * (cell + gap),
+          y: 92 + gridY + r * (cell + gap)
+        };
+      }
+
+      // month labels close to GitHub layout
+      const monthNames = [
+        ["May", 0], ["Jun", 4], ["Jul", 8], ["Aug", 13], ["Sep", 17], ["Oct", 21],
+        ["Nov", 26], ["Dec", 30], ["Jan", 35], ["Feb", 39], ["Mar", 43], ["Apr", 48]
+      ];
+      monthNames.forEach(([name, c]) => {
+        const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        t.setAttribute("class", "month");
+        t.setAttribute("x", gridX + c * (cell + gap));
+        t.setAttribute("y", -2);
+        t.textContent = name;
+        months.appendChild(t);
+      });
+
+      [["Mon",1],["Wed",3],["Fri",5]].forEach(([name, r]) => {
+        const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        t.setAttribute("class", "day");
+        t.setAttribute("x", 0);
+        t.setAttribute("y", gridY + r * (cell + gap) + 9);
+        t.textContent = name;
+        days.appendChild(t);
+      });
+
+      // seeded pseudo-random so it always looks the same
+      let seed = 1337;
+      function rand() {
+        seed = (seed * 1664525 + 1013904223) % 4294967296;
+        return seed / 4294967296;
+      }
+
+      // Create a believable GitHub-like heatmap
+      const cells = [];
+      for (let c = 0; c < cols; c++) {
+        for (let r = 0; r < rows; r++) {
+          const p = rand();
+
+          // gentle clusters so it feels like a real contribution graph
+          const seasonalBoost =
+            (c > 4 && c < 11 ? 0.06 : 0) +
+            (c > 15 && c < 22 ? 0.10 : 0) +
+            (c > 33 && c < 39 ? 0.07 : 0) +
+            (c > 43 && c < 50 ? 0.10 : 0);
+
+          const rowBias = (r === 0 || r === 6) ? -0.05 : 0;
+          const v = p + seasonalBoost + rowBias;
+
+          let level = 0;
+          if (v > 0.83) level = 4;
+          else if (v > 0.64) level = 3;
+          else if (v > 0.42) level = 2;
+          else if (v > 0.22) level = 1;
+
+          const pos = cellPos(c, r);
+          const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          rect.setAttribute("class", "cell");
+          rect.setAttribute("x", pos.x);
+          rect.setAttribute("y", pos.y);
+          rect.setAttribute("width", cell);
+          rect.setAttribute("height", cell);
+          rect.setAttribute("rx", 2);
+          rect.setAttribute("fill", palette[level]);
+          rect.dataset.col = c;
+          rect.dataset.row = r;
+          rect.dataset.level = level;
+          grid.appendChild(rect);
+          cells.push(rect);
+        }
+      }
+
+      function getCell(c, r) {
+        return cells.find(el => +el.dataset.col === c && +el.dataset.row === r);
+      }
+
+      // --- Targets that the ball will actually destroy
+      const targets = [
+        [47, 5],
+        [42, 4],
+        [37, 3],
+        [31, 2],
+        [26, 1],
+        [20, 2],
+        [15, 3],
+        [11, 4],
+        [8, 5]
+      ];
+
+      // make targets visible/high-value like real active days
+      targets.forEach(([c, r]) => {
+        const rect = getCell(c, r);
+        if (rect) rect.setAttribute("fill", palette[4]);
+      });
+
+      // --- Animation timeline
+      const duration = 7.2; // seconds
+      const start = performance.now();
+
+      const ball = svg.getElementById("ball");
+      const paddle = svg.getElementById("paddle");
+      const trail = svg.getElementById("ballTrail");
+
+      const paddleY = 370;
+      const paddleW = 92;
+      const paddleH = 10;
+
+      // helper: center of a cell
+      function centerOfCell(c, r) {
+        const p = cellPos(c, r);
+        return { x: p.x + cell / 2, y: p.y + cell / 2 };
+      }
+
+      // Ball route:
+      // starts near paddle, bounces through selected cells, returns to paddle, repeats
+      const pts = [];
+      const startX = 790;
+      const startY = paddleY - 12;
+
+      pts.push({ x: startX, y: startY });
+      targets.forEach(([c, r]) => pts.push(centerOfCell(c, r)));
+      pts.push({ x: 240, y: 300 });       // lower bounce
+      pts.push({ x: 510, y: paddleY - 12 }); // paddle intercept
+      pts.push({ x: startX, y: startY }); // close loop
+
+      function lerp(a, b, t) {
+        return a + (b - a) * t;
+      }
+
+      function segmentLengths(points) {
+        const lengths = [];
+        let total = 0;
+        for (let i = 0; i < points.length - 1; i++) {
+          const dx = points[i + 1].x - points[i].x;
+          const dy = points[i + 1].y - points[i].y;
+          const len = Math.hypot(dx, dy);
+          lengths.push(len);
+          total += len;
+        }
+        return { lengths, total };
+      }
+
+      const seg = segmentLengths(pts);
+      const cumulative = [0];
+      for (let i = 0; i < seg.lengths.length; i++) {
+        cumulative.push(cumulative[i] + seg.lengths[i] / seg.total);
+      }
+
+      function pointAt(t) {
+        t = t % 1;
+        let i = 0;
+        while (i < cumulative.length - 1 && t > cumulative[i + 1]) i++;
+        const localT = (t - cumulative[i]) / (cumulative[i + 1] - cumulative[i]);
+        return {
+          x: lerp(pts[i].x, pts[i + 1].x, localT),
+          y: lerp(pts[i].y, pts[i + 1].y, localT)
+        };
+      }
+
+      // build trail from points
+      trail.setAttribute("d", "M " + pts.map(p => `${p.x} ${p.y}`).join(" L "));
+
+      // target hit windows
+      const hitMoments = targets.map((_, i) => cumulative[i + 1]);
+
+      const destroyed = new Set();
+      let score = 0;
+
+      function updatePaddle(ballX) {
+        // Track the ball during the final descent near the paddle
+        // and stay plausible during the rest of the loop.
+        let x = ballX - paddleW / 2;
+
+        const minX = 48;
+        const maxX = 932 - paddleW;
+        x = Math.max(minX, Math.min(maxX, x));
+
+        paddle.setAttribute("x", x);
+        paddle.setAttribute("y", paddleY);
+      }
+
+      function resetTargets() {
+        destroyed.clear();
+        score = 0;
+        scoreText.textContent = String(score).padStart(4, "0");
+        targets.forEach(([c, r]) => {
+          const rect = getCell(c, r);
+          if (!rect) return;
+          rect.style.opacity = "1";
+          rect.style.transform = "";
+          rect.setAttribute("fill", palette[4]);
+        });
+      }
+
+      let lastLoop = -1;
+      function frame(now) {
+        const elapsed = (now - start) / 1000;
+        const loop = Math.floor(elapsed / duration);
+        const t = (elapsed % duration) / duration;
+
+        if (loop !== lastLoop) {
+          resetTargets();
+          lastLoop = loop;
+        }
+
+        const p = pointAt(t);
+        ball.setAttribute("cx", p.x);
+        ball.setAttribute("cy", p.y);
+
+        // paddle and ball use the same timeline, so they stay aligned
+        updatePaddle(p.x);
+
+        // destroy cells exactly when their time is reached
+        hitMoments.forEach((hm, i) => {
+          if (t >= hm && !destroyed.has(i)) {
+            destroyed.add(i);
+            const [c, r] = targets[i];
+            const rect = getCell(c, r);
+            if (rect) {
+              rect.style.opacity = "0";
+              rect.style.transformOrigin = "center";
+              rect.style.transformBox = "fill-box";
+              rect.style.transform = "scale(0.15)";
+            }
+            score += 100;
+            scoreText.textContent = String(score).padStart(4, "0");
+          }
+        });
+
+        requestAnimationFrame(frame);
+      }
+
+      // initial paddle position
+      paddle.setAttribute("x", startX - paddleW / 2);
+      paddle.setAttribute("y", paddleY);
+
+      requestAnimationFrame(frame);
+    })();
+  ]]></script>
+</svg>

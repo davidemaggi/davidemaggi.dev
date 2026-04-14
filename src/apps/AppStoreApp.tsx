@@ -19,6 +19,7 @@ const DESCRIPTIONS = {
     settings: 'Impostazioni di sistema: tema, lingua, orologio e wallpaper.',
     calendar: 'Timeline esperienze lavorative con filtri e vista temporale.',
     certManager: 'Gestione certificati e competenze con dettaglio metadati.',
+    arkanoid: 'GtiOut: parodia di Breakout in versione SVG animata, visualizzata a piena finestra.',
     easterEgg: 'Contenuto segreto sbloccabile con combinazione speciale.',
     gradius: 'Konami 1986. Arcade shooter orizzontale classico. Non installato.',
   },
@@ -29,6 +30,7 @@ const DESCRIPTIONS = {
     settings: 'System settings: theme, language, clock and wallpaper.',
     calendar: 'Work experience timeline with filters and time views.',
     certManager: 'Certificates and skills manager with detailed metadata.',
+    arkanoid: 'GtiOut: a Breakout parody rendered as an animated SVG in fullscreen style.',
     easterEgg: 'Secret unlockable content triggered by a special combo.',
     gradius: 'Konami 1986. Classic horizontal arcade shooter. Not installed.',
   },
@@ -116,5 +118,3 @@ export function AppStoreApp({ desktopApi, i18nApi, preferencesApi }: DesktopAppP
     </div>
   )
 }
-
-

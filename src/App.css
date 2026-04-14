@@ -979,3 +979,156 @@
   filter: none;
 }
 
+.power-overlay {
+  pointer-events: auto;
+}
+
+.sleep-scene {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+.sleep-scene__veil {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 35%, #33415540 0%, #020617f2 55%, #000 100%);
+  opacity: 0.25;
+  transition: opacity 300ms ease;
+}
+
+.sleep-scene__lid {
+  position: absolute;
+  left: -2%;
+  width: 104%;
+  height: 50%;
+  background: #02040a;
+  box-shadow: inset 0 0 60px #000000cc;
+  transform: translateY(0%);
+}
+
+.sleep-scene__lid--top {
+  top: 0;
+  transform-origin: top;
+}
+
+.sleep-scene__lid--bottom {
+  bottom: 0;
+  transform-origin: bottom;
+}
+
+.sleep-scene__hint {
+  position: absolute;
+  left: 50%;
+  bottom: 10%;
+  transform: translateX(-50%);
+  color: #cbd5e1;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
+.sleep-scene--closing .sleep-scene__lid--top {
+  animation: eyelid-close-top 680ms ease forwards;
+}
+
+.sleep-scene--closing .sleep-scene__lid--bottom {
+  animation: eyelid-close-bottom 680ms ease forwards;
+}
+
+.sleep-scene--asleep .sleep-scene__veil {
+  opacity: 0.95;
+}
+
+.sleep-scene--asleep .sleep-scene__lid--top {
+  transform: translateY(98%);
+}
+
+.sleep-scene--asleep .sleep-scene__lid--bottom {
+  transform: translateY(-98%);
+}
+
+.sleep-scene--asleep .sleep-scene__hint {
+  opacity: 0.9;
+}
+
+.sleep-scene--opening .sleep-scene__lid--top {
+  transform: translateY(98%);
+  animation: eyelid-open-top 520ms ease forwards;
+}
+
+.sleep-scene--opening .sleep-scene__lid--bottom {
+  transform: translateY(-98%);
+  animation: eyelid-open-bottom 520ms ease forwards;
+}
+
+.sleep-scene--opening .sleep-scene__veil {
+  opacity: 0.15;
+}
+
+.power-screen {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  height: 100%;
+  text-align: center;
+  color: #e2e8f0;
+  background: #020617f2;
+  padding: 1.25rem;
+}
+
+.power-screen--restart {
+  background: radial-gradient(circle at 50% 30%, #1e293b 0%, #020617 65%);
+}
+
+.power-screen--shutdown {
+  background: linear-gradient(180deg, #0b1022 0%, #020617 100%);
+}
+
+.power-screen__spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 3px solid #475569;
+  border-top-color: #93c5fd;
+  margin-bottom: 14px;
+  animation: spin 0.9s linear infinite;
+}
+
+.power-screen__progress {
+  height: 10px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  overflow: hidden;
+}
+
+.power-screen__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #38bdf8, #60a5fa);
+  transition: width 200ms ease;
+}
+
+@keyframes eyelid-close-top {
+  from { transform: translateY(0%); }
+  to { transform: translateY(98%); }
+}
+
+@keyframes eyelid-close-bottom {
+  from { transform: translateY(0%); }
+  to { transform: translateY(-98%); }
+}
+
+@keyframes eyelid-open-top {
+  from { transform: translateY(98%); }
+  to { transform: translateY(0%); }
+}
+
+@keyframes eyelid-open-bottom {
+  from { transform: translateY(-98%); }
+  to { transform: translateY(0%); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

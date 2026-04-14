@@ -20,6 +20,7 @@ type TaskbarProps = {
   windows: TaskbarWindowItem[]
   onLaunchFromAppleMenu: (id: AppId, query?: string) => void
   onTaskbarAppClick: (id: AppId, isOpen: boolean, isMinimized: boolean) => void
+  onPowerAction: (action: 'sleep' | 'restart' | 'shutdown') => void
 }
 
 type AboutTab = 'overview' | 'displays' | 'storage'
@@ -39,6 +40,7 @@ export function Taskbar({
   windows,
   onLaunchFromAppleMenu,
   onTaskbarAppClick,
+  onPowerAction,
 }: TaskbarProps) {
   const dockAreaRef = useRef<HTMLDivElement | null>(null)
   const appleMenuRef = useRef<HTMLDivElement | null>(null)
@@ -417,9 +419,18 @@ export function Taskbar({
                 <button className="menu-bar__apple-item" onClick={() => handleAppleLaunch('settings')}>{t('menu.daveos.systemSettings')}</button>
                 <button className="menu-bar__apple-item" onClick={() => handleAppleLaunch('terminal')}>{t('menu.daveos.terminal')}</button>
                 <div className="menu-bar__apple-separator" aria-hidden="true" />
-                <button className="menu-bar__apple-item" onClick={() => setIsAppleMenuOpen(false)}>{t('start.power.sleep')}</button>
-                <button className="menu-bar__apple-item" onClick={() => setIsAppleMenuOpen(false)}>{t('start.power.restart')}</button>
-                <button className="menu-bar__apple-item" onClick={() => setIsAppleMenuOpen(false)}>{t('start.power.shutdown')}</button>
+                <button className="menu-bar__apple-item" onClick={() => {
+                  setIsAppleMenuOpen(false)
+                  onPowerAction('sleep')
+                }}>{t('start.power.sleep')}</button>
+                <button className="menu-bar__apple-item" onClick={() => {
+                  setIsAppleMenuOpen(false)
+                  onPowerAction('restart')
+                }}>{t('start.power.restart')}</button>
+                <button className="menu-bar__apple-item" onClick={() => {
+                  setIsAppleMenuOpen(false)
+                  onPowerAction('shutdown')
+                }}>{t('start.power.shutdown')}</button>
               </section>
             ) : null}
           </div>

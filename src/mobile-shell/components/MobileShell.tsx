@@ -55,6 +55,7 @@ const MOBILE_ICON_OVERRIDES: Record<AppId, AppIcon> = {
   settings: { kind: 'image', src: '/icons/gear.svg', alt: 'Settings icon' },
   calendar: { kind: 'image', src: '/icons/calendar.svg', alt: 'Calendar icon' },
   certManager: { kind: 'image', src: '/icons/certificate.svg', alt: 'Certificate icon' },
+  arkanoid: { kind: 'image', src: '/icons/gtiout.svg', alt: 'GtiOut icon' },
   easterEgg: { kind: 'image', src: '/icons/spark.svg', alt: 'Secret access icon' },
 }
 
@@ -419,8 +420,6 @@ export function MobileShell({
     </div>
   )
 }
-
-
 
 
 

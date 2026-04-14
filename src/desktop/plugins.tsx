@@ -1,4 +1,5 @@
 import { AboutApp } from '../apps/AboutApp'
+import { ArkanoidApp } from '../apps/ArkanoidApp'
 import { AppStoreApp } from '../apps/AppStoreApp'
 import { CalendarApp } from '../apps/CalendarApp'
 import { CertManagerApp } from '../apps/CertManagerApp'
@@ -104,6 +105,22 @@ export const DESKTOP_PLUGINS: Record<AppId, DesktopPlugin> = {
     },
     Component: CertManagerApp,
   },
+  arkanoid: {
+    id: 'arkanoid',
+    titleKey: 'app.arkanoid.title',
+    icon: {
+      kind: 'image',
+      src: '/icons/gtiout.svg',
+      alt: 'GtiOut icon',
+    },
+    defaultBounds: {
+      x: 160,
+      y: 90,
+      width: 920,
+      height: 360,
+    },
+    Component: ArkanoidApp,
+  },
   easterEgg: {
     id: 'easterEgg',
     titleKey: 'app.easter.title',
@@ -121,5 +138,3 @@ export const DESKTOP_PLUGINS: Record<AppId, DesktopPlugin> = {
     Component: EasterEggApp,
   },
 }
-
-

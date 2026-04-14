@@ -43,6 +43,7 @@ const createEmptyPerAppMap = <T>(initial: T): Record<AppId, T> => ({
   settings: initial,
   calendar: initial,
   certManager: initial,
+  arkanoid: initial,
   easterEgg: initial,
 })
 

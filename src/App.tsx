@@ -113,6 +113,18 @@ function App() {
   const [preferences, setPreferences] = useState<DesktopPreferences>(loadPersistedPreferences)
   const [now, setNow] = useState(() => new Date())
   const [launchIntent, setLaunchIntent] = useState<DesktopLaunchIntent | null>(null)
+  const [powerMode, setPowerMode] = useState<
+    | 'awake'
+    | 'sleepTransition'
+    | 'sleeping'
+    | 'waking'
+    | 'restarting'
+    | 'shutdownUpdating'
+    | 'shutdownFailed'
+    | 'shutdownRebooting'
+  >('awake')
+  const [shutdownProgress, setShutdownProgress] = useState(0)
+  const [isSleepWakeArmed, setIsSleepWakeArmed] = useState(false)
   const jsConfettiRef = useRef<JSConfetti | null>(null)
   const isConfettiRunningRef = useRef(false)
   const t = useMemo(() => createTranslator(locale), [locale])
@@ -148,6 +160,102 @@ function App() {
     const timer = window.setInterval(() => setNow(new Date()), 1000)
     return () => window.clearInterval(timer)
   }, [])
+
+  useEffect(() => {
+    if (powerMode !== 'sleepTransition') return
+
+    const toSleeping = window.setTimeout(() => {
+      setPowerMode('sleeping')
+      setIsSleepWakeArmed(false)
+    }, 680)
+
+    return () => window.clearTimeout(toSleeping)
+  }, [powerMode])
+
+  useEffect(() => {
+    if (powerMode !== 'sleeping') return
+
+    const armWake = window.setTimeout(() => {
+      setIsSleepWakeArmed(true)
+    }, 520)
+
+    return () => window.clearTimeout(armWake)
+  }, [powerMode])
+
+  useEffect(() => {
+    if (powerMode !== 'sleeping' || !isSleepWakeArmed) return
+
+    const wake = () => {
+      setPowerMode('waking')
+      setIsSleepWakeArmed(false)
+    }
+
+    window.addEventListener('pointermove', wake, { once: true })
+    window.addEventListener('keydown', wake, { once: true })
+    window.addEventListener('touchstart', wake, { once: true })
+    return () => {
+      window.removeEventListener('pointermove', wake)
+      window.removeEventListener('keydown', wake)
+      window.removeEventListener('touchstart', wake)
+    }
+  }, [powerMode, isSleepWakeArmed])
+
+  useEffect(() => {
+    if (powerMode !== 'waking') return
+
+    const toAwake = window.setTimeout(() => {
+      setPowerMode('awake')
+    }, 520)
+
+    return () => window.clearTimeout(toAwake)
+  }, [powerMode])
+
+  useEffect(() => {
+    if (powerMode !== 'restarting') return
+
+    const rebootTimer = window.setTimeout(() => {
+      window.location.reload()
+    }, 2200)
+
+    return () => window.clearTimeout(rebootTimer)
+  }, [powerMode])
+
+  useEffect(() => {
+    if (powerMode !== 'shutdownUpdating') return
+
+    const interval = window.setInterval(() => {
+      setShutdownProgress((prev) => {
+        const next = Math.min(88, prev + 5 + Math.floor(Math.random() * 8))
+        if (next >= 88) {
+          window.clearInterval(interval)
+          setPowerMode('shutdownFailed')
+        }
+        return next
+      })
+    }, 260)
+
+    return () => window.clearInterval(interval)
+  }, [powerMode])
+
+  useEffect(() => {
+    if (powerMode !== 'shutdownFailed') return
+
+    const toReboot = window.setTimeout(() => {
+      setPowerMode('shutdownRebooting')
+    }, 1800)
+
+    return () => window.clearTimeout(toReboot)
+  }, [powerMode])
+
+  useEffect(() => {
+    if (powerMode !== 'shutdownRebooting') return
+
+    const rebootTimer = window.setTimeout(() => {
+      window.location.reload()
+    }, 1800)
+
+    return () => window.clearTimeout(rebootTimer)
+  }, [powerMode])
 
   const launchKonamiConfettiWaves = useCallback(async () => {
     if (typeof window === 'undefined' || isConfettiRunningRef.current) return
@@ -274,6 +382,24 @@ function App() {
     launchApp(id, query)
   }
 
+  const startPowerAction = (action: 'sleep' | 'restart' | 'shutdown') => {
+    if (powerMode !== 'awake') return
+    setLaunchIntent(null)
+
+    if (action === 'sleep') {
+      setPowerMode('sleepTransition')
+      return
+    }
+
+    if (action === 'restart') {
+      setPowerMode('restarting')
+      return
+    }
+
+    setShutdownProgress(0)
+    setPowerMode('shutdownUpdating')
+  }
+
   const shellClassName = `desktop-shell desktop-shell--theme-${preferences.theme} desktop-shell--wallpaper-${preferences.wallpaper}`
 
   if (isPhone) {
@@ -374,7 +500,50 @@ function App() {
           }
           minimizeWindow(id)
         }}
+        onPowerAction={startPowerAction}
       />
+
+      {powerMode !== 'awake' ? (
+        <section className="power-overlay absolute inset-0 z-60">
+          {powerMode === 'sleepTransition' || powerMode === 'sleeping' || powerMode === 'waking' ? (
+            <div className={`sleep-scene ${powerMode === 'sleepTransition' ? 'sleep-scene--closing' : ''} ${powerMode === 'sleeping' ? 'sleep-scene--asleep' : ''} ${powerMode === 'waking' ? 'sleep-scene--opening' : ''}`}>
+              <div className="sleep-scene__veil" />
+              <div className="sleep-scene__lid sleep-scene__lid--top" />
+              <div className="sleep-scene__lid sleep-scene__lid--bottom" />
+              <div className="sleep-scene__hint">
+                <p className="m-0 text-base font-semibold">{t('power.sleep.title')}</p>
+                <p className="m-0 mt-1 text-xs opacity-80">{t('power.sleep.hint')}</p>
+              </div>
+            </div>
+          ) : null}
+
+          {powerMode === 'restarting' ? (
+            <div className="power-screen power-screen--restart">
+              <div className="power-screen__spinner" aria-hidden="true" />
+              <p className="m-0 text-lg font-semibold">{t('power.restart.title')}</p>
+              <p className="m-0 mt-2 text-sm opacity-80">{t('power.restart.body')}</p>
+            </div>
+          ) : null}
+
+          {powerMode === 'shutdownUpdating' || powerMode === 'shutdownFailed' || powerMode === 'shutdownRebooting' ? (
+            <div className="power-screen power-screen--shutdown">
+              <p className="m-0 text-lg font-semibold">{t('power.shutdown.title')}</p>
+              <p className="m-0 mt-2 text-sm opacity-85">
+                {powerMode === 'shutdownUpdating'
+                  ? t('power.shutdown.updating')
+                  : powerMode === 'shutdownFailed'
+                    ? t('power.shutdown.failed')
+                    : t('power.shutdown.rebooting')}
+              </p>
+
+              <div className="power-screen__progress mt-5 w-[min(72vw,480px)] rounded-full">
+                <div className="power-screen__progress-fill rounded-full" style={{ width: `${shutdownProgress}%` }} />
+              </div>
+              <p className="m-0 mt-2 text-xs opacity-70">{shutdownProgress}%</p>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
     </div>
   )
 }
