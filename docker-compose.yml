@@ -1,9 +1,7 @@
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: ghcr.io/davidemaggidev/davidemaggidev:local
+  davidemaggidev:
+    container_name: davidemaggidev
+    image: ghcr.io/davidemaggidev/davidemaggidev:latest
     ports:
       - "8080:80"
     restart: unless-stopped
