@@ -1,5 +1,29 @@
 # React + TypeScript + Vite
 
+## Release automatica (semantic-release) + Docker su GHCR
+
+Il progetto usa `semantic-release` nel workflow `.github/workflows/docker-build-push.yml` su push verso `main`/`master` (o `workflow_dispatch`).
+Non devi creare tag manuali: i tag Git vengono creati automaticamente nel formato `vX.Y.Z`.
+
+Regole Conventional Commits usate per il version bump:
+- `fix:` -> patch
+- `feat:` -> minor
+- `BREAKING CHANGE` o `!` -> major
+
+Quando esce una nuova release:
+1. `semantic-release` calcola la nuova versione.
+2. Aggiorna `CHANGELOG.md`, `package.json` e `package-lock.json` (commit di release automatico).
+3. Crea release GitHub.
+4. Solo in questo caso builda e pubblica l'immagine Docker su GHCR.
+
+Allineamento versione app/immagine:
+- il workflow valida che `package.json.version` sia uguale alla versione release;
+- i tag Docker pubblicati sono `${version}`, `v${version}` e `latest`.
+
+Registry immagine:
+- `ghcr.io/<owner>/<repo>` (sempre lowercase)
+- esempio: `ghcr.io/davidemaggidev/davidemaggidev`
+
 ## Deploy su GitHub Pages
 
 Il progetto e' configurato per pubblicare automaticamente su GitHub Pages tramite GitHub Actions.
