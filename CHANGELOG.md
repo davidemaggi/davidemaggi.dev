@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/davidemaggi/davidemaggi.dev/compare/v1.0.1...v1.0.2) (2026-04-23)
+
+
+### Bug Fixes
+
+* added compose ([3c53fd2](https://github.com/davidemaggi/davidemaggi.dev/commit/3c53fd24c477319376f265e3733fc0e0c98d65c0))
+
 ## [1.0.1](https://github.com/davidemaggi/davidemaggi.dev/compare/v1.0.0...v1.0.1) (2026-04-23)
 
 
