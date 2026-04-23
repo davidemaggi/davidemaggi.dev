@@ -24,17 +24,6 @@ Registry immagine:
 - `ghcr.io/<owner>/<repo>` (sempre lowercase)
 - esempio: `ghcr.io/davidemaggidev/davidemaggidev`
 
-## Deploy su GitHub Pages
-
-Il progetto e' configurato per pubblicare automaticamente su GitHub Pages tramite GitHub Actions.
-
-1. Fai push su `main` (il workflow e' in `.github/workflows/deploy.yml`).
-2. In GitHub apri `Settings > Pages`.
-3. In `Build and deployment`, imposta `Source: GitHub Actions`.
-4. Attendi il completamento del workflow `Deploy to GitHub Pages` nella tab `Actions`.
-
-Nota: la `base` di Vite viene calcolata automaticamente per GitHub Pages usando il nome repository.
-
 ### Coerenza lockfile (npm)
 
 Per evitare errori `npm ci` in GitHub Actions, il repository e' fissato a `npm@10.9.4` (vedi `package.json` e workflow).
