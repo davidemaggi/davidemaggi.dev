@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/davidemaggi/davidemaggi.dev/compare/v1.0.2...v1.0.3) (2026-04-26)
+
+
+### Bug Fixes
+
+* Fixed Typo ([54b4b73](https://github.com/davidemaggi/davidemaggi.dev/commit/54b4b73e0b2a950613f0190c1f89559f3361acd0))
+
 ## [1.0.2](https://github.com/davidemaggi/davidemaggi.dev/compare/v1.0.1...v1.0.2) (2026-04-23)
 
 
