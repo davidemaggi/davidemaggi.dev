@@ -60,7 +60,7 @@ const it = {
   'app.skills.title': 'Skills Player',
   'app.calendar.title': 'Calendario',
   'app.certManager.title': 'Gestione certificati',
-  'app.arkanoid.title': 'GtiOut',
+  'app.arkanoid.title': 'GitOut',
   'app.easter.title': 'La tana del Bianconiglio',
 
   'certManager.folders': 'Cartelle certificati',

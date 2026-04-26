@@ -60,7 +60,7 @@ const en = {
   'app.skills.title': 'Skills Player',
   'app.calendar.title': 'Calendar',
   'app.certManager.title': 'Certificate Manager',
-  'app.arkanoid.title': 'GtiOut',
+  'app.arkanoid.title': 'GitOut',
   'app.easter.title': 'Down the Rabbit Hole',
 
   'certManager.folders': 'Certificate folders',

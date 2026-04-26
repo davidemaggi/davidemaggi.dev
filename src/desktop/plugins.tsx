@@ -111,7 +111,7 @@ export const DESKTOP_PLUGINS: Record<AppId, DesktopPlugin> = {
     icon: {
       kind: 'image',
       src: '/icons/gtiout.svg',
-      alt: 'GtiOut icon',
+      alt: 'GitOut icon',
     },
     defaultBounds: {
       x: 160,
