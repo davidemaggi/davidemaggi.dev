@@ -8,7 +8,7 @@ Non devi creare tag manuali: i tag Git vengono creati automaticamente nel format
 Regole Conventional Commits usate per il version bump:
 - `fix:` -> patch
 - `feat:` -> minor
-- `BREAKING CHANGE` o `!` -> major
+- `BREAKING CHANGE` o `!` -> major 
 
 Quando esce una nuova release:
 1. `semantic-release` calcola la nuova versione.
