@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { AppId, WindowState } from '../../desktop/types'
 
@@ -35,6 +35,7 @@ const MIN_WINDOW_WIDTH = 320
 const MIN_WINDOW_HEIGHT = 220
 const SNAP_EDGE_THRESHOLD = 28
 const SNAP_TOP_THRESHOLD = 18
+const DOCK_RESERVED_HEIGHT = 84
 
 const createEmptyPerAppMap = <T>(initial: T): Record<AppId, T> => ({
   terminal: initial,
@@ -44,7 +45,6 @@ const createEmptyPerAppMap = <T>(initial: T): Record<AppId, T> => ({
   calendar: initial,
   certManager: initial,
   arkanoid: initial,
-  easterEgg: initial,
 })
 
 export function useWindowManager({
@@ -63,6 +63,15 @@ export function useWindowManager({
     createEmptyPerAppMap(null),
   )
   const snappedSideRef = useRef<Record<AppId, SnapSide | null>>(createEmptyPerAppMap(null))
+  // Pointer events can fire faster than the display refreshes: coalesce them into one update per frame.
+  const pendingMoveRef = useRef<{ id: AppId; x: number; y: number } | null>(null)
+  const pendingResizeRef = useRef<{ clientX: number; clientY: number } | null>(null)
+  const frameRef = useRef(0)
+  const windowsRef = useRef(windows)
+
+  useEffect(() => {
+    windowsRef.current = windows
+  }, [windows])
 
   const clampPosition = (x: number, y: number, width: number, height: number) => {
     const maxX = Math.max(0, window.innerWidth - width)
@@ -98,12 +107,26 @@ export function useWindowManager({
 
   const openWindow = useCallback(
     (id: AppId) => {
-      bumpWindowZ(id, (current, nextZ) => ({
-        ...current,
-        isOpen: true,
-        isMinimized: false,
-        zIndex: nextZ,
-      }))
+      bumpWindowZ(id, (current, nextZ) => {
+        // Keep windows fully on screen (minus the dock area) when the viewport is smaller than their bounds.
+        const width = Math.max(MIN_WINDOW_WIDTH, Math.min(current.width, window.innerWidth - 16))
+        const height = Math.max(
+          MIN_WINDOW_HEIGHT,
+          Math.min(current.height, window.innerHeight - WINDOW_TOP_OFFSET - DOCK_RESERVED_HEIGHT),
+        )
+        const { x, y } = clampPosition(current.x, current.y, width, height + DOCK_RESERVED_HEIGHT)
+
+        return {
+          ...current,
+          x,
+          y,
+          width,
+          height,
+          isOpen: true,
+          isMinimized: false,
+          zIndex: nextZ,
+        }
+      })
     },
     [bumpWindowZ],
   )
@@ -162,50 +185,50 @@ export function useWindowManager({
 
   const toggleHorizontalSnap = useCallback(
     (id: AppId, side: SnapSide) => {
-      bumpWindowZ(id, (current, nextZ) => {
-        const alreadySnappedSameSide =
-          snappedSideRef.current[id] === side && preSnapBoundsRef.current[id] !== null
+      // Decide outside the state updater: updaters must stay pure (StrictMode runs them twice).
+      const current = windowsRef.current[id]
+      const alreadySnappedSameSide =
+        snappedSideRef.current[id] === side && preSnapBoundsRef.current[id] !== null
 
-        if (alreadySnappedSameSide) {
-          const previous = preSnapBoundsRef.current[id]!
-          preSnapBoundsRef.current[id] = null
-          snappedSideRef.current[id] = null
-          return {
-            ...current,
-            ...previous,
-            isMaximized: false,
-            isMinimized: false,
-            zIndex: nextZ,
-          }
-        }
-
-        if (!current.isMaximized && !snappedSideRef.current[id]) {
-          preSnapBoundsRef.current[id] = {
-            x: current.x,
-            y: current.y,
-            width: current.width,
-            height: current.height,
-          }
-        }
-
-        const viewportWidth = window.innerWidth
-        const viewportHeight = window.innerHeight - WINDOW_TOP_OFFSET
-        const halfWidth = Math.max(MIN_WINDOW_WIDTH, Math.floor(viewportWidth / 2))
-        const x = side === 'left' ? 0 : Math.max(0, viewportWidth - halfWidth)
-
-        snappedSideRef.current[id] = side
-
-        return {
-          ...current,
-          x,
-          y: WINDOW_TOP_OFFSET,
-          width: halfWidth,
-          height: viewportHeight,
+      if (alreadySnappedSameSide) {
+        const previous = preSnapBoundsRef.current[id]!
+        preSnapBoundsRef.current[id] = null
+        snappedSideRef.current[id] = null
+        bumpWindowZ(id, (latest, nextZ) => ({
+          ...latest,
+          ...previous,
           isMaximized: false,
           isMinimized: false,
           zIndex: nextZ,
+        }))
+        return
+      }
+
+      if (!current.isMaximized && !snappedSideRef.current[id]) {
+        preSnapBoundsRef.current[id] = {
+          x: current.x,
+          y: current.y,
+          width: current.width,
+          height: current.height,
         }
-      })
+      }
+
+      const viewportWidth = window.innerWidth
+      const viewportHeight = window.innerHeight - WINDOW_TOP_OFFSET
+      const halfWidth = Math.max(MIN_WINDOW_WIDTH, Math.floor(viewportWidth / 2))
+      const x = side === 'left' ? 0 : Math.max(0, viewportWidth - halfWidth)
+      snappedSideRef.current[id] = side
+
+      bumpWindowZ(id, (latest, nextZ) => ({
+        ...latest,
+        x,
+        y: WINDOW_TOP_OFFSET,
+        width: halfWidth,
+        height: viewportHeight,
+        isMaximized: false,
+        isMinimized: false,
+        zIndex: nextZ,
+      }))
     },
     [bumpWindowZ],
   )
@@ -237,7 +260,15 @@ export function useWindowManager({
       if (!dragStateRef.current || isResizing) return
 
       const { id, offsetX, offsetY } = dragStateRef.current
-      moveWindow(id, event.clientX - offsetX, event.clientY - offsetY)
+      pendingMoveRef.current = { id, x: event.clientX - offsetX, y: event.clientY - offsetY }
+      if (!frameRef.current) {
+        frameRef.current = window.requestAnimationFrame(() => {
+          frameRef.current = 0
+          const pending = pendingMoveRef.current
+          pendingMoveRef.current = null
+          if (pending) moveWindow(pending.id, pending.x, pending.y)
+        })
+      }
 
       if (event.clientY <= SNAP_TOP_THRESHOLD) {
         setSnapPreviewTarget((prev) => (prev === 'top' ? prev : 'top'))
@@ -255,8 +286,19 @@ export function useWindowManager({
     [isResizing, moveWindow],
   )
 
+  const flushPendingFrame = useCallback(() => {
+    if (!frameRef.current) return
+    window.cancelAnimationFrame(frameRef.current)
+    frameRef.current = 0
+  }, [])
+
   const stopDragging = useCallback((event: ReactPointerEvent<HTMLElement>) => {
     if (!dragStateRef.current) return
+
+    flushPendingFrame()
+    const pendingMove = pendingMoveRef.current
+    pendingMoveRef.current = null
+    if (pendingMove) moveWindow(pendingMove.id, pendingMove.x, pendingMove.y)
 
     const { id } = dragStateRef.current
     const target = snapPreviewTarget
@@ -277,7 +319,7 @@ export function useWindowManager({
     if (target === 'left' || target === 'right') {
       toggleHorizontalSnap(id, target)
     }
-  }, [snapPreviewTarget, toggleHorizontalSnap, toggleMaximizeWindow])
+  }, [flushPendingFrame, moveWindow, snapPreviewTarget, toggleHorizontalSnap, toggleMaximizeWindow])
 
   const handleResizePointerDown = useCallback(
     (event: ReactPointerEvent<HTMLElement>, id: AppId, direction: ResizeDirection) => {
@@ -304,12 +346,12 @@ export function useWindowManager({
     [bringToFront, windows],
   )
 
-  const handleResizePointerMove = useCallback((event: ReactPointerEvent<HTMLElement>) => {
+  const applyResize = useCallback((clientX: number, clientY: number) => {
     const state = resizeStateRef.current
     if (!state) return
 
-    const dx = event.clientX - state.startClientX
-    const dy = event.clientY - state.startClientY
+    const dx = clientX - state.startClientX
+    const dy = clientY - state.startClientY
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
 
@@ -367,15 +409,34 @@ export function useWindowManager({
     }))
   }, [])
 
+  const handleResizePointerMove = useCallback(
+    (event: ReactPointerEvent<HTMLElement>) => {
+      if (!resizeStateRef.current) return
+      pendingResizeRef.current = { clientX: event.clientX, clientY: event.clientY }
+      if (frameRef.current) return
+      frameRef.current = window.requestAnimationFrame(() => {
+        frameRef.current = 0
+        const pending = pendingResizeRef.current
+        pendingResizeRef.current = null
+        if (pending) applyResize(pending.clientX, pending.clientY)
+      })
+    },
+    [applyResize],
+  )
+
   const stopResizing = useCallback((event: ReactPointerEvent<HTMLElement>) => {
     if (!resizeStateRef.current) return
+    flushPendingFrame()
+    const pendingResize = pendingResizeRef.current
+    pendingResizeRef.current = null
+    if (pendingResize) applyResize(pendingResize.clientX, pendingResize.clientY)
     resizeStateRef.current = null
     setIsResizing(false)
 
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId)
     }
-  }, [])
+  }, [applyResize, flushPendingFrame])
 
   return {
     windows,
