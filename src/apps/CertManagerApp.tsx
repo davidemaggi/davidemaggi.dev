@@ -1,220 +1,243 @@
-import { useMemo, useState } from 'react'
-import { useIsPhone } from '../mobile-shell/hooks/useIsPhone'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { getCertificateFolders } from '../desktop/resources/certManager'
 import type { CertificateItem } from '../desktop/resources/certManager/types'
 import type { DesktopAppProps, Locale } from '../desktop/types'
 import { resolveAssetPath } from '../desktop/utils/assetPath'
+import { Icon } from '../desktop-shell/components/Icon'
 
-const CERT_ICON_SRC = '/icons/certificate.svg'
+const ALL_FOLDERS = 'all'
 
-export function CertManagerApp({ i18nApi }: DesktopAppProps) {
+type CertificateWithFolder = CertificateItem & { folderId: string; folderLabel: string }
+
+export function CertManagerApp({ i18nApi, launchIntent }: DesktopAppProps) {
   const t = i18nApi?.t ?? ((key: string) => key)
   const contentLocale: Locale = i18nApi?.locale === 'en' ? 'en' : 'it'
   const dateLocale = contentLocale === 'en' ? 'en-US' : 'it-IT'
 
   const folders = useMemo(() => getCertificateFolders(contentLocale), [contentLocale])
-  const [expandedFolderId, setExpandedFolderId] = useState<string | null>(folders[0]?.id ?? null)
-  const [selectedCertId, setSelectedCertId] = useState<string | null>(folders[0]?.certificates[0]?.id ?? null)
-  const [lastActionLabel, setLastActionLabel] = useState<string | null>(null)
-  const [isNavOpen, setIsNavOpen] = useState(false)
-  const isPhone = useIsPhone()
+  const certificates = useMemo<CertificateWithFolder[]>(
+    () =>
+      folders
+        .flatMap((folder) =>
+          folder.certificates.map((cert) => ({ ...cert, folderId: folder.id, folderLabel: folder.label })),
+        )
+        .sort((a, b) => b.validFrom.localeCompare(a.validFrom)),
+    [folders],
+  )
 
-  const selectedFolder = folders.find((folder) => folder.id === expandedFolderId) ?? folders[0] ?? null
+  const [folderFilter, setFolderFilter] = useState(ALL_FOLDERS)
+  const [query, setQuery] = useState('')
+  const [selectedCertId, setSelectedCertId] = useState<string | null>(null)
+  const [hasCopiedSerial, setHasCopiedSerial] = useState(false)
+  const [appliedLaunchToken, setAppliedLaunchToken] = useState<number | null>(null)
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null)
 
-  const selectedCert: CertificateItem | null =
-    folders.flatMap((folder) => folder.certificates).find((cert) => cert.id === selectedCertId)
-      ?? selectedFolder?.certificates[0]
-      ?? null
+  // Opening the app from the command palette selects the requested certificate.
+  if (launchIntent?.appId === 'certManager' && launchIntent.query && launchIntent.token !== appliedLaunchToken) {
+    setAppliedLaunchToken(launchIntent.token)
+    if (certificates.some((cert) => cert.id === launchIntent.query)) {
+      setSelectedCertId(launchIntent.query)
+    }
+  }
 
-  const formatDate = (raw: string) => {
+  const selectedCert = certificates.find((cert) => cert.id === selectedCertId) ?? null
+
+  useEffect(() => {
+    if (!selectedCert) return
+    closeButtonRef.current?.focus()
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setSelectedCertId(null)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [selectedCert])
+
+  useEffect(() => {
+    if (!hasCopiedSerial) return
+    const timer = window.setTimeout(() => setHasCopiedSerial(false), 1600)
+    return () => window.clearTimeout(timer)
+  }, [hasCopiedSerial])
+
+  const visibleCertificates = useMemo(() => {
+    const normalized = query.trim().toLowerCase()
+    return certificates.filter((cert) => {
+      const folderOk = folderFilter === ALL_FOLDERS || cert.folderId === folderFilter
+      const queryOk =
+        !normalized ||
+        cert.commonName.toLowerCase().includes(normalized) ||
+        cert.issuedBy.toLowerCase().includes(normalized)
+      return folderOk && queryOk
+    })
+  }, [certificates, folderFilter, query])
+
+  const formatDate = (
+    raw: string,
+    options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: '2-digit' },
+  ) => {
     const date = new Date(raw)
     if (Number.isNaN(date.getTime())) return raw
-    return new Intl.DateTimeFormat(dateLocale, {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
-    }).format(date)
+    return new Intl.DateTimeFormat(dateLocale, options).format(date)
   }
 
-  const handleToolbarAction = (actionLabel: string) => {
-    setLastActionLabel(actionLabel)
+  const copySerial = async (serial: string) => {
+    try {
+      await navigator.clipboard.writeText(serial)
+      setHasCopiedSerial(true)
+    } catch {
+      setHasCopiedSerial(false)
+    }
   }
+
+  const issuerCount = new Set(certificates.map((cert) => cert.issuedBy)).size
+  const folderTabs = [
+    { id: ALL_FOLDERS, label: t('certManager.folder.all'), count: certificates.length },
+    ...folders.map((folder) => ({ id: folder.id, label: folder.label, count: folder.certificates.length })),
+  ]
 
   return (
-    <div className="relative flex h-full bg-(--app-surface-1) text-(--window-text)">
-      {isPhone && isNavOpen ? (
-        <button
-          type="button"
-          className="absolute inset-0 z-10 bg-black/30"
-          aria-label={t('certManager.nav.close')}
-          onClick={() => setIsNavOpen(false)}
-        />
-      ) : null}
-
-      <aside className={`${isPhone ? 'absolute inset-y-0 left-0 z-20 transition-transform duration-200' : 'relative shrink-0'} w-72 border-r border-(--app-border) bg-(--app-surface-2) ${isPhone ? (isNavOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0'}`}>
-        <div className="flex items-center justify-between gap-2 border-b border-(--app-border) px-3 py-2 text-sm font-semibold">
-          <span>{t('certManager.folders')}</span>
-          <button
-            type="button"
-            className={`rounded border border-(--app-border) px-2 py-0.5 text-xs ${isPhone ? '' : 'hidden'}`}
-            onClick={() => setIsNavOpen(false)}
-          >
-            {t('certManager.nav.close')}
-          </button>
+    <div className="@container relative flex h-full flex-col bg-(--app-surface-1) text-(--window-text)">
+      <header className="app-header shrink-0">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="app-header__title">{t('certManager.heading')}</h1>
+            <p className="app-header__subtitle">
+              {t('certManager.subheading', { count: String(certificates.length), issuers: String(issuerCount) })}
+            </p>
+          </div>
+          <label className="relative w-full @lg:w-64">
+            <span className="sr-only">{t('certManager.search')}</span>
+            <Icon name="search" className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-(--app-muted)" />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={t('certManager.search')}
+              className="app-input w-full"
+            />
+          </label>
         </div>
-        <div className="max-h-full overflow-auto p-2">
-          {folders.map((folder) => {
-            const isExpanded = expandedFolderId === folder.id
-            return (
-              <div key={folder.id} className="mb-2">
-                <button
-                  type="button"
-                  className="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-(--app-surface-3)"
-                  onClick={() => setExpandedFolderId(isExpanded ? null : folder.id)}
-                >
-                  <span className="flex min-w-0 items-center gap-1.5">
-                    <img src={resolveAssetPath('/icons/folder.svg')} alt="Folder icon" className="h-4 w-4 shrink-0 object-contain" />
-                    <span className="truncate">{folder.label}</span>
+
+        <div className="mt-3 flex flex-wrap gap-1.5" role="group" aria-label={t('certManager.folders')}>
+          {folderTabs.map((folder) => (
+            <button
+              key={folder.id}
+              type="button"
+              aria-pressed={folderFilter === folder.id}
+              className={`app-chip ${folderFilter === folder.id ? 'app-chip--active' : ''}`}
+              onClick={() => setFolderFilter(folder.id)}
+            >
+              {folder.label}
+              <span className="tabular-nums opacity-70">{folder.count}</span>
+            </button>
+          ))}
+        </div>
+      </header>
+
+      <div className="min-h-0 flex-1 overflow-auto p-4 @2xl:p-5">
+        {visibleCertificates.length ? (
+          <ul className="m-0 grid list-none grid-cols-1 gap-3 p-0 @xl:grid-cols-2 @4xl:grid-cols-3">
+            {visibleCertificates.map((cert, index) => (
+              <li key={cert.id} style={{ '--i': Math.min(index, 12) } as CSSProperties} className="cert-card-wrap">
+                <button type="button" className="cert-card" onClick={() => setSelectedCertId(cert.id)}>
+                  <span className="cert-card__logo">
+                    <img src={resolveAssetPath(cert.issuedByLogo?.src ?? '/icons/certificate.svg')} alt="" />
                   </span>
-                  <span className="text-(--app-muted)">{isExpanded ? '-' : '+'}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[13.5px] leading-snug font-medium line-clamp-2">{cert.commonName}</span>
+                    <span className="mt-1 block truncate text-xs text-(--app-muted)">{cert.issuedBy}</span>
+                  </span>
+                  <span className="cert-card__year">{formatDate(cert.validFrom, { year: 'numeric' })}</span>
                 </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="grid h-full place-items-center text-center text-sm text-(--app-muted)">
+            <p className="m-0">{query ? t('certManager.noResults', { query }) : t('certManager.empty')}</p>
+          </div>
+        )}
+      </div>
 
-                {isExpanded ? (
-                  <div className="mt-1 space-y-1 pl-3">
-                    {folder.certificates.map((cert) => {
-                      const isActive = cert.id === selectedCert?.id
-                      return (
-                        <button
-                          key={cert.id}
-                          type="button"
-                          className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-xs ${isActive ? 'bg-blue-500/20 text-(--window-text)' : 'hover:bg-(--app-surface-3)'}`}
-                          onClick={() => {
-                            setSelectedCertId(cert.id)
-                            setIsNavOpen(false)
-                          }}
-                        >
-                          <img src={resolveAssetPath(CERT_ICON_SRC)} alt="Certificate icon" className="h-3.5 w-3.5 shrink-0 object-contain" />
-                          <span className="truncate">{cert.commonName}</span>
-                        </button>
-                      )
-                    })}
-                  </div>
-                ) : null}
+      {selectedCert ? (
+        <div className="cert-sheet-backdrop" onClick={() => setSelectedCertId(null)}>
+          <section
+            className="cert-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cert-sheet-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              ref={closeButtonRef}
+              type="button"
+              className="cert-sheet__close"
+              onClick={() => setSelectedCertId(null)}
+              aria-label={t('certManager.nav.close')}
+            >
+              <Icon name="x" className="h-4 w-4" />
+            </button>
+
+            <div className="cert-diploma">
+              <div className="cert-diploma__seal" aria-hidden="true">
+                <Icon name="award" className="h-7 w-7" strokeWidth={1.8} />
               </div>
-            )
-          })}
-        </div>
-      </aside>
-
-      <section className="min-w-0 flex-1 overflow-auto p-4">
-        <div className={`mb-3 ${isPhone ? '' : 'hidden'}`}>
-          <button
-            type="button"
-            className="rounded border border-(--app-border) bg-(--app-surface-2) px-2.5 py-1.5 text-xs"
-            onClick={() => setIsNavOpen(true)}
-          >
-            {t('certManager.nav.open')}
-          </button>
-        </div>
-
-        <div className="mb-4 flex flex-wrap items-center gap-2 border-b border-(--app-border) pb-3">
-          <button
-            type="button"
-            className="rounded border border-(--app-border) bg-(--app-surface-2) px-2.5 py-1 text-xs hover:bg-(--app-surface-3)"
-            onClick={() => handleToolbarAction(t('certManager.action.import'))}
-          >
-            {t('certManager.action.import')}
-          </button>
-          <button
-            type="button"
-            className="rounded border border-(--app-border) bg-(--app-surface-2) px-2.5 py-1 text-xs hover:bg-(--app-surface-3)"
-            onClick={() => handleToolbarAction(t('certManager.action.export'))}
-            disabled={!selectedCert}
-          >
-            {t('certManager.action.export')}
-          </button>
-          <button
-            type="button"
-            className="rounded border border-(--app-border) bg-(--app-surface-2) px-2.5 py-1 text-xs hover:bg-(--app-surface-3)"
-            onClick={() => handleToolbarAction(t('certManager.action.delete'))}
-            disabled={!selectedCert}
-          >
-            {t('certManager.action.delete')}
-          </button>
-          <button
-            type="button"
-            className="rounded border border-(--app-border) bg-(--app-surface-2) px-2.5 py-1 text-xs hover:bg-(--app-surface-3)"
-            onClick={() => handleToolbarAction(t('certManager.action.refresh'))}
-          >
-            {t('certManager.action.refresh')}
-          </button>
-          {lastActionLabel ? (
-            <span className="ml-auto text-xs text-(--app-muted)">
-              {t('certManager.action.status', { action: lastActionLabel })}
-            </span>
-          ) : null}
-        </div>
-
-        {selectedCert ? (
-          <>
-            <div className="mb-4 flex items-start gap-3 border-b border-(--app-border) pb-3">
-              <img src={resolveAssetPath(CERT_ICON_SRC)} alt="Certificate icon" className="h-14 w-14 shrink-0 object-contain" />
-              <div className="min-w-0">
-                <h2 className="truncate text-lg font-semibold">{selectedCert.commonName}</h2>
-                <p className="text-sm text-(--app-muted)">{selectedFolder?.label}</p>
+              <p className="cert-diploma__eyebrow">{t('certManager.certifies')}</p>
+              <p className="cert-diploma__name">Davide Maggi</p>
+              <p className="m-0 text-xs text-(--app-muted)">{t('certManager.completed')}</p>
+              <h2 id="cert-sheet-title" className="cert-diploma__title">{selectedCert.commonName}</h2>
+              <div className="mt-4 flex items-center justify-center gap-2 text-sm">
+                {selectedCert.issuedByLogo ? (
+                  <span className="cert-card__logo !h-8 !w-8 !rounded-lg !p-1.5">
+                    <img src={resolveAssetPath(selectedCert.issuedByLogo.src)} alt="" />
+                  </span>
+                ) : null}
+                <span className="font-medium">{selectedCert.issuedBy}</span>
               </div>
             </div>
 
-            <dl className="grid grid-cols-[170px_1fr] gap-y-1 text-sm sm:grid-cols-[200px_1fr]">
-              <dt className="text-(--app-muted)">{t('certManager.field.issuedBy')}</dt>
-              <dd className="inline-flex min-w-0 items-center gap-1.5 truncate">
-                {selectedCert.issuedByLogo ? (
-                  <img
-                    src={resolveAssetPath(selectedCert.issuedByLogo.src)}
-                    alt={selectedCert.issuedByLogo.alt}
-                    className="h-4 w-4 shrink-0 object-contain"
-                  />
-                ) : null}
-                <span className="truncate">{selectedCert.issuedBy}</span>
-              </dd>
-
-              <dt className="text-(--app-muted)">{t('certManager.field.validFrom')}</dt>
-              <dd>{formatDate(selectedCert.validFrom)}</dd>
-
-              {selectedCert.validTo ? (
-                <>
-                  <dt className="text-(--app-muted)">{t('certManager.field.validTo')}</dt>
-                  <dd>{formatDate(selectedCert.validTo)}</dd>
-                </>
-              ) : null}
-
+            <dl className="cert-fields">
+              <div>
+                <dt>{t('certManager.field.validFrom')}</dt>
+                <dd>{formatDate(selectedCert.validFrom)}</dd>
+              </div>
+              <div>
+                <dt>{t('certManager.field.validTo')}</dt>
+                <dd>{selectedCert.validTo ? formatDate(selectedCert.validTo) : t('certManager.noExpiry')}</dd>
+              </div>
+              <div>
+                <dt>{t('certManager.field.folder')}</dt>
+                <dd>{selectedCert.folderLabel}</dd>
+              </div>
               {selectedCert.serialNumber ? (
-                <>
-                  <dt className="text-(--app-muted)">{t('certManager.field.serialNumber')}</dt>
-                  <dd className="truncate">{selectedCert.serialNumber}</dd>
-                </>
-              ) : null}
-
-              {selectedCert.thumbprint ? (
-                <>
-                  <dt className="text-(--app-muted)">{t('certManager.field.thumbprint')}</dt>
-                  <dd className="break-all">{selectedCert.thumbprint}</dd>
-                </>
+                <div>
+                  <dt>{t('certManager.field.serialNumber')}</dt>
+                  <dd className="flex items-center gap-2">
+                    <span className="truncate font-mono text-xs">{selectedCert.serialNumber}</span>
+                    <button
+                      type="button"
+                      className="profile-copy-btn"
+                      onClick={() => copySerial(selectedCert.serialNumber ?? '')}
+                    >
+                      <Icon name={hasCopiedSerial ? 'check' : 'copy'} className="h-3.5 w-3.5" />
+                      {hasCopiedSerial ? t('profile.copied') : t('profile.action.copy')}
+                    </button>
+                  </dd>
+                </div>
               ) : null}
             </dl>
 
             {selectedCert.description?.trim() ? (
-              <div className="mt-6 rounded border border-(--app-border) bg-(--app-surface-2) p-3">
-                <h3 className="mb-2 text-sm font-semibold">{t('certManager.description')}</h3>
-                <p className="text-sm leading-6 text-(--window-text)">{selectedCert.description.trim()}</p>
-              </div>
+              <p className="m-0 mt-4 text-sm leading-relaxed">{selectedCert.description.trim()}</p>
             ) : null}
-          </>
-        ) : (
-          <p className="text-(--app-muted)">{t('certManager.empty')}</p>
-        )}
-      </section>
+
+            <p className="cert-verified">
+              <Icon name="check" className="h-3.5 w-3.5" strokeWidth={3} />
+              {t('certManager.verified')}
+            </p>
+          </section>
+        </div>
+      ) : null}
     </div>
   )
 }
-

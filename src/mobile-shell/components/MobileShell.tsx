@@ -12,7 +12,8 @@ import type {
   DesktopPreferencesApi,
   WindowState,
 } from '../../desktop/types'
-import { renderAppIcon, resolveAppIcon } from '../../desktop-shell/utils/icons'
+import { isBareIcon, renderAppIcon, resolveAppIcon } from '../../desktop-shell/utils/icons'
+import { MobileProfileCard } from './MobileProfileCard'
 
 type MobileShellProps = {
   now: Date
@@ -48,17 +49,6 @@ const EDGE_SWIPE_START = 28
 const SWIPE_CLOSE_THRESHOLD = 90
 const SWIPE_SWITCH_THRESHOLD = 72
 
-const MOBILE_ICON_OVERRIDES: Record<AppId, AppIcon> = {
-  terminal: { kind: 'image', src: '/icons/terminal.svg', alt: 'Terminal icon' },
-  about: { kind: 'image', src: '/icons/about.svg', alt: 'About icon' },
-  help: { kind: 'image', src: '/icons/app-store.svg', alt: 'App Store icon' },
-  settings: { kind: 'image', src: '/icons/gear.svg', alt: 'Settings icon' },
-  calendar: { kind: 'image', src: '/icons/calendar.svg', alt: 'Calendar icon' },
-  certManager: { kind: 'image', src: '/icons/certificate.svg', alt: 'Certificate icon' },
-  arkanoid: { kind: 'image', src: '/icons/gtiout.svg', alt: 'GtiOut icon' },
-  easterEgg: { kind: 'image', src: '/icons/spark.svg', alt: 'Secret access icon' },
-}
-
 export function MobileShell({
   now,
   t,
@@ -92,12 +82,7 @@ export function MobileShell({
 
   const activeApp = foregroundApps[0] ?? null
 
-  const resolveMobileIcon = (id: AppId): AppIcon => {
-    const forcedIcon = MOBILE_ICON_OVERRIDES[id]
-    if (forcedIcon) return forcedIcon
-
-    return resolveAppIcon(id, preferences)
-  }
+  const resolveMobileIcon = (id: AppId): AppIcon => resolveAppIcon(id, preferences)
 
   const resetSwipe = () => {
     swipeStartXRef.current = null
@@ -214,8 +199,9 @@ export function MobileShell({
       <section className="mobile-safe-content px-4">
         <div className="mb-5 px-1 text-(--desktop-icon-color)">
           <p className="m-0 text-sm capitalize opacity-85">{formatMobileDate(now, i18nApi.locale)}</p>
-          <h1 className="m-0 text-[1.7rem] leading-tight font-semibold">{formatMobileTime(now)}</h1>
+          <p className="widget__clock m-0 text-[2.4rem]">{formatMobileTime(now)}</p>
         </div>
+        <MobileProfileCard locale={i18nApi.locale} now={now} t={t} onOpenApp={onOpenApp} />
         <div className="grid grid-cols-4 gap-4">
           {discoverablePlugins.map((plugin) => (
             <button
@@ -223,8 +209,11 @@ export function MobileShell({
               className="mobile-home-app flex flex-col items-center gap-1.5 rounded-2xl p-1.5 text-(--desktop-icon-color)"
               onClick={() => onOpenApp(plugin.id)}
             >
-              <span className="mobile-home-app__icon grid h-12 w-12 place-items-center rounded-[1rem]">
-                {renderAppIcon(resolveMobileIcon(plugin.id), 'h-8.5 w-8.5 object-contain')}
+              <span className={`grid h-14 w-14 place-items-center rounded-[23.4%] ${isBareIcon(resolveMobileIcon(plugin.id)) ? 'mobile-home-app__icon--bare' : 'mobile-home-app__icon'}`}>
+                {renderAppIcon(
+                  resolveMobileIcon(plugin.id),
+                  isBareIcon(resolveMobileIcon(plugin.id)) ? 'h-full w-full object-contain' : 'h-9 w-9 object-contain',
+                )}
               </span>
               <span className="max-w-full truncate text-[11px] leading-tight">{t(plugin.titleKey)}</span>
             </button>
@@ -239,16 +228,19 @@ export function MobileShell({
         {discoverablePlugins.slice(0, 5).map((plugin) => (
           <button
             key={plugin.id}
-            className={`mobile-home-dock__app grid h-10 w-10 place-items-center rounded-xl ${windows[plugin.id].isOpen ? 'mobile-home-dock__app--active' : ''}`}
+            className={`grid h-12 w-12 place-items-center rounded-[23.4%] ${isBareIcon(resolveMobileIcon(plugin.id)) ? '' : 'mobile-home-dock__app'} ${windows[plugin.id].isOpen ? 'mobile-home-dock__app--active' : ''}`}
             onClick={() => onOpenApp(plugin.id)}
             aria-label={t(plugin.titleKey)}
           >
-            {renderAppIcon(resolveMobileIcon(plugin.id), 'h-6 w-6 object-contain')}
+            {renderAppIcon(
+              resolveMobileIcon(plugin.id),
+              isBareIcon(resolveMobileIcon(plugin.id)) ? 'h-full w-full object-contain' : 'h-7 w-7 object-contain',
+            )}
           </button>
         ))}
         <button
           type="button"
-          className="mobile-home-dock__switcher ml-auto rounded-lg border border-white/20 bg-white/10 px-2.5 py-2 text-xs text-(--desktop-icon-color)"
+          className="mobile-home-dock__switcher ml-auto rounded-lg border border-white/20 bg-white/10 px-2.5 py-2 text-xs text-(--glass-text)"
           onClick={() => setIsSwitcherOpen((prev) => !prev)}
           aria-label={t('mobile.action.switcher')}
         >

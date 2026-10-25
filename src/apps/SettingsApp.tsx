@@ -1,300 +1,256 @@
 import { useEffect, useState } from 'react'
-import type { ChangeEvent } from 'react'
-import { useIsPhone } from '../mobile-shell/hooks/useIsPhone'
-import type {
-  ClockDateFormat,
-  ClockHourFormat,
-  DesktopAppProps,
-  DesktopIconSize,
-  Locale,
-  ThemeMode,
-  WallpaperPreset,
-} from '../desktop/types'
-import { resolveAssetPath } from '../desktop/utils/assetPath'
+import type { ReactNode } from 'react'
+import type { DesktopAppProps } from '../desktop/types'
+import { DaveOsLogo } from '../desktop-shell/components/DaveOsLogo'
+import { Icon } from '../desktop-shell/components/Icon'
+import type { IconName } from '../desktop-shell/components/Icon'
 
 type SettingsPage = 'theme' | 'localization' | 'softwareUpdate'
+type UpdateState = 'idle' | 'checking' | 'done'
 
-const ICON_SIZE_PREVIEW_CLASSES: Record<DesktopIconSize, { icon: string; label: string }> = {
-  small: { icon: 'h-8 w-8', label: 'text-[11px]' },
-  normal: { icon: 'h-10 w-10', label: 'text-xs' },
-  large: { icon: 'h-12 w-12', label: 'text-sm' },
-  xl: { icon: 'h-14 w-14', label: 'text-[15px]' },
-}
+const PAGES: ReadonlyArray<{ id: SettingsPage; icon: IconName; labelKey: string }> = [
+  { id: 'theme', icon: 'palette', labelKey: 'settings.nav.theme' },
+  { id: 'localization', icon: 'globe', labelKey: 'settings.nav.localization' },
+  { id: 'softwareUpdate', icon: 'sparkles', labelKey: 'settings.nav.softwareUpdate' },
+]
+
+const LOCALE_FLAGS: Record<string, string> = { it: '/flags/italy.svg', en: '/flags/uk.svg' }
+const LOCALE_NAMES: Record<string, string> = { it: 'Italiano', en: 'English' }
+
+const Group = ({ title, help, children }: { title: string; help?: string; children: ReactNode }) => (
+  <section className="settings-group">
+    <h3 className="settings-group__title">{title}</h3>
+    {help ? <p className="settings-group__help">{help}</p> : null}
+    <div className="mt-3">{children}</div>
+  </section>
+)
 
 export function SettingsApp({ i18nApi, preferencesApi, launchIntent }: DesktopAppProps) {
   const [activePage, setActivePage] = useState<SettingsPage>('theme')
-  const [isNavOpen, setIsNavOpen] = useState(false)
-  const isPhone = useIsPhone()
+  const [appliedLaunchToken, setAppliedLaunchToken] = useState<number | null>(null)
+  const [updateState, setUpdateState] = useState<UpdateState>('idle')
+  const [lastCheck, setLastCheck] = useState(() => new Date())
+
+  if (launchIntent?.appId === 'settings' && launchIntent.token !== appliedLaunchToken) {
+    setAppliedLaunchToken(launchIntent.token)
+    if (launchIntent.query === 'software-update') setActivePage('softwareUpdate')
+  }
 
   useEffect(() => {
-    if (launchIntent?.appId !== 'settings') return
-    if (launchIntent.query === 'software-update') {
-      setActivePage('softwareUpdate')
-      setIsNavOpen(false)
-    }
-  }, [launchIntent])
+    if (updateState !== 'checking') return
+    const timer = window.setTimeout(() => {
+      setUpdateState('done')
+      setLastCheck(new Date())
+    }, 1600)
+    return () => window.clearTimeout(timer)
+  }, [updateState])
 
   if (!i18nApi || !preferencesApi) {
     return <div className="p-5 text-left text-(--window-text)">Settings APIs unavailable.</div>
   }
 
-  const handleLocaleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    i18nApi.setLocale(event.target.value as Locale)
-  }
+  const { t } = i18nApi
+  const { preferences } = preferencesApi
+  const version = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '0.0.0'
+  const dateLocale = i18nApi.locale === 'it' ? 'it-IT' : 'en-US'
+  const activeMeta = PAGES.find((page) => page.id === activePage) ?? PAGES[0]
 
-  const handleThemeChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    preferencesApi.setTheme(event.target.value as ThemeMode)
-  }
-
-  const handleWallpaperChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    preferencesApi.setWallpaper(event.target.value as WallpaperPreset)
-  }
-
-  const handleDesktopIconSizeChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    preferencesApi.setDesktopIconSize(event.target.value as DesktopIconSize)
-  }
-
-  const handleClockHourFormatChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    preferencesApi.setClockHourFormat(event.target.value as ClockHourFormat)
-  }
-
-  const handleClockDateFormatChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    preferencesApi.setClockDateFormat(event.target.value as ClockDateFormat)
-  }
   return (
-    <div className="relative flex h-full bg-(--app-surface-1) text-(--window-text)">
-      {isPhone && isNavOpen ? (
-        <button
-          type="button"
-          className="absolute inset-0 z-10 bg-black/30"
-          aria-label={i18nApi.t('settings.nav.close')}
-          onClick={() => setIsNavOpen(false)}
-        />
-      ) : null}
+    <div className="@container flex h-full bg-(--app-surface-1) text-(--window-text)">
+      <nav className="settings-nav hidden @2xl:flex" aria-label={t('settings.heading')}>
+        <p className="settings-nav__heading">{t('settings.heading')}</p>
+        {PAGES.map((page) => (
+          <button
+            key={page.id}
+            type="button"
+            className="settings-nav__item"
+            aria-current={activePage === page.id ? 'page' : undefined}
+            onClick={() => setActivePage(page.id)}
+          >
+            <span className={`settings-nav__icon settings-nav__icon--${page.id}`}>
+              <Icon name={page.icon} className="h-4 w-4" />
+            </span>
+            {t(page.labelKey)}
+          </button>
+        ))}
+      </nav>
 
-      <aside className={`${isPhone ? 'absolute inset-y-0 left-0 z-20 transition-transform duration-200' : 'relative shrink-0'} w-64 border-r border-(--app-border) bg-(--app-surface-2) p-3 ${isPhone ? (isNavOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0'}`}>
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <h1 className="text-lg font-semibold">{i18nApi.t('settings.heading')}</h1>
-          <button
-            type="button"
-            className={`rounded border border-(--app-border) px-2 py-1 text-xs ${isPhone ? '' : 'hidden'}`}
-            onClick={() => setIsNavOpen(false)}
-          >
-            {i18nApi.t('settings.nav.close')}
-          </button>
-        </div>
-        <nav className="space-y-1" aria-label={i18nApi.t('settings.heading')}>
-          <button
-            type="button"
-            className={`flex w-full items-center gap-2 rounded px-2.5 py-2 text-left text-sm ${activePage === 'theme' ? 'bg-(--app-surface-3) font-semibold' : 'hover:bg-(--app-surface-3)'}`}
-            onClick={() => {
-              setActivePage('theme')
-              setIsNavOpen(false)
-            }}
-          >
-            <img src={resolveAssetPath('/icons/gear.svg')} alt="Theme section icon" className="h-4 w-4 object-contain" />
-            {i18nApi.t('settings.nav.theme')}
-          </button>
-          <button
-            type="button"
-            className={`flex w-full items-center gap-2 rounded px-2.5 py-2 text-left text-sm ${activePage === 'localization' ? 'bg-(--app-surface-3) font-semibold' : 'hover:bg-(--app-surface-3)'}`}
-            onClick={() => {
-              setActivePage('localization')
-              setIsNavOpen(false)
-            }}
-          >
-            <img src={resolveAssetPath('/icons/translate.svg')} alt="Localization section icon" className="h-4 w-4 object-contain" />
-            {i18nApi.t('settings.nav.localization')}
-          </button>
-          <button
-            type="button"
-            className={`flex w-full items-center gap-2 rounded px-2.5 py-2 text-left text-sm ${activePage === 'softwareUpdate' ? 'bg-(--app-surface-3) font-semibold' : 'hover:bg-(--app-surface-3)'}`}
-            onClick={() => {
-              setActivePage('softwareUpdate')
-              setIsNavOpen(false)
-            }}
-          >
-            <img src={resolveAssetPath('/icons/spark.svg')} alt="Software update section icon" className="h-4 w-4 object-contain" />
-            {i18nApi.t('settings.nav.softwareUpdate')}
-          </button>
-        </nav>
-      </aside>
-
-      <section className="min-w-0 flex-1 overflow-auto p-5 text-left">
-        <div className={`mb-3 ${isPhone ? '' : 'hidden'}`}>
-          <button
-            type="button"
-            className="rounded border border-(--app-border) bg-(--app-surface-2) px-2.5 py-1.5 text-xs"
-            onClick={() => setIsNavOpen(true)}
-          >
-            {i18nApi.t('settings.nav.open')}
-          </button>
-        </div>
-
-        {activePage === 'theme' ? (
-          <>
-            <h2 className="mb-1 text-xl font-semibold">{i18nApi.t('settings.page.theme.title')}</h2>
-            <p className="mb-4 text-(--app-muted)">{i18nApi.t('settings.page.theme.subtitle')}</p>
-
-            <label className="mb-3 flex max-w-64 flex-col gap-1.5">
-              <span>{i18nApi.t('settings.theme.label')}</span>
-              <select
-                className="h-8.5 rounded-lg border border-(--app-border) bg-(--app-surface-2) px-2.5 text-(--window-text)"
-                value={preferencesApi.preferences.theme}
-                onChange={handleThemeChange}
+      <section className="min-w-0 flex-1 overflow-auto">
+        <div className="mx-auto max-w-3xl px-5 py-5 @2xl:px-7">
+          <div className="segmented mb-4 flex w-full @2xl:hidden" role="tablist" aria-label={t('settings.heading')}>
+            {PAGES.map((page) => (
+              <button
+                key={page.id}
+                type="button"
+                role="tab"
+                aria-selected={activePage === page.id}
+                className="segmented__item min-w-0 flex-1 justify-center"
+                aria-label={t(page.labelKey)}
+                onClick={() => setActivePage(page.id)}
               >
-                {preferencesApi.themes.map((theme) => (
-                  <option key={theme} value={theme}>
-                    {i18nApi.t(`theme.${theme}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <p>{i18nApi.t('settings.theme.help')}</p>
+                <Icon name={page.icon} className="h-3.5 w-3.5" />
+                <span className="hidden truncate @lg:inline">{t(page.labelKey)}</span>
+              </button>
+            ))}
+          </div>
 
-            <label className="mb-3 mt-4 flex max-w-64 flex-col gap-1.5">
-              <span>{i18nApi.t('settings.wallpaper.label')}</span>
-              <select
-                className="h-8.5 rounded-lg border border-(--app-border) bg-(--app-surface-2) px-2.5 text-(--window-text)"
-                value={preferencesApi.preferences.wallpaper}
-                onChange={handleWallpaperChange}
-              >
-                {preferencesApi.wallpapers.map((wallpaper) => (
-                  <option key={wallpaper} value={wallpaper}>
-                    {i18nApi.t(`wallpaper.${wallpaper}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <p>{i18nApi.t('settings.wallpaper.help')}</p>
+          <h2 className="app-header__title">{t(activeMeta.labelKey)}</h2>
+          <p className="app-header__subtitle mb-5">{t(`settings.page.${activePage}.subtitle`)}</p>
 
-            <label className="mb-3 mt-4 flex max-w-64 flex-col gap-1.5">
-              <span>{i18nApi.t('settings.desktopIconSize.label')}</span>
-              <select
-                className="h-8.5 rounded-lg border border-(--app-border) bg-(--app-surface-2) px-2.5 text-(--window-text)"
-                value={preferencesApi.preferences.desktopIconSize}
-                onChange={handleDesktopIconSizeChange}
-              >
-                {preferencesApi.desktopIconSizes.map((size) => (
-                  <option key={size} value={size}>
-                    {i18nApi.t(`settings.desktopIconSize.${size}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <p>{i18nApi.t('settings.desktopIconSize.help')}</p>
-
-            <div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-2.5">
-              {preferencesApi.desktopIconSizes.map((size) => {
-                const previewClasses = ICON_SIZE_PREVIEW_CLASSES[size]
-                const isActive = preferencesApi.preferences.desktopIconSize === size
-
-                return (
-                  <button
-                    type="button"
-                    key={size}
-                    className={`rounded-lg border p-3 text-left transition ${
-                      isActive
-                        ? 'border-blue-500 bg-blue-500/15'
-                        : 'border-(--app-border) bg-(--app-surface-2) hover:bg-(--app-surface-3)'
-                    }`}
-                    onClick={() => preferencesApi.setDesktopIconSize(size)}
-                    aria-pressed={isActive}
-                  >
-                    <span className="mb-2 flex items-center justify-between gap-2 text-xs text-(--app-muted)">
-                      <span>{i18nApi.t(`settings.desktopIconSize.${size}`)}</span>
-                      {isActive ? (
-                        <span className="rounded-full border border-blue-400/60 bg-blue-500/20 px-2 py-0.5 text-[10px] font-semibold text-blue-200">
-                          {i18nApi.t('settings.desktopIconSize.active')}
-                        </span>
-                      ) : null}
-                    </span>
-                    <span className="flex w-full flex-col items-center gap-1.5 rounded-md border border-transparent p-1 text-(--window-text)">
-                      <span className={`grid place-items-center ${previewClasses.icon}`}>
-                        <img src={resolveAssetPath('/icons/about.svg')} alt="Desktop icon preview" className="h-full w-full object-contain" />
+          {activePage === 'theme' ? (
+            <div className="flex flex-col gap-4">
+              <Group title={t('settings.theme.label')} help={t('settings.theme.help')}>
+                <div className="grid grid-cols-2 gap-3">
+                  {preferencesApi.themes.map((theme) => (
+                    <button
+                      key={theme}
+                      type="button"
+                      className="settings-option"
+                      aria-pressed={preferences.theme === theme}
+                      onClick={() => preferencesApi.setTheme(theme)}
+                    >
+                      <span className={`theme-preview theme-preview--${theme}`} aria-hidden="true">
+                        <span className="theme-preview__bar" />
+                        <span className="theme-preview__window" />
                       </span>
-                      <span className={`max-w-full break-words text-center leading-tight ${previewClasses.label}`}>
-                        {i18nApi.t('app.about.title')}
+                      <span className="flex items-center gap-2 text-sm font-medium">
+                        <Icon name={theme === 'dark' ? 'moon' : 'sun'} className="h-4 w-4" />
+                        {t(`theme.${theme}`)}
                       </span>
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          </>
-        ) : activePage === 'localization' ? (
-          <>
-            <h2 className="mb-1 text-xl font-semibold">{i18nApi.t('settings.page.localization.title')}</h2>
-            <p className="mb-4 text-(--app-muted)">{i18nApi.t('settings.page.localization.subtitle')}</p>
-
-            <label className="mb-3 flex max-w-64 flex-col gap-1.5">
-              <span>{i18nApi.t('settings.language.label')}</span>
-              <select
-                className="h-8.5 rounded-lg border border-(--app-border) bg-(--app-surface-2) px-2.5 text-(--window-text)"
-                value={i18nApi.locale}
-                onChange={handleLocaleChange}
-              >
-                {i18nApi.locales.map((locale) => (
-                  <option key={locale} value={locale}>
-                    {locale.toUpperCase()}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <p>{i18nApi.t('settings.language.help')}</p>
-
-            <label className="mb-3 mt-4 flex max-w-64 flex-col gap-1.5">
-              <span>{i18nApi.t('settings.clock.hourFormat.label')}</span>
-              <select
-                className="h-8.5 rounded-lg border border-(--app-border) bg-(--app-surface-2) px-2.5 text-(--window-text)"
-                value={preferencesApi.preferences.clockHourFormat}
-                onChange={handleClockHourFormatChange}
-              >
-                {preferencesApi.clockHourFormats.map((format) => (
-                  <option key={format} value={format}>
-                    {i18nApi.t(`settings.clock.hourFormat.${format}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <p>{i18nApi.t('settings.clock.hourFormat.help')}</p>
-
-            <label className="mb-3 mt-4 flex max-w-64 flex-col gap-1.5">
-              <span>{i18nApi.t('settings.clock.dateFormat.label')}</span>
-              <select
-                className="h-8.5 rounded-lg border border-(--app-border) bg-(--app-surface-2) px-2.5 text-(--window-text)"
-                value={preferencesApi.preferences.clockDateFormat}
-                onChange={handleClockDateFormatChange}
-              >
-                {preferencesApi.clockDateFormats.map((format) => (
-                  <option key={format} value={format}>
-                    {i18nApi.t(`settings.clock.dateFormat.${format}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <p>{i18nApi.t('settings.clock.dateFormat.help')}</p>
-          </>
-        ) : (
-          <>
-            <h2 className="mb-1 text-xl font-semibold">{i18nApi.t('settings.page.softwareUpdate.title')}</h2>
-            <p className="mb-4 text-(--app-muted)">{i18nApi.t('settings.page.softwareUpdate.subtitle')}</p>
-
-            <div className="max-w-xl rounded-xl border border-(--app-border) bg-(--app-surface-2) p-4">
-              <div className="flex items-center gap-3">
-                <img src={resolveAssetPath('/icons/daveos.svg')} alt="DaveOS icon" className="h-10 w-10 rounded-lg object-contain" />
-                <div>
-                  <p className="m-0 font-semibold">DaveOS {typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '0.0.0'}</p>
-                  <p className="m-0 text-sm text-(--app-muted)">{i18nApi.t('settings.page.softwareUpdate.latest')}</p>
+                    </button>
+                  ))}
                 </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-(--app-border) bg-(--app-surface-1) p-3 text-sm">
-                <span>{i18nApi.t('settings.page.softwareUpdate.lastCheck')}</span>
-                <strong>{new Date().toLocaleString(i18nApi.locale === 'it' ? 'it-IT' : 'en-US')}</strong>
-              </div>
+              </Group>
+
+              <Group title={t('settings.wallpaper.label')} help={t('settings.wallpaper.help')}>
+                <div className="grid grid-cols-2 gap-3 @lg:grid-cols-3">
+                  {preferencesApi.wallpapers.map((wallpaper) => (
+                    <button
+                      key={wallpaper}
+                      type="button"
+                      className="settings-option"
+                      aria-pressed={preferences.wallpaper === wallpaper}
+                      onClick={() => preferencesApi.setWallpaper(wallpaper)}
+                    >
+                      <span
+                        className={`wallpaper-swatch wallpaper-swatch--${wallpaper} desktop-shell--wallpaper-${wallpaper}`}
+                        aria-hidden="true"
+                      />
+                      <span className="flex items-center justify-between gap-2 text-sm">
+                        {t(`wallpaper.${wallpaper}`)}
+                        {preferences.wallpaper === wallpaper ? <Icon name="check" className="h-4 w-4 text-(--accent)" /> : null}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </Group>
+
+              <Group title={t('settings.desktopIconSize.label')} help={t('settings.desktopIconSize.help')}>
+                <div className="segmented flex w-full" role="radiogroup" aria-label={t('settings.desktopIconSize.label')}>
+                  {preferencesApi.desktopIconSizes.map((size) => (
+                    <button
+                      key={size}
+                      type="button"
+                      role="radio"
+                      aria-checked={preferences.desktopIconSize === size}
+                      aria-pressed={preferences.desktopIconSize === size}
+                      className="segmented__item flex-1 justify-center"
+                      onClick={() => preferencesApi.setDesktopIconSize(size)}
+                    >
+                      {t(`settings.desktopIconSize.${size}`)}
+                    </button>
+                  ))}
+                </div>
+              </Group>
             </div>
-          </>
-        )}
+          ) : null}
+
+          {activePage === 'localization' ? (
+            <div className="flex flex-col gap-4">
+              <Group title={t('settings.language.label')} help={t('settings.language.help')}>
+                <div className="grid grid-cols-2 gap-3">
+                  {i18nApi.locales.map((locale) => (
+                    <button
+                      key={locale}
+                      type="button"
+                      className="settings-option flex-row! items-center gap-3"
+                      aria-pressed={i18nApi.locale === locale}
+                      onClick={() => i18nApi.setLocale(locale)}
+                    >
+                      <img src={LOCALE_FLAGS[locale]} alt="" className="h-6 w-9 rounded-[4px] object-cover" />
+                      <span className="flex-1 text-left text-sm font-medium">{LOCALE_NAMES[locale] ?? locale}</span>
+                      {i18nApi.locale === locale ? <Icon name="check" className="h-4 w-4 text-(--accent)" /> : null}
+                    </button>
+                  ))}
+                </div>
+              </Group>
+
+              <Group title={t('settings.clock.hourFormat.label')} help={t('settings.clock.hourFormat.help')}>
+                <div className="segmented flex w-full flex-wrap" role="radiogroup" aria-label={t('settings.clock.hourFormat.label')}>
+                  {preferencesApi.clockHourFormats.map((format) => (
+                    <button
+                      key={format}
+                      type="button"
+                      role="radio"
+                      aria-checked={preferences.clockHourFormat === format}
+                      aria-pressed={preferences.clockHourFormat === format}
+                      className="segmented__item flex-1 justify-center"
+                      onClick={() => preferencesApi.setClockHourFormat(format)}
+                    >
+                      {t(`settings.clock.hourFormat.${format}`)}
+                    </button>
+                  ))}
+                </div>
+              </Group>
+
+              <Group title={t('settings.clock.dateFormat.label')} help={t('settings.clock.dateFormat.help')}>
+                <div className="segmented flex w-full flex-wrap" role="radiogroup" aria-label={t('settings.clock.dateFormat.label')}>
+                  {preferencesApi.clockDateFormats.map((format) => (
+                    <button
+                      key={format}
+                      type="button"
+                      role="radio"
+                      aria-checked={preferences.clockDateFormat === format}
+                      aria-pressed={preferences.clockDateFormat === format}
+                      className="segmented__item flex-1 justify-center"
+                      onClick={() => preferencesApi.setClockDateFormat(format)}
+                    >
+                      {t(`settings.clock.dateFormat.${format}`)}
+                    </button>
+                  ))}
+                </div>
+              </Group>
+            </div>
+          ) : null}
+
+          {activePage === 'softwareUpdate' ? (
+            <section className="settings-update">
+              <div className="settings-update__logo" aria-hidden="true">
+                <DaveOsLogo className="h-9 w-9" />
+              </div>
+              <p className="m-0 font-display text-xl font-semibold tracking-tight">DaveOS {version}</p>
+              <p className="m-0 mt-1 text-sm text-(--app-muted)" aria-live="polite">
+                {updateState === 'checking'
+                  ? t('settings.update.checking')
+                  : updateState === 'done'
+                    ? t('settings.update.none')
+                    : t('settings.page.softwareUpdate.latest')}
+              </p>
+              <button
+                type="button"
+                className="hero-action hero-action--primary mt-5 px-5 text-sm"
+                disabled={updateState === 'checking'}
+                onClick={() => setUpdateState('checking')}
+              >
+                <Icon name="refresh" className={`h-4 w-4 ${updateState === 'checking' ? 'animate-spin' : ''}`} />
+                {t('settings.update.check')}
+              </button>
+              <p className="m-0 mt-4 text-xs text-(--app-muted)">
+                {t('settings.page.softwareUpdate.lastCheck')}: {lastCheck.toLocaleString(dateLocale)}
+              </p>
+            </section>
+          ) : null}
+        </div>
       </section>
     </div>
   )

@@ -9,6 +9,8 @@ import type { WorkExperienceEvent } from '../desktop/resources/calendar/types'
 import type { DesktopAppProps, Locale } from '../desktop/types'
 import { resolveAssetPath } from '../desktop/utils/assetPath'
 import { useIsPhone } from '../mobile-shell/hooks/useIsPhone'
+import { Icon } from '../desktop-shell/components/Icon'
+import { ExperienceTimeline } from './experience/ExperienceTimeline'
 
 const EVENT_COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6']
 const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
@@ -50,7 +52,7 @@ const periodLabel = (
 
 export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
   const isPhone = useIsPhone()
-  const t = i18nApi?.t ?? ((key: string) => key)
+  const t = useMemo(() => i18nApi?.t ?? ((key: string) => key), [i18nApi])
   const contentLocale: Locale = i18nApi?.locale === 'en' ? 'en' : 'it'
   const locale = contentLocale === 'en' ? 'en-US' : 'it-IT'
 
@@ -59,7 +61,6 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
   const now = useMemo(() => new Date(), [])
 
   const [selectedId, setSelectedId] = useState<string | null>(events[0]?.id ?? null)
-  const [selectedMobileOccurrence, setSelectedMobileOccurrence] = useState<string | null>(null)
   const [selectedTag, setSelectedTag] = useState<string>('all')
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
   const [isTagMenuOpen, setIsTagMenuOpen] = useState(false)
@@ -68,8 +69,12 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
   const tagTriggerRef = useRef<HTMLButtonElement | null>(null)
   const tagOptionRefs = useRef<(HTMLButtonElement | null)[]>([])
 
+  const [view, setView] = useState<'timeline' | 'gantt'>('timeline')
+  const [dismissedLaunchToken, setDismissedLaunchToken] = useState<number | null>(null)
   const launchQuery =
-    launchIntent?.appId === 'calendar' ? launchIntent.query?.trim().toLowerCase() ?? '' : ''
+    launchIntent?.appId === 'calendar' && launchIntent.token !== dismissedLaunchToken
+      ? launchIntent.query?.trim().toLowerCase() ?? ''
+      : ''
 
   const nowIndex = toMonthIndex(now.getFullYear(), now.getMonth() + 1)
 
@@ -155,9 +160,6 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
   useEffect(() => {
     if (!isTagMenuOpen) return
 
-    const selectedIndex = Math.max(0, tagOptions.findIndex((option) => option.id === selectedTag))
-    setActiveTagIndex(selectedIndex)
-
     const onPointerDown = (event: PointerEvent) => {
       if (!tagMenuRef.current) return
       if (tagMenuRef.current.contains(event.target as Node)) return
@@ -174,15 +176,14 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
       document.removeEventListener('pointerdown', onPointerDown)
       document.removeEventListener('keydown', onKeyDown)
     }
-  }, [isTagMenuOpen, selectedTag, tagOptions])
+  }, [isTagMenuOpen])
 
   useEffect(() => {
     if (!isTagMenuOpen) return
     tagOptionRefs.current[activeTagIndex]?.focus()
   }, [activeTagIndex, isTagMenuOpen])
 
-  const filteredEvents = useMemo(() => {
-    return events.filter((event) => {
+  const filteredEvents = events.filter((event) => {
       const eventTagIds = getEventTagIds(event)
       const tagFilterOk = selectedTag === 'all' || eventTagIds.includes(selectedTag)
       const queryFilterOk =
@@ -194,7 +195,6 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
         eventTagIds.some((tagId) => resolveTag(tagId).label.toLowerCase().includes(launchQuery))
       return tagFilterOk && queryFilterOk
     })
-  }, [contentLocale, events, launchQuery, selectedTag])
 
   const allYears = useMemo(() => {
     const years: number[] = []
@@ -210,28 +210,54 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
     return EVENT_COLORS[safeIndex % EVENT_COLORS.length]
   }
 
+  const newestFirst = [...filteredEvents].sort(
+    (a, b) => toMonthIndex(b.startYear, b.startMonth) - toMonthIndex(a.startYear, a.startMonth),
+  )
+  const timelineEvents = sortOrder === 'desc' ? newestFirst : newestFirst.reverse()
+
   const selectedEvent =
     filteredEvents.find((e) => e.id === selectedId) ?? filteredEvents[0] ?? null
   const selectedRole = selectedEvent ? getEventRole(selectedEvent) : ''
   const selectedCompany = selectedEvent ? getEventCompanyName(selectedEvent) : ''
 
   return (
-    <div className="flex h-full flex-col bg-(--app-surface-1) text-(--window-text)">
-      <header className="shrink-0 border-b border-[var(--app-border)] px-5 pt-4 pb-3">
-        <h1 className="mb-1 text-2xl">{t('calendar.heading')}</h1>
-        <p className="text-(--app-muted)">{t('calendar.subheading')}</p>
-        <div className="mt-2.5 flex flex-wrap items-end gap-2.5">
-          <label className="flex flex-col gap-1 text-xs text-(--app-muted)">
-            <span>{t('calendar.filters.tag')}</span>
+    <div className="@container flex h-full flex-col bg-(--app-surface-1) text-(--window-text)">
+      <header className="app-header shrink-0">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="app-header__title">{t('calendar.heading')}</h1>
+            <p className="app-header__subtitle">{t('calendar.subheading')}</p>
+          </div>
+          {!isPhone ? (
+            <div className="segmented" role="tablist" aria-label={t('calendar.view.label')}>
+              <button type="button" role="tab" aria-selected={view === 'timeline'} className="segmented__item" onClick={() => setView('timeline')}>
+                <Icon name="list" className="h-3.5 w-3.5" />
+                {t('calendar.view.timeline')}
+              </button>
+              <button type="button" role="tab" aria-selected={view === 'gantt'} className="segmented__item" onClick={() => setView('gantt')}>
+                <Icon name="gantt" className="h-3.5 w-3.5" />
+                {t('calendar.view.gantt')}
+              </button>
+            </div>
+          ) : null}
+        </div>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2 text-xs text-(--app-muted)">
+            <span className="sr-only">{t('calendar.filters.tag')}</span>
             <div className="relative" ref={tagMenuRef}>
               <button
                 ref={tagTriggerRef}
                 type="button"
-                className="flex h-8 min-w-40 items-center justify-between gap-2 rounded-lg border border-(--app-border) bg-(--app-surface-1) px-2 text-(--window-text)"
+                className="app-control min-w-44 justify-between"
                 aria-haspopup="listbox"
                 aria-expanded={isTagMenuOpen}
                 aria-controls="calendar-tag-listbox"
-                onClick={() => setIsTagMenuOpen((prev) => !prev)}
+                onClick={() => {
+                  if (!isTagMenuOpen) {
+                    setActiveTagIndex(Math.max(0, tagOptions.findIndex((option) => option.id === selectedTag)))
+                  }
+                  setIsTagMenuOpen(!isTagMenuOpen)
+                }}
                 onKeyDown={onTagTriggerKeyDown}
               >
                 <span className="inline-flex items-center gap-1.5 truncate">
@@ -240,7 +266,7 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
                   ) : null}
                   {selectedTagOption.label}
                 </span>
-                <span className="text-[10px] text-(--app-muted)">{isTagMenuOpen ? '▲' : '▼'}</span>
+                <Icon name="chevronDown" className={`h-3.5 w-3.5 text-(--app-muted) transition-transform ${isTagMenuOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {isTagMenuOpen ? (
@@ -248,7 +274,7 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
                   id="calendar-tag-listbox"
                   role="listbox"
                   aria-activedescendant={`calendar-tag-option-${tagOptions[activeTagIndex]?.id ?? 'all'}`}
-                  className="absolute z-20 mt-1 max-h-60 min-w-52 overflow-auto rounded-lg border border-(--app-border) bg-(--app-surface-1) p-1 shadow-lg"
+                  className="popover absolute z-20 mt-1.5 max-h-72 min-w-56 overflow-auto rounded-xl p-1.5"
                   onKeyDown={onTagMenuKeyDown}
                 >
                   {tagOptions.map((tag, index) => (
@@ -261,7 +287,7 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
                       type="button"
                       role="option"
                       aria-selected={selectedTag === tag.id}
-                      className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm ${selectedTag === tag.id ? 'bg-(--app-surface-3)' : 'hover:bg-(--app-surface-2)'}`}
+                      className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm ${selectedTag === tag.id ? 'bg-(--accent) text-white' : 'hover:bg-(--app-surface-3)'}`}
                       onClick={() => selectTagOption(tag.id)}
                     >
                       {tag.icon ? <img src={resolveAssetPath(tag.icon.src)} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
@@ -271,90 +297,40 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
                 </div>
               ) : null}
             </div>
-          </label>
+          </div>
           <button
             type="button"
-            className="h-8 rounded-lg border border-[var(--app-border)] bg-(--app-surface-3) px-2.5 text-(--window-text)"
+            className="app-control"
             onClick={() => setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
           >
+            <Icon name="sort" className="h-3.5 w-3.5 text-(--app-muted)" />
             {sortOrder === 'desc' ? t('calendar.sort.desc') : t('calendar.sort.asc')}
           </button>
+          {launchQuery ? (
+            <button type="button" className="app-chip app-chip--active" onClick={() => setDismissedLaunchToken(launchIntent?.token ?? null)}>
+              {t('calendar.filters.query', { query: launchQuery })}
+              <Icon name="x" className="h-3.5 w-3.5" />
+            </button>
+          ) : null}
+          <span className="ml-auto text-xs text-(--app-muted)">
+            {t('calendar.count', { count: String(filteredEvents.length) })}
+          </span>
         </div>
       </header>
 
       {filteredEvents.length ? (
-        isPhone ? (
-          <section className="overflow-auto px-3.5 py-3" aria-label={t('calendar.timeline.label')}>
-            {allYears.map((year) => {
-              const yearStart = toMonthIndex(year, 1)
-              const yearEnd = toMonthIndex(year, 12)
-              const yearEvents = filteredEvents.filter((ev) => {
-                const r = eventRange(ev, now)
-                return r.start <= yearEnd && r.end >= yearStart
-              })
-
-              if (!yearEvents.length) return null
-
-              return (
-                <div key={`mobile-year-${year}`} className="mb-4 rounded-xl border border-(--app-border) bg-(--app-surface-2) p-3">
-                  <h3 className="mb-2 text-base font-semibold text-(--window-text)">{year}</h3>
-
-                  <div className="flex flex-col gap-2">
-                    {yearEvents.map((event) => {
-                      const occurrenceId = `${year}-${event.id}`
-                      const isSelected = selectedMobileOccurrence === occurrenceId
-                      const color = getEventColor(event)
-                      const role = getEventRole(event)
-                      const companyName = getEventCompanyName(event)
-
-                      return (
-                        <button
-                          key={`mobile-event-${event.id}`}
-                          type="button"
-                          className={`rounded-lg border p-2 text-left ${isSelected ? 'border-blue-400/60 bg-blue-500/15' : 'border-(--app-border) bg-(--app-surface-1)'}`}
-                          onClick={() => {
-                            setSelectedId(event.id)
-                            setSelectedMobileOccurrence((prev) => (prev === occurrenceId ? null : occurrenceId))
-                          }}
-                        >
-                          <span className="mb-1 inline-flex items-center gap-2 text-sm font-semibold text-(--window-text)">
-                            <img src={resolveAssetPath(event.icon.src)} alt={event.icon.alt} className="h-4 w-4 object-contain" />
-                            <span className="truncate">{companyName || role}</span>
-                          </span>
-                          <span className="mb-1 inline-block rounded-sm px-1.5 py-0.5 text-[11px] font-semibold text-white" style={{ backgroundColor: color }}>
-                            {role}
-                          </span>
-                          <span className="block text-xs font-semibold" style={{ color }}>
-                            {periodLabel(event, locale, t)}
-                          </span>
-                          {isSelected ? (
-                            <>
-                              <span className="mt-1.5 block text-xs leading-5 text-(--window-text)">
-                                {event.description}
-                              </span>
-                              {getEventTagIds(event).length > 0 ? (
-                                <span className="mt-1.5 flex flex-wrap gap-1.5">
-                                  {getEventTagIds(event).map((tagId) => {
-                                    const tag = resolveTag(tagId)
-                                    return (
-                                      <span key={`mobile-tag-${event.id}-${tag.id}`} className="inline-flex items-center gap-1 rounded-full border border-(--app-border) bg-(--app-surface-2) px-2 py-0.5 text-[11px] text-(--app-muted)">
-                                        {tag.icon ? <img src={resolveAssetPath(tag.icon.src)} alt={tag.icon.alt} className="h-3.5 w-3.5 object-contain" /> : null}
-                                        {tag.label}
-                                      </span>
-                                    )
-                                  })}
-                                </span>
-                              ) : null}
-                            </>
-                          ) : null}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-              )
-            })}
-          </section>
+        isPhone || view === 'timeline' ? (
+          <ExperienceTimeline
+            events={timelineEvents}
+            locale={locale}
+            now={now}
+            t={t}
+            getColor={getEventColor}
+            getRole={getEventRole}
+            getCompany={getEventCompanyName}
+            getTags={(event) => getEventTagIds(event).map(resolveTag)}
+            onSelectTag={(tagId) => setSelectedTag(tagId)}
+          />
         ) : (
         <div className="grid min-h-0 flex-1 grid-cols-[1fr_260px]">
           <section className="overflow-auto px-3.5 py-3" aria-label={t('calendar.timeline.label')}>
@@ -393,7 +369,7 @@ export function CalendarApp({ i18nApi, launchIntent }: DesktopAppProps) {
                       <button
                         key={event.id}
                         type="button"
-                        className={`calendar-gantt-row relative mb-0.5 min-h-8.5 items-center rounded border border-transparent p-0 text-left ${isSelected ? 'border-blue-400/60 bg-blue-500/20' : 'bg-transparent hover:border-[var(--app-border)] hover:bg-(--app-surface-2)'}`}
+                        className={`calendar-gantt-row relative mb-0.5 min-h-8.5 items-center rounded border border-transparent p-0 text-left ${isSelected ? 'border-(--accent)/60 bg-(--accent)/15' : 'bg-transparent hover:border-[var(--app-border)] hover:bg-(--app-surface-2)'}`}
                         style={{ '--event-color': color } as React.CSSProperties}
                         onClick={() => setSelectedId(event.id)}
                       >

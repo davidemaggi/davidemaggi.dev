@@ -1,3 +1,4 @@
+import { memo, useEffect, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { DESKTOP_PLUGINS } from '../../desktop/plugins'
 import type {
@@ -41,6 +42,46 @@ type WindowLayerProps = {
   t: (key: string, vars?: Record<string, string>) => string
 }
 
+type ExitKind = 'closing' | 'minimizing'
+
+const EXIT_DURATION_MS: Record<ExitKind, number> = {
+  closing: 170,
+  minimizing: 260,
+}
+
+const TrafficGlyph = ({ kind }: { kind: 'close' | 'minimize' | 'maximize' }) => (
+  <svg viewBox="0 0 8 8" aria-hidden="true">
+    {kind === 'close' ? (
+      <path d="M1.5 1.5l5 5M6.5 1.5l-5 5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+    ) : kind === 'minimize' ? (
+      <path d="M1.2 4h5.6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+    ) : (
+      <path d="M1.5 5.2V1.5h3.7zM6.5 2.8v3.7H2.8z" fill="currentColor" />
+    )}
+  </svg>
+)
+
+type WindowContentProps = {
+  id: AppId
+  desktopApi: DesktopCommandApi
+  i18nApi: DesktopI18nApi
+  preferencesApi: DesktopPreferencesApi
+  launchIntent: DesktopLaunchIntent | null
+}
+
+/** App content only re-renders when its inputs change, never while the window is dragged or resized. */
+const WindowContent = memo(function WindowContent({ id, desktopApi, i18nApi, preferencesApi, launchIntent }: WindowContentProps) {
+  const PluginComponent = DESKTOP_PLUGINS[id].Component
+  return (
+    <PluginComponent
+      desktopApi={desktopApi}
+      i18nApi={i18nApi}
+      preferencesApi={preferencesApi}
+      launchIntent={launchIntent}
+    />
+  )
+})
+
 const RESIZE_HANDLES: Array<{
   direction: ResizeDirection
   className: string
@@ -79,36 +120,61 @@ export function WindowLayer({
   t,
 }: WindowLayerProps) {
   const topZIndex = visibleWindows.reduce((max, current) => Math.max(max, current.zIndex), Number.NEGATIVE_INFINITY)
+  const [exitingWindows, setExitingWindows] = useState<Partial<Record<AppId, ExitKind>>>({})
+  const exitTimersRef = useRef<number[]>([])
+
+  useEffect(() => {
+    const timers = exitTimersRef.current
+    return () => timers.forEach((timer) => window.clearTimeout(timer))
+  }, [])
+
+  const animateOut = (id: AppId, kind: ExitKind) => {
+    if (exitingWindows[id]) return
+    setExitingWindows((prev) => ({ ...prev, [id]: kind }))
+    const timer = window.setTimeout(() => {
+      if (kind === 'closing') onCloseWindow(id)
+      else onMinimizeWindow(id)
+      setExitingWindows((prev) => {
+        const next = { ...prev }
+        delete next[id]
+        return next
+      })
+    }, EXIT_DURATION_MS[kind])
+    exitTimersRef.current.push(timer)
+  }
 
   return (
     <main className="pointer-events-none absolute inset-0 z-10">
       {isDragging && snapPreviewTarget ? (
         <div
-          className={`absolute z-5 rounded-md border border-blue-400/60 bg-blue-500/15 shadow-[inset_0_0_0_1px_#93c5fd66] transition-all duration-150 ease-out ${
+          className={`snap-preview absolute z-5 transition-all duration-150 ease-out ${
             snapPreviewTarget === 'left'
-              ? 'top-[36px] left-0 h-[calc(100%-36px)] w-1/2 opacity-100 scale-100'
+              ? 'top-[40px] left-2 h-[calc(100%-48px)] w-[calc(50%-12px)]'
               : snapPreviewTarget === 'right'
-                ? 'top-[36px] right-0 h-[calc(100%-36px)] w-1/2 opacity-100 scale-100'
-                : 'top-[36px] left-0 h-[calc(100%-36px)] w-full opacity-100 scale-100'
+                ? 'top-[40px] right-2 h-[calc(100%-48px)] w-[calc(50%-12px)]'
+                : 'top-[40px] left-2 h-[calc(100%-48px)] w-[calc(100%-16px)]'
           }`}
         />
       ) : null}
 
       {visibleWindows.map((windowItem) => {
         const plugin = DESKTOP_PLUGINS[windowItem.id]
-        const PluginComponent = plugin.Component
+        const exitKind = exitingWindows[windowItem.id]
 
         return (
-          <section
+          <div
             key={windowItem.id}
-            className={`window pointer-events-auto absolute flex flex-col overflow-hidden rounded-[10px] border border-[var(--window-border)] bg-(--window-bg) shadow-[0_18px_40px_#00000066] ${windowItem.zIndex === topZIndex ? '' : 'window--inactive'} ${windowItem.isMaximized ? 'window--maximized' : ''}`}
+            className={`window-frame ${windowItem.isMaximized ? 'window-frame--maximized' : ''}`}
             style={{
               zIndex: windowItem.zIndex,
-              left: windowItem.x,
-              top: windowItem.y,
               width: windowItem.width,
               height: windowItem.height,
+              transform: `translate3d(${windowItem.x}px, ${windowItem.y}px, 0)`,
             }}
+          >
+          <section
+            className={`window pointer-events-auto relative flex h-full w-full flex-col overflow-hidden ${windowItem.zIndex === topZIndex ? '' : 'window--inactive'} ${windowItem.isMaximized ? 'window--maximized' : ''} ${exitKind ? `window--${exitKind}` : ''}`}
+            aria-label={t(plugin.titleKey)}
             onMouseDown={() => onBringToFront(windowItem.id)}
           >
             {!windowItem.isMaximized
@@ -136,7 +202,7 @@ export function WindowLayer({
               : null}
 
             <header
-              className={`window__titlebar flex items-center gap-2 px-3 py-2 ${isDragging ? 'cursor-grabbing' : isResizing ? 'cursor-default' : 'cursor-grab'}`}
+              className={`window__titlebar flex items-center gap-2 px-3.5 py-2 ${isDragging ? 'cursor-grabbing' : isResizing ? 'cursor-default' : 'cursor-grab'}`}
               onPointerDown={(event) => onHeaderPointerDown(event, windowItem.id)}
               onPointerMove={onHeaderPointerMove}
               onPointerUp={onStopDragging}
@@ -147,7 +213,7 @@ export function WindowLayer({
                 onToggleMaximizeWindow(windowItem.id)
               }}
             >
-              <div className="window__actions inline-flex items-center gap-2">
+              <div className="window__actions inline-flex items-center gap-2.5">
                 <button
                   type="button"
                   className="window__traffic-light window__traffic-light--close"
@@ -156,8 +222,9 @@ export function WindowLayer({
                   })}
                   onMouseDown={(event) => event.stopPropagation()}
                   onPointerDown={(event) => event.stopPropagation()}
-                  onClick={() => onCloseWindow(windowItem.id)}
+                  onClick={() => animateOut(windowItem.id, 'closing')}
                 >
+                  <TrafficGlyph kind="close" />
                   <span className="sr-only">{t('window.action.close', { title: t(plugin.titleKey) })}</span>
                 </button>
                 <button
@@ -168,8 +235,9 @@ export function WindowLayer({
                   })}
                   onMouseDown={(event) => event.stopPropagation()}
                   onPointerDown={(event) => event.stopPropagation()}
-                  onClick={() => onMinimizeWindow(windowItem.id)}
+                  onClick={() => animateOut(windowItem.id, 'minimizing')}
                 >
+                  <TrafficGlyph kind="minimize" />
                   <span className="sr-only">{t('window.action.minimize', { title: t(plugin.titleKey) })}</span>
                 </button>
                 <button
@@ -184,6 +252,7 @@ export function WindowLayer({
                   onPointerDown={(event) => event.stopPropagation()}
                   onClick={() => onToggleMaximizeWindow(windowItem.id)}
                 >
+                  <TrafficGlyph kind="maximize" />
                   <span className="sr-only">
                     {windowItem.isMaximized
                       ? t('window.action.restore', { title: t(plugin.titleKey) })
@@ -191,14 +260,15 @@ export function WindowLayer({
                   </span>
                 </button>
               </div>
-              <p className="window__title m-0 inline-flex min-w-0 items-center gap-2 text-sm font-semibold text-(--window-title-text)">
-                {renderAppIcon(resolveAppIcon(windowItem.id, preferences), 'h-4.5 w-4.5 object-contain')}
+              <p className="window__title m-0 inline-flex min-w-0 items-center gap-2 text-[13px] text-(--window-title-text)">
+                {renderAppIcon(resolveAppIcon(windowItem.id, preferences), 'h-4 w-4 object-contain')}
                 <span className="truncate">{t(plugin.titleKey)}</span>
               </p>
               <div className="window__titlebar-spacer" aria-hidden="true" />
             </header>
             <div className="window__body min-h-0 flex-1 overflow-auto text-(--window-text)">
-              <PluginComponent
+              <WindowContent
+                id={windowItem.id}
                 desktopApi={desktopApi}
                 i18nApi={i18nApi}
                 preferencesApi={preferencesApi}
@@ -206,6 +276,7 @@ export function WindowLayer({
               />
             </div>
           </section>
+          </div>
         )
       })}
     </main>

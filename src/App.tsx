@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import JSConfetti from 'js-confetti'
+import type { CSSProperties } from 'react'
 import './App.css'
 import { APP_ICON_CHOICES } from './desktop/appIcons'
 import { AVAILABLE_LOCALES, createTranslator } from './desktop/i18n'
@@ -7,16 +7,21 @@ import { DESKTOP_PLUGINS } from './desktop/plugins'
 import type {
   AppId,
   DesktopCommandApi,
-  DesktopIconSize,
   DesktopI18nApi,
   DesktopLaunchIntent,
   DesktopPreferences,
   DesktopPreferencesApi,
   Locale,
 } from './desktop/types'
+import { BootScreen } from './desktop-shell/components/BootScreen'
+import { DesktopHero } from './desktop-shell/components/DesktopHero'
+import { AchievementToast } from './desktop-shell/components/AchievementToast'
+import { StarWarsCrawl } from './desktop-shell/components/StarWarsCrawl'
 import { Taskbar } from './desktop-shell/components/Taskbar'
+import { Wallpaper } from './desktop-shell/components/Wallpaper'
 import { WindowLayer } from './desktop-shell/components/WindowLayer'
 import { useKonamiUnlock } from './desktop-shell/hooks/useKonamiUnlock'
+import { useNow } from './desktop-shell/hooks/useNow'
 import { useWindowManager } from './desktop-shell/hooks/useWindowManager'
 import {
   AVAILABLE_CLOCK_DATE_FORMATS,
@@ -27,62 +32,43 @@ import {
   DESKTOP_STATE_KEY,
   LOCALE_STATE_KEY,
   PREFERENCES_STATE_KEY,
+  DEFAULT_PREFERENCES,
   loadPersistedDesktopState,
   loadPersistedLocale,
   loadPersistedPreferences,
 } from './desktop-shell/utils/persistence'
-import { renderAppIcon, resolveAppIcon } from './desktop-shell/utils/icons'
+import { resetBootFlag, shouldShowBoot } from './desktop-shell/utils/boot'
+import { EASTER_EGG_EVENT, isStarDestroyerUnlocked, resetEasterEgg, unlockStarDestroyer } from './desktop-shell/utils/easterEgg'
+import { isBareIcon, renderAppIcon, resolveAppIcon } from './desktop-shell/utils/icons'
 import { MobileShell } from './mobile-shell/components/MobileShell'
 import { useIsPhone } from './mobile-shell/hooks/useIsPhone'
 
 const DESKTOP_ICON_SIZE_CLASSES = {
   small: {
     column: 'w-28',
-    button: 'w-full gap-1 p-1.5',
-    iconWrap: 'h-8 w-8',
+    button: 'w-full gap-1.5 p-1.5',
+    tile: 'h-11 w-11 p-2',
     label: 'text-[11px]',
   },
   normal: {
-    column: 'w-36',
+    column: 'w-32',
     button: 'w-full gap-1.5 p-2',
-    iconWrap: 'h-10 w-10',
+    tile: 'h-13 w-13 p-2.5',
     label: 'text-xs',
   },
   large: {
-    column: 'w-44',
-    button: 'w-full gap-2 p-2.5',
-    iconWrap: 'h-12 w-12',
-    label: 'text-sm',
+    column: 'w-36',
+    button: 'w-full gap-2 p-2',
+    tile: 'h-15 w-15 p-3',
+    label: 'text-[13px]',
   },
   xl: {
-    column: 'w-52',
-    button: 'w-full gap-2.5 p-3',
-    iconWrap: 'h-14 w-14',
-    label: 'text-[15px]',
+    column: 'w-44',
+    button: 'w-full gap-2 p-2.5',
+    tile: 'h-18 w-18 p-3.5',
+    label: 'text-sm',
   },
 } as const
-
-const CALENDAR_ICON_TEXT_CLASSES: Record<DesktopIconSize, { weekday: string; day: string }> = {
-  small: { weekday: 'text-[7px]', day: 'text-[22px]' },
-  normal: { weekday: 'text-[8px]', day: 'text-[26px]' },
-  large: { weekday: 'text-[10px]', day: 'text-[31px]' },
-  xl: { weekday: 'text-[11px]', day: 'text-[36px]' },
-}
-
-const renderDynamicCalendarDesktopIcon = (now: Date, locale: Locale, iconSize: DesktopIconSize) => {
-  const intlLocale = locale === 'en' ? 'en-US' : 'it-IT'
-  const weekdayRaw = new Intl.DateTimeFormat(intlLocale, { weekday: 'short' }).format(now)
-  const weekday = weekdayRaw.charAt(0).toUpperCase() + weekdayRaw.slice(1)
-  const day = new Intl.DateTimeFormat(intlLocale, { day: 'numeric' }).format(now)
-  const textClasses = CALENDAR_ICON_TEXT_CLASSES[iconSize]
-
-  return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-[22%] bg-[#ececec] text-black shadow-[inset_0_0_0_1px_#0000001f]">
-      <span className={`truncate px-1 pt-[8%] text-center leading-none text-red-500 ${textClasses.weekday}`}>{weekday}</span>
-      <span className={`grid flex-1 place-items-center leading-none ${textClasses.day}`}>{day}</span>
-    </div>
-  )
-}
 
 function App() {
   const isPhone = useIsPhone()
@@ -111,8 +97,12 @@ function App() {
   })
   const [locale, setLocale] = useState<Locale>(loadPersistedLocale)
   const [preferences, setPreferences] = useState<DesktopPreferences>(loadPersistedPreferences)
-  const [now, setNow] = useState(() => new Date())
+  // Every clock on screen shows minutes, so the shell only needs to re-render once a minute.
+  const now = useNow(60_000)
   const [launchIntent, setLaunchIntent] = useState<DesktopLaunchIntent | null>(null)
+  const [isSpotlightOpen, setIsSpotlightOpen] = useState(false)
+  const [isBooting, setIsBooting] = useState(shouldShowBoot)
+  const finishBoot = useCallback(() => setIsBooting(false), [])
   const [powerMode, setPowerMode] = useState<
     | 'awake'
     | 'sleepTransition'
@@ -125,8 +115,9 @@ function App() {
   >('awake')
   const [shutdownProgress, setShutdownProgress] = useState(0)
   const [isSleepWakeArmed, setIsSleepWakeArmed] = useState(false)
-  const jsConfettiRef = useRef<JSConfetti | null>(null)
-  const isConfettiRunningRef = useRef(false)
+  const [isCrawlOpen, setIsCrawlOpen] = useState(false)
+  const [isStarDestroyerAvailable, setIsStarDestroyerAvailable] = useState(isStarDestroyerUnlocked)
+  const [showAchievement, setShowAchievement] = useState(false)
   const t = useMemo(() => createTranslator(locale), [locale])
 
   const discoverablePlugins = useMemo(
@@ -134,32 +125,32 @@ function App() {
     [],
   )
 
-  const i18nApi: DesktopI18nApi = {
-    locale,
-    locales: AVAILABLE_LOCALES,
-    setLocale,
-    t,
-  }
+  const i18nApi = useMemo<DesktopI18nApi>(
+    () => ({
+      locale,
+      locales: AVAILABLE_LOCALES,
+      setLocale,
+      t,
+    }),
+    [locale, t],
+  )
 
+  // Window state changes on every drag frame: persist it lazily instead of synchronously each time.
   useEffect(() => {
-    window.localStorage.setItem(
-      DESKTOP_STATE_KEY,
-      JSON.stringify({ windows, zCounter }),
-    )
+    const timer = window.setTimeout(() => {
+      window.localStorage.setItem(DESKTOP_STATE_KEY, JSON.stringify({ windows, zCounter }))
+    }, 400)
+    return () => window.clearTimeout(timer)
   }, [windows, zCounter])
 
   useEffect(() => {
     window.localStorage.setItem(LOCALE_STATE_KEY, locale)
+    document.documentElement.lang = locale
   }, [locale])
 
   useEffect(() => {
     window.localStorage.setItem(PREFERENCES_STATE_KEY, JSON.stringify(preferences))
   }, [preferences])
-
-  useEffect(() => {
-    const timer = window.setInterval(() => setNow(new Date()), 1000)
-    return () => window.clearInterval(timer)
-  }, [])
 
   useEffect(() => {
     if (powerMode !== 'sleepTransition') return
@@ -257,154 +248,191 @@ function App() {
     return () => window.clearTimeout(rebootTimer)
   }, [powerMode])
 
-  const launchKonamiConfettiWaves = useCallback(async () => {
-    if (typeof window === 'undefined' || isConfettiRunningRef.current) return
+  const openCrawl = useCallback(() => setIsCrawlOpen(true), [])
+  useKonamiUnlock(openCrawl)
 
-    if (!jsConfettiRef.current) {
-      jsConfettiRef.current = new JSConfetti()
-    }
+  useEffect(() => {
+    window.addEventListener(EASTER_EGG_EVENT, openCrawl)
+    return () => window.removeEventListener(EASTER_EGG_EVENT, openCrawl)
+  }, [openCrawl])
 
-    isConfettiRunningRef.current = true
-
-    const waves = [
-      { confettiRadius: 6, confettiNumber: 70 },
-      { confettiRadius: 5, confettiNumber: 110 },
-      { confettiRadius: 4, confettiNumber: 140 },
-      { confettiRadius: 6, confettiNumber: 90 },
-    ]
-
-    try {
-      for (const wave of waves) {
-        await jsConfettiRef.current.addConfetti(wave)
-        await new Promise((resolve) => window.setTimeout(resolve, 140))
-      }
-    } finally {
-      isConfettiRunningRef.current = false
-    }
+  // Finishing (or skipping) the crawl unlocks the Imperial Fleet wallpaper and switches to it.
+  const finishCrawl = useCallback(() => {
+    setIsCrawlOpen(false)
+    unlockStarDestroyer()
+    setIsStarDestroyerAvailable(true)
+    setPreferences((prev) => ({ ...prev, wallpaper: 'stardestroyer' }))
+    setShowAchievement(true)
   }, [])
 
-  const onKonamiUnlock = useCallback(() => {
-    openWindow('easterEgg')
-    void launchKonamiConfettiWaves()
-  }, [launchKonamiConfettiWaves, openWindow])
+  const dismissAchievement = useCallback(() => setShowAchievement(false), [])
 
-  const { arm: armKonami, reset: resetKonami } = useKonamiUnlock(onKonamiUnlock)
+  const easterEggLayer = (
+    <>
+      {isCrawlOpen ? <StarWarsCrawl locale={locale} t={t} onFinish={finishCrawl} /> : null}
+      {showAchievement ? (
+        <AchievementToast title={t('achievement.title')} body={t('achievement.stardestroyer')} onDismiss={dismissAchievement} />
+      ) : null}
+    </>
+  )
 
-  const resolveAppId = (name: string): AppId | null => {
-    const normalized = name.trim().toLowerCase()
-    if (!normalized) return null
+  // Window contents are memoized, so the APIs handed to apps must keep a stable identity.
+  const windowsRef = useRef(windows)
+  useEffect(() => {
+    windowsRef.current = windows
+  }, [windows])
 
-    const byId = discoverablePlugins.find((plugin) => plugin.id.toLowerCase() === normalized)
-    if (byId) return byId.id
+  const resolveAppId = useCallback(
+    (name: string): AppId | null => {
+      const normalized = name.trim().toLowerCase()
+      if (!normalized) return null
 
-    const byTitle = discoverablePlugins.find(
-      (plugin) => t(plugin.titleKey).toLowerCase() === normalized,
-    )
-    return byTitle ? byTitle.id : null
-  }
+      const byId = discoverablePlugins.find((plugin) => plugin.id.toLowerCase() === normalized)
+      if (byId) return byId.id
 
-  const launchApp = (id: AppId, query?: string) => {
-    if (query?.trim()) {
-      setLaunchIntent({
-        appId: id,
-        query: query.trim(),
-        token: Date.now(),
-      })
-    } else {
-      setLaunchIntent(null)
-    }
-
-    openWindow(id)
-  }
-
-  const desktopApi: DesktopCommandApi = {
-    openApp: (name, query) => {
-      const id = resolveAppId(name)
-      if (!id) return false
-      launchApp(id, query)
-      return true
+      const byTitle = discoverablePlugins.find((plugin) => t(plugin.titleKey).toLowerCase() === normalized)
+      return byTitle ? byTitle.id : null
     },
-    minimizeApp: (name) => {
-      const id = resolveAppId(name)
-      if (!id) return false
-      minimizeWindow(id)
-      return true
-    },
-    closeApp: (name) => {
-      const id = resolveAppId(name)
-      if (!id) return false
-      closeWindow(id)
-      return true
-    },
-    listApps: () =>
-      discoverablePlugins.map((plugin) => ({
-        id: plugin.id,
-        title: t(plugin.titleKey),
-        isOpen: windows[plugin.id].isOpen,
-        isMinimized: windows[plugin.id].isMinimized,
-      })),
-  }
+    [discoverablePlugins, t],
+  )
 
-  const preferencesApi: DesktopPreferencesApi = {
-    preferences,
-    themes: AVAILABLE_THEMES,
-    wallpapers: AVAILABLE_WALLPAPERS,
-    desktopIconSizes: AVAILABLE_DESKTOP_ICON_SIZES,
-    clockHourFormats: AVAILABLE_CLOCK_HOUR_FORMATS,
-    clockDateFormats: AVAILABLE_CLOCK_DATE_FORMATS,
-    appIconChoices: APP_ICON_CHOICES,
-    setTheme: (theme) => setPreferences((prev) => ({ ...prev, theme })),
-    setWallpaper: (wallpaper) => setPreferences((prev) => ({ ...prev, wallpaper })),
-    setDesktopIconSize: (desktopIconSize) =>
-      setPreferences((prev) => ({ ...prev, desktopIconSize })),
-    setClockHourFormat: (clockHourFormat) =>
-      setPreferences((prev) => ({ ...prev, clockHourFormat })),
-    setClockDateFormat: (clockDateFormat) =>
-      setPreferences((prev) => ({ ...prev, clockDateFormat })),
-    setAppIcon: (appId, iconId) => {
-      setPreferences((prev) => ({
-        ...prev,
-        appIcons: {
-          ...prev.appIcons,
-          [appId]: iconId ?? undefined,
-        },
-      }))
+  const launchApp = useCallback(
+    (id: AppId, query?: string) => {
+      setLaunchIntent(query?.trim() ? { appId: id, query: query.trim(), token: Date.now() } : null)
+      openWindow(id)
     },
-  }
+    [openWindow],
+  )
+
+  const desktopApi = useMemo<DesktopCommandApi>(
+    () => ({
+      openApp: (name, query) => {
+        const id = resolveAppId(name)
+        if (!id) return false
+        launchApp(id, query)
+        return true
+      },
+      minimizeApp: (name) => {
+        const id = resolveAppId(name)
+        if (!id) return false
+        minimizeWindow(id)
+        return true
+      },
+      closeApp: (name) => {
+        const id = resolveAppId(name)
+        if (!id) return false
+        closeWindow(id)
+        return true
+      },
+      listApps: () =>
+        discoverablePlugins.map((plugin) => ({
+          id: plugin.id,
+          title: t(plugin.titleKey),
+          isOpen: windowsRef.current[plugin.id].isOpen,
+          isMinimized: windowsRef.current[plugin.id].isMinimized,
+        })),
+    }),
+    [closeWindow, discoverablePlugins, launchApp, minimizeWindow, resolveAppId, t],
+  )
+
+  const preferencesApi = useMemo<DesktopPreferencesApi>(
+    () => ({
+      preferences,
+      themes: AVAILABLE_THEMES,
+      wallpapers: isStarDestroyerAvailable
+        ? AVAILABLE_WALLPAPERS
+        : AVAILABLE_WALLPAPERS.filter((wallpaper) => wallpaper !== 'stardestroyer'),
+      desktopIconSizes: AVAILABLE_DESKTOP_ICON_SIZES,
+      clockHourFormats: AVAILABLE_CLOCK_HOUR_FORMATS,
+      clockDateFormats: AVAILABLE_CLOCK_DATE_FORMATS,
+      appIconChoices: APP_ICON_CHOICES,
+      setTheme: (theme) => setPreferences((prev) => ({ ...prev, theme })),
+      setWallpaper: (wallpaper) => setPreferences((prev) => ({ ...prev, wallpaper })),
+      setDesktopIconSize: (desktopIconSize) => setPreferences((prev) => ({ ...prev, desktopIconSize })),
+      setClockHourFormat: (clockHourFormat) => setPreferences((prev) => ({ ...prev, clockHourFormat })),
+      setClockDateFormat: (clockDateFormat) => setPreferences((prev) => ({ ...prev, clockDateFormat })),
+      setAppIcon: (appId, iconId) => {
+        setPreferences((prev) => ({
+          ...prev,
+          appIcons: {
+            ...prev.appIcons,
+            [appId]: iconId ?? undefined,
+          },
+        }))
+      },
+    }),
+    [isStarDestroyerAvailable, preferences],
+  )
 
   const visibleWindows = Object.values(windows).filter(
     (windowItem) => windowItem.isOpen && !windowItem.isMinimized,
   )
 
+  // The taskbar only cares about open/minimized/focus state, not positions: keep its input stable while dragging.
+  const taskbarKey = Object.values(windows)
+    .map((windowItem) => `${windowItem.id}:${Number(windowItem.isOpen)}:${Number(windowItem.isMinimized)}:${windowItem.zIndex}`)
+    .join('|')
+  const taskbarWindows = useMemo(
+    () =>
+      taskbarKey.split('|').map((entry) => {
+        const [id, isOpen, isMinimized, zIndex] = entry.split(':')
+        return { id: id as AppId, isOpen: isOpen === '1', isMinimized: isMinimized === '1', zIndex: Number(zIndex) }
+      }),
+    [taskbarKey],
+  )
+
   const desktopIconClasses = DESKTOP_ICON_SIZE_CLASSES[preferences.desktopIconSize]
 
-  const launchFromAppleMenu = (id: AppId, query?: string) => {
-    launchApp(id, query)
-  }
+  const handleTaskbarAppClick = useCallback(
+    (id: AppId, isOpen: boolean, isMinimized: boolean) => {
+      if (!isOpen || isMinimized) {
+        openWindow(id)
+        return
+      }
+      minimizeWindow(id)
+    },
+    [minimizeWindow, openWindow],
+  )
 
-  const startPowerAction = (action: 'sleep' | 'restart' | 'shutdown') => {
-    if (powerMode !== 'awake') return
-    setLaunchIntent(null)
+  const openSearch = useCallback(() => setIsSpotlightOpen(true), [])
 
-    if (action === 'sleep') {
-      setPowerMode('sleepTransition')
-      return
-    }
+  const startPowerAction = useCallback(
+    (action: 'sleep' | 'restart' | 'shutdown') => {
+      if (powerMode !== 'awake') return
+      setLaunchIntent(null)
 
-    if (action === 'restart') {
-      setPowerMode('restarting')
-      return
-    }
+      if (action === 'sleep') {
+        setPowerMode('sleepTransition')
+        return
+      }
 
-    setShutdownProgress(0)
-    setPowerMode('shutdownUpdating')
-  }
+      // A restart or shutdown is a fresh start: forget the easter egg unlock and replay the boot.
+      resetEasterEgg()
+      resetBootFlag()
+      setIsStarDestroyerAvailable(false)
+      if (preferences.wallpaper === 'stardestroyer') {
+        const next = { ...preferences, wallpaper: DEFAULT_PREFERENCES.wallpaper }
+        window.localStorage.setItem(PREFERENCES_STATE_KEY, JSON.stringify(next))
+        setPreferences(next)
+      }
+
+      if (action === 'restart') {
+        setPowerMode('restarting')
+        return
+      }
+
+      setShutdownProgress(0)
+      setPowerMode('shutdownUpdating')
+    },
+    [powerMode, preferences],
+  )
 
   const shellClassName = `desktop-shell desktop-shell--theme-${preferences.theme} desktop-shell--wallpaper-${preferences.wallpaper}`
 
   if (isPhone) {
     return (
       <div className={shellClassName} style={{ minHeight: '100dvh', height: '100dvh' }}>
+        <Wallpaper preset={preferences.wallpaper} interactive={false} />
         <MobileShell
           now={now}
           t={t}
@@ -419,48 +447,55 @@ function App() {
           onCloseApp={closeWindow}
           onMinimizeApp={minimizeWindow}
         />
+        {easterEggLayer}
       </div>
     )
   }
 
   return (
-    <div
-      className={shellClassName}
-      onPointerDown={(event) => {
-        if (event.target === event.currentTarget) {
-          armKonami()
-          return
-        }
+    <div className={shellClassName}>
+      <Wallpaper preset={preferences.wallpaper} />
 
-        resetKonami()
-      }}
-    >
-      <aside
-        className={`flex flex-col gap-2 p-4 pt-10 ${desktopIconClasses.column}`}
+      <DesktopHero
+        locale={locale}
+        now={now}
+        t={t}
+        preferences={preferences}
+        onOpenApp={launchApp}
+        onOpenSearch={openSearch}
+        isDimmed={visibleWindows.length > 0}
+      />
+
+      <nav
+        className={`relative z-[6] flex max-h-[calc(100svh-6rem)] flex-col flex-wrap gap-1 p-3 pt-11 ${desktopIconClasses.column}`}
         aria-label={t('desktop.icons.label')}
       >
-        {discoverablePlugins.map((plugin) => (
-          <button
-            key={plugin.id}
-            className={`flex cursor-default select-none flex-col items-center rounded-lg border border-transparent text-(--desktop-icon-color) hover:border-white/25 hover:bg-white/10 ${desktopIconClasses.button}`}
-            onDoubleClick={() => openWindow(plugin.id)}
-          >
-            <span className={`grid place-items-center ${desktopIconClasses.iconWrap}`}>
-              {plugin.id === 'calendar'
-                ? renderDynamicCalendarDesktopIcon(now, locale, preferences.desktopIconSize)
-                : renderAppIcon(
-                    resolveAppIcon(plugin.id, preferences),
-                    'h-full w-full object-contain text-center leading-none',
-                  )}
-            </span>
-            <span
-              className={`desktop-icon-label max-w-full whitespace-normal break-words text-center leading-tight ${desktopIconClasses.label}`}
+        {discoverablePlugins.map((plugin, index) => {
+          const isOpen = windows[plugin.id].isOpen
+          const appIcon = resolveAppIcon(plugin.id, preferences)
+          return (
+            <button
+              key={plugin.id}
+              type="button"
+              className={`desktop-icon flex select-none flex-col items-center rounded-xl ${desktopIconClasses.button}`}
+              style={{ '--i': index } as CSSProperties}
+              onClick={() => openWindow(plugin.id)}
             >
-              {t(plugin.titleKey)}
-            </span>
-          </button>
-        ))}
-      </aside>
+              <span
+                className={`desktop-icon__tile grid place-items-center ${desktopIconClasses.tile} ${isBareIcon(appIcon) ? 'desktop-icon__tile--bare' : ''}`}
+              >
+                {renderAppIcon(appIcon, 'h-full w-full object-contain text-center leading-none')}
+                {isOpen ? <span className="desktop-icon__badge" aria-hidden="true" /> : null}
+              </span>
+              <span
+                className={`desktop-icon-label max-w-full whitespace-normal break-words text-center leading-tight ${desktopIconClasses.label}`}
+              >
+                {t(plugin.titleKey)}
+              </span>
+            </button>
+          )
+        })}
+      </nav>
 
       <WindowLayer
         isDragging={isDragging}
@@ -491,17 +526,15 @@ function App() {
         now={now}
         t={t}
         preferences={preferences}
-        windows={Object.values(windows)}
-        onLaunchFromAppleMenu={launchFromAppleMenu}
-        onTaskbarAppClick={(id, isOpen, isMinimized) => {
-          if (!isOpen || isMinimized) {
-            openWindow(id)
-            return
-          }
-          minimizeWindow(id)
-        }}
+        windows={taskbarWindows}
+        onLaunchFromAppleMenu={launchApp}
+        onTaskbarAppClick={handleTaskbarAppClick}
         onPowerAction={startPowerAction}
+        isSpotlightOpen={isSpotlightOpen}
+        onSpotlightOpenChange={setIsSpotlightOpen}
       />
+
+      {isBooting ? <BootScreen onDone={finishBoot} skipHint={t('boot.skip')} /> : null}
 
       {powerMode !== 'awake' ? (
         <section className="power-overlay absolute inset-0 z-60">
@@ -544,6 +577,7 @@ function App() {
           ) : null}
         </section>
       ) : null}
+      {easterEggLayer}
     </div>
   )
 }
