@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/davidemaggi/davidemaggi.dev/compare/v1.0.3...v1.1.0) (2026-10-25)
+
+
+### Features
+
+* DaveOS 2 redesign ([#20](https://github.com/davidemaggi/davidemaggi.dev/issues/20)) ([ef35943](https://github.com/davidemaggi/davidemaggi.dev/commit/ef35943e39ac7f94cd646bdf7a8c105e39109552))
+
 ## [1.0.3](https://github.com/davidemaggi/davidemaggi.dev/compare/v1.0.2...v1.0.3) (2026-04-26)
 
 
