@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent, KeyboardEvent, ReactNode } from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkBreaks from 'remark-breaks'
-import remarkGfm from 'remark-gfm'
 import { getAboutContent } from '../desktop/resources/about'
+import type { AboutContent } from '../desktop/resources/about/types'
 import { getCalendarEvents, getCalendarTagById } from '../desktop/resources/calendar'
 import { getCertificateFolders } from '../desktop/resources/certManager'
 import type { WorkExperienceEvent } from '../desktop/resources/calendar/types'
 import type { DesktopAppProps, Locale } from '../desktop/types'
 import { getTerminalContent } from '../desktop/resources/terminal'
+import { OPEN_SOURCE_PROJECTS } from '../desktop/resources/projects'
+import { useProfileSummary } from '../desktop-shell/hooks/useProfileSummary'
+import { triggerEasterEgg } from '../desktop-shell/utils/easterEgg'
 import { formatDesktopDateTime } from '../desktop/utils/dateTimeFormat'
 import { resolveAssetPath } from '../desktop/utils/assetPath'
 
@@ -29,16 +30,37 @@ const FAKE_LS_ENTRIES = [
   'password.txt',
 ]
 
-const buildInitialLines = (t: (key: string) => string): TerminalLine[] => [
+const buildInitialLines = (t: (key: string) => string, banner: ReactNode): TerminalLine[] => [
   {
     type: 'output',
-    text: t('terminal.welcome'),
+    text: banner,
   },
   {
     type: 'output',
     text: t('terminal.help.hint'),
   },
 ]
+
+const contentLocaleForSummary = (locale: Locale | undefined): Locale => (locale === 'en' ? 'en' : 'it')
+const summaryNow = new Date()
+
+const NEOFETCH_LOGO = [
+  '  ██████████▄▄     ▄',
+  '  ███      ▀███   ▀▀',
+  '  ███        ███',
+  '  ███        ███',
+  '  ███        ███',
+  '  ███      ▄███',
+  '  ██████████▀▀',
+].join('\n')
+
+const TerminalPrompt = ({ user }: { user: string }) => (
+  <span className="terminal-prompt" aria-hidden="true">
+    <span className="terminal-prompt__user">{user}</span>
+    <span className="terminal-prompt__path"> ~ </span>
+    <span className="terminal-prompt__symbol">❯ </span>
+  </span>
+)
 
 const buildPeriodLabel = (
   event: WorkExperienceEvent,
@@ -69,41 +91,39 @@ const formatCertificateDate = (raw: string | undefined, locale: string) => {
   }).format(date)
 }
 
-const renderTerminalMarkdown = (markdown: string) => {
-  return (
-    <div className="terminal-markdown rounded border border-slate-800 bg-slate-900/60 p-3">
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkBreaks]}
-        components={{
-          h1: ({ children }) => <h1 className="mb-2 text-lg font-semibold text-slate-50">{children}</h1>,
-          h2: ({ children }) => <h2 className="mb-2 text-base font-semibold text-slate-100">{children}</h2>,
-          h3: ({ children }) => <h3 className="mb-1 text-sm font-semibold text-slate-100">{children}</h3>,
-          p: ({ children }) => <p className="mb-2 leading-6 text-slate-200">{children}</p>,
-          ul: ({ children }) => <ul className="mb-2 list-disc space-y-1 pl-5 text-slate-200">{children}</ul>,
-          ol: ({ children }) => <ol className="mb-2 list-decimal space-y-1 pl-5 text-slate-200">{children}</ol>,
-          li: ({ children }) => <li>{children}</li>,
-          a: ({ children, href }) => (
-            <a href={href} target="_blank" rel="noreferrer" className="underline decoration-dotted underline-offset-2 text-sky-300">
-              {children}
-            </a>
-          ),
-          img: ({ src, alt }) => {
-            const isInlineIcon = alt === 'md-icon' || alt === 'md-icon-color' || alt === 'md-flag'
-            return (
-              <img
-                src={resolveAssetPath(src ?? '')}
-                alt={alt ?? ''}
-                className={isInlineIcon ? 'inline-block h-[1.2em] w-auto align-middle' : 'my-2 max-w-full'}
-              />
-            )
-          },
-        }}
-      >
-        {markdown}
-      </ReactMarkdown>
-    </div>
-  )
-}
+const renderTerminalProfile = (content: AboutContent) => (
+  <div className="terminal-block">
+    <p className="mb-1 text-[var(--term-accent)]">{content.greeting}</p>
+    <p className="mb-3 text-[var(--term-muted)]">{content.headline}</p>
+    {content.bio.map((paragraph) => (
+      <p key={paragraph} className="mb-2 leading-6">{paragraph}</p>
+    ))}
+    <p className="mb-3 text-[var(--term-green)]">{content.signOff}</p>
+    <p className="mb-1 text-[var(--term-muted)]">
+      email: {content.info.email} · {content.info.location}
+    </p>
+    <p className="mb-3 inline-flex flex-wrap items-center gap-1.5 text-[var(--term-muted)]">
+      lang:
+      {content.info.languages.map((language) => (
+        <img key={language.label} src={resolveAssetPath(language.icon)} alt={language.label} className="inline-block h-[1em] w-auto" />
+      ))}
+    </p>
+    {content.socials.map((social) => (
+      <p key={social.label} className="mb-0.5">
+        <span className="text-[var(--term-muted)]">{social.label.padEnd(9, ' ')}</span>
+        <a href={social.href} target="_blank" rel="noreferrer" className="text-[var(--term-cyan)] underline decoration-dotted underline-offset-2">
+          {social.handle}
+        </a>
+      </p>
+    ))}
+    <p className="mt-3 mb-1 text-[var(--term-muted)]">interests:</p>
+    <p className="m-0 inline-flex flex-wrap gap-x-3 gap-y-1">
+      {content.interests.map((interest) => (
+        <span key={interest.label}>• {interest.label}</span>
+      ))}
+    </p>
+  </div>
+)
 
 export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent }: DesktopAppProps) {
   const t = useMemo(() => i18nApi?.t ?? ((key: string) => key), [i18nApi])
@@ -111,7 +131,44 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
     () => getTerminalContent(i18nApi?.locale ?? 'it'),
     [i18nApi?.locale],
   )
-  const [lines, setLines] = useState<TerminalLine[]>(() => buildInitialLines(t))
+  const { currentRole, firstYear, skills } = useProfileSummary(contentLocaleForSummary(i18nApi?.locale), summaryNow, t)
+  const promptUser = t('terminal.prompt.user')
+
+  const renderNeofetch = useCallback(() => {
+    const rows: Array<[string, string]> = [
+      ['OS', `DaveOS ${typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '0.0.0'}`],
+      ['Host', 'davidemaggi.dev'],
+      ['Kernel', 'react-19 · vite · tailwind-4'],
+      ['Uptime', t('terminal.neofetch.uptime', { years: String(summaryNow.getFullYear() - firstYear), since: String(firstYear) })],
+      ['Shell', 'dsh 2.0'],
+      ['Role', currentRole ? `${currentRole.role} @ ${currentRole.companyName}` : '-'],
+      ['Stack', skills.slice(0, 6).map((skill) => skill.label).join(', ')],
+      ['Locale', i18nApi?.locale ?? 'it'],
+      ['Theme', `${preferencesApi?.preferences.theme ?? 'dark'} · ${preferencesApi?.preferences.wallpaper ?? 'aurora'}`],
+    ]
+
+    return (
+      <div className="terminal-neofetch">
+        <pre className="terminal-neofetch__logo" aria-hidden="true">{NEOFETCH_LOGO}</pre>
+        <div className="min-w-0">
+          <p className="m-0 font-bold"><span className="text-[var(--term-green)]">{promptUser}</span></p>
+          <p className="m-0 text-[var(--term-muted)]">{'-'.repeat(promptUser.length)}</p>
+          {rows.map(([key, value]) => (
+            <p key={key} className="m-0 break-words">
+              <span className="font-bold text-[var(--term-accent)]">{key}</span>: {value}
+            </p>
+          ))}
+          <p className="mt-2 mb-0 flex gap-0" aria-hidden="true">
+            {['#ff5f57', '#febc2e', '#28c840', '#3ee6ff', '#8b7bff', '#ff5ea8', '#e6e8f2', '#4b5163'].map((color) => (
+              <span key={color} className="inline-block h-3.5 w-6" style={{ background: color }} />
+            ))}
+          </p>
+        </div>
+      </div>
+    )
+  }, [currentRole, firstYear, i18nApi?.locale, preferencesApi?.preferences, promptUser, skills, t])
+
+  const [lines, setLines] = useState<TerminalLine[]>(() => buildInitialLines(t, renderNeofetch()))
   const [input, setInput] = useState('')
   const [history, setHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState<number | null>(null)
@@ -151,6 +208,8 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
               "    Type ' dev | credits ' to discover how this website has been made.",
               "    Type ' tr | translate <it | en> | lang ' to translate the website in the desired language.",
               "    Type ' dump ' to show Everything!!!",
+              "    Type ' neofetch ' to print DaveOS system info.",
+              "    Type ' projects | repos | oss ' to list my open source projects.",
               "    Type ' clear | cls ' to clear the console.",
               "    Type ' show | menu ' to show/hide navigation.",
               "    Type ' v | version ' display version number.",
@@ -173,6 +232,8 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
               "    Digita ' dev | credits ' per scoprire come e stato realizzato questo sito.",
               "    Digita ' tr | translate <it | en> | lang ' per cambiare lingua.",
               "    Digita ' dump ' per mostrare tutto.",
+              "    Digita ' neofetch ' per le info di sistema di DaveOS.",
+              "    Digita ' projects | progetti | oss ' per i miei progetti open source.",
               "    Digita ' clear | cls ' per pulire la console.",
               "    Digita ' show | menu ' per mostrare/nascondere la navigazione.",
               "    Digita ' v | version ' per mostrare la versione.",
@@ -181,11 +242,44 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
             ]
       ),
       credits: () => terminalContent.creditsLines,
+      neofetch: () => [renderNeofetch()],
+      starwars: () => {
+        window.setTimeout(triggerEasterEgg, 600)
+        return [t('terminal.egg.crawl')]
+      },
+      order66: () => {
+        window.setTimeout(triggerEasterEgg, 900)
+        return [t('terminal.egg.order66')]
+      },
+      sudo: () => [t('terminal.egg.sudo')],
+      hodor: () => [t('terminal.egg.hodor')],
+      belin: () => [t('terminal.egg.belin')],
+      projects: () => [
+        <div key="terminal-projects" className="terminal-block">
+          {OPEN_SOURCE_PROJECTS.map((project) => (
+            <p key={project.id} className="mb-2">
+              <span className="font-bold text-[var(--term-green)]">{project.name}</span>
+              <span className="text-[var(--term-muted)]"> · {project.license}</span>
+              <br />
+              {project.tagline[contentLocale]}
+              <br />
+              <a
+                href={`https://github.com/${project.repo}`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[var(--term-cyan)] underline decoration-dotted underline-offset-2"
+              >
+                github.com/{project.repo}
+              </a>
+            </p>
+          ))}
+        </div>,
+      ],
       version: () => [
         `DavideMaggi.dev v${typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '0.0.0'}`,
       ],
       dump: () => {
-        const markdown = getAboutContent(contentLocale).markdown
+        const profile = getAboutContent(contentLocale)
         const experiences = getCalendarEvents(contentLocale)
         const certificates = getCertificateFolders(contentLocale).flatMap((folder) => folder.certificates)
 
@@ -243,7 +337,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
           contentLocale === 'en' ? '📦 Full Dump' : '📦 Dump Completo',
           '==================================',
           '',
-          renderTerminalMarkdown(markdown),
+          renderTerminalProfile(profile),
           '',
           contentLocale === 'en' ? '--- Experiences ---' : '--- Esperienze ---',
           ...experienceBlocks,
@@ -254,8 +348,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
       menu: () => ['Navigation toggle is not available in this desktop mode.'],
       show: () => ['Navigation toggle is not available in this desktop mode.'],
       about: () => {
-        const markdown = getAboutContent(contentLocale).markdown
-        return [renderTerminalMarkdown(markdown)]
+        return [renderTerminalProfile(getAboutContent(contentLocale))]
       },
       calendar: () => {
         const experiences = getCalendarEvents(contentLocale)
@@ -514,7 +607,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
       },
       clear: () => [],
     }),
-    [desktopApi, i18nApi, preferencesApi, t, terminalContent],
+    [calendarLocale, contentLocale, desktopApi, i18nApi, preferencesApi, t, terminalContent, renderNeofetch],
   )
 
   const aliases = useMemo<AliasMap>(
@@ -576,6 +669,20 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
       ping: 'ping',
       ls: 'ls',
       cat: 'cat',
+      neofetch: 'neofetch',
+      starwars: 'starwars',
+      episode: 'starwars',
+      crawl: 'starwars',
+      order66: 'order66',
+      sudo: 'sudo',
+      hodor: 'hodor',
+      belin: 'belin',
+      projects: 'projects',
+      progetti: 'projects',
+      repos: 'projects',
+      oss: 'projects',
+      fetch: 'neofetch',
+      sysinfo: 'neofetch',
       clear: 'clear',
       cls: 'clear',
       pulisci: 'clear',
@@ -703,44 +810,46 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
   }
 
   return (
-    <div className="flex h-full flex-col bg-slate-950 font-mono text-sm text-gray-300">
-      <div ref={outputRef} className="terminal-output flex-1 overflow-auto p-3.5">
+    <div
+      className="terminal-app flex h-full flex-col"
+      onClick={() => {
+        if (!window.getSelection()?.toString()) inputRef.current?.focus()
+      }}
+    >
+      <div ref={outputRef} className="terminal-output flex-1 overflow-auto px-4 py-3.5">
         {lines.map((line, index) => (
           typeof line.text === 'string' ? (
             <p
               key={`${line.type}-${index}`}
-              className={`mb-1.5 whitespace-pre-wrap text-left leading-[1.35] ${line.type === 'input' ? 'text-gray-50' : ''}`}
+              className={`mb-1.5 whitespace-pre-wrap text-left leading-[1.5] ${line.type === 'input' ? 'text-[var(--term-fg-strong)]' : ''}`}
             >
-              {line.type === 'input' ? (
-                <span className="text-green-500">{t('terminal.prompt')} </span>
-              ) : null}
+              {line.type === 'input' ? <TerminalPrompt user={promptUser} /> : null}
               {line.text}
             </p>
           ) : (
-            <div key={`${line.type}-${index}`} className="mb-1.5 text-left leading-[1.35]">
+            <div key={`${line.type}-${index}`} className="mb-2 text-left leading-[1.5]">
               {line.text}
             </div>
           )
         ))}
-      </div>
-      <form className="flex items-center gap-2.5 border-t border-slate-800 px-3.5 py-3" onSubmit={handleSubmit}>
-        <label className="text-green-500" htmlFor="terminal-input">
-          {t('terminal.prompt')}
-        </label>
-        <div className="relative flex-1">
+        <form className="flex items-center" onSubmit={handleSubmit}>
+          <label htmlFor="terminal-input" className="shrink-0">
+            <TerminalPrompt user={promptUser} />
+            <span className="sr-only">{t('terminal.prompt')}</span>
+          </label>
           <input
             id="terminal-input"
             ref={inputRef}
             autoComplete="off"
+            autoCapitalize="off"
             spellCheck={false}
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full border-none bg-transparent text-base font-inherit text-gray-200 outline-none caret-gray-50 md:text-sm"
+            className="terminal-input min-w-0 flex-1 border-none bg-transparent text-base outline-none md:text-[13px]"
           />
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   )
 }
-

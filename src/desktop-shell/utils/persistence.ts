@@ -19,12 +19,17 @@ export const PREFERENCES_STATE_KEY = 'desktop.preferences.v1'
 
 export const AVAILABLE_THEMES: readonly ThemeMode[] = ['dark', 'light'] as const
 export const AVAILABLE_WALLPAPERS: readonly WallpaperPreset[] = [
+  'darkside',
   'aurora',
   'graphite',
   'cobalt',
   'ember',
   'prism',
   'pearl',
+  'hyperspace',
+  'vortex',
+  'matrix',
+  'stardestroyer',
 ] as const
 export const AVAILABLE_DESKTOP_ICON_SIZES: readonly DesktopIconSize[] = ['small', 'normal', 'large', 'xl'] as const
 export const AVAILABLE_CLOCK_HOUR_FORMATS: readonly ClockHourFormat[] = ['locale', '12h', '24h'] as const
@@ -39,7 +44,7 @@ export const PLUGIN_IDS = Object.keys(DESKTOP_PLUGINS) as AppId[]
 
 export const DEFAULT_PREFERENCES: DesktopPreferences = {
   theme: 'dark',
-  wallpaper: 'aurora',
+  wallpaper: 'darkside',
   appIcons: {},
   desktopIconSize: 'large',
   clockHourFormat: 'locale',

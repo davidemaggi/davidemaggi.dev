@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react'
 
-export type AppId = 'terminal' | 'about' | 'help' | 'settings' | 'calendar' | 'certManager' | 'arkanoid' | 'easterEgg'
+export type AppId = 'terminal' | 'about' | 'help' | 'settings' | 'calendar' | 'certManager' | 'arkanoid'
 export type Locale = 'it' | 'en'
 export type ThemeMode = 'dark' | 'light'
 export type WallpaperPreset =
@@ -10,6 +10,11 @@ export type WallpaperPreset =
   | 'ember'
   | 'prism'
   | 'pearl'
+  | 'hyperspace'
+  | 'vortex'
+  | 'matrix'
+  | 'darkside'
+  | 'stardestroyer'
 export type DesktopIconSize = 'small' | 'normal' | 'large' | 'xl'
 export type ClockHourFormat = 'locale' | '12h' | '24h'
 export type ClockDateFormat = 'locale' | 'dd/mm/yyyy' | 'mm/dd/yyyy' | 'yyyy-mm-dd'
@@ -100,6 +105,11 @@ export type AppIcon =
       kind: 'image'
       src: string
       alt: string
+      /** Icon already ships its own squircle background, so shells should not frame it. */
+      bare?: boolean
+    }
+  | {
+      kind: 'calendar'
     }
 
 export type DesktopPlugin = {
