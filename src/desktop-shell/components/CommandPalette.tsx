@@ -4,11 +4,12 @@ import { DESKTOP_PLUGINS } from '../../desktop/plugins'
 import { getCalendarEvents } from '../../desktop/resources/calendar'
 import { getCertificateFolders } from '../../desktop/resources/certManager'
 import { OPEN_SOURCE_PROJECTS } from '../../desktop/resources/projects'
+import { FALLBACK_POSTS } from '../../desktop/resources/blog'
 import type { AppId, DesktopPreferences, Locale } from '../../desktop/types'
 import { resolveAssetPath } from '../../desktop/utils/assetPath'
 import { renderAppIcon, resolveAppIcon } from '../utils/icons'
 
-type PaletteGroup = 'apps' | 'projects' | 'experience' | 'certificates'
+type PaletteGroup = 'apps' | 'blog' | 'projects' | 'experience' | 'certificates'
 
 type PaletteItem = {
   key: string
@@ -29,7 +30,7 @@ type CommandPaletteProps = {
   onLaunch: (id: AppId, query?: string) => void
 }
 
-const GROUP_ORDER: PaletteGroup[] = ['apps', 'projects', 'experience', 'certificates']
+const GROUP_ORDER: PaletteGroup[] = ['apps', 'blog', 'projects', 'experience', 'certificates']
 const MAX_PER_GROUP = 6
 
 const imageIcon = (src: string) => (
@@ -90,7 +91,18 @@ export function CommandPalette({ locale, t, preferences, onClose, onLaunch }: Co
       query: project.id,
     }))
 
-    return [...apps, ...projects, ...experiences, ...certificates]
+    const posts = FALLBACK_POSTS.map<PaletteItem>((post) => ({
+      key: `post-${post.link}`,
+      group: 'blog',
+      title: post.title,
+      subtitle: 'monkeyproof.dev',
+      keywords: `${post.title} ${post.description} blog monkeyproof`,
+      icon: imageIcon('/icons/apps/monkeyproof.svg'),
+      appId: 'blog',
+      query: post.link,
+    }))
+
+    return [...apps, ...posts, ...projects, ...experiences, ...certificates]
   }, [locale, preferences, t])
 
   const results = useMemo(() => {

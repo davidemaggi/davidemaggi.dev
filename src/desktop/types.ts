@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react'
 
-export type AppId = 'terminal' | 'about' | 'help' | 'settings' | 'calendar' | 'certManager' | 'arkanoid'
+export type AppId = 'terminal' | 'about' | 'help' | 'settings' | 'calendar' | 'certManager' | 'blog' | 'arkanoid'
 export type Locale = 'it' | 'en'
 export type ThemeMode = 'dark' | 'light'
 export type WallpaperPreset =

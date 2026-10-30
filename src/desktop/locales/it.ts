@@ -377,6 +377,25 @@ const it = {
   'achievement.stardestroyer': "L'Impero ti dà il benvenuto a bordo. Lo sfondo Flotta Imperiale ora è in Impostazioni.",
   'wallpaper.stardestroyer': 'Flotta Imperiale',
   'crawl.continue': 'Torna a DaveOS',
+
+  'app.blog.title': 'MonkeyProof',
+  'blog.tagline': 'Architettura software, backend engineering e caos tecnicamente accurato.',
+  'blog.intro.caption': '∞ scimmie · ∞ macchine da scrivere · {{count}} articoli finora',
+  'blog.replay': 'Rivedi le scimmie',
+  'blog.visit': 'Visita il blog',
+  'blog.latest': 'Ultimo articolo',
+  'blog.read': "Leggi l'articolo",
+  'blog.back': 'La redazione',
+  'blog.openExternal': 'Apri in una nuova scheda',
+  'blog.loading': 'Le scimmie stanno recuperando le banane…',
+  'blog.colophon': 'Battuto a macchina da ∞ scimmie. Corretto da un architetto.',
+  'palette.group.blog': 'Blog',
+  'terminal.blog.heading': 'MonkeyProof — ultimi articoli',
+
+  'blog.live': 'Feed live',
+  'blog.offline': 'Copia offline',
+  'blog.count': '{{count}} articoli',
+  'blog.updated': 'Ultimo articolo: {{date}}',
 } as const
 
 export default it
