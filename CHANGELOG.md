@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/davidemaggi/davidemaggi.dev/compare/v1.1.0...v1.2.0) (2026-10-30)
+
+
+### Features
+
+* MonkeyProof blog app, README and icon fix ([#21](https://github.com/davidemaggi/davidemaggi.dev/issues/21)) ([633fec3](https://github.com/davidemaggi/davidemaggi.dev/commit/633fec3cfa05e16903dbe3d51ec83240b802fbac))
+
 # [1.1.0](https://github.com/davidemaggi/davidemaggi.dev/compare/v1.0.3...v1.1.0) (2026-10-25)
 
 
