@@ -1,7 +1,7 @@
 services:
   davidemaggidev:
     container_name: davidemaggidev
-    image: ghcr.io/davidemaggidev/davidemaggidev:latest
+    image: ghcr.io/davidemaggi/davidemaggi.dev:latest
     ports:
       - "8080:80"
     restart: unless-stopped
