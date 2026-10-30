@@ -58,8 +58,8 @@ const DESKTOP_ICON_SIZE_CLASSES = {
   },
   large: {
     column: 'w-36',
-    button: 'w-full gap-2 p-2',
-    tile: 'h-15 w-15 p-3',
+    button: 'w-full gap-1.5 px-2 py-1.5',
+    tile: 'h-14 w-14 p-3',
     label: 'text-[13px]',
   },
   xl: {
@@ -467,7 +467,7 @@ function App() {
       />
 
       <nav
-        className={`relative z-[6] flex max-h-[calc(100svh-6rem)] flex-col flex-wrap gap-1 p-3 pt-11 ${desktopIconClasses.column}`}
+        className={`relative z-[6] flex max-h-[calc(100svh-6rem)] flex-col flex-wrap gap-0.5 p-3 pt-10 ${desktopIconClasses.column}`}
         aria-label={t('desktop.icons.label')}
       >
         {discoverablePlugins.map((plugin, index) => {

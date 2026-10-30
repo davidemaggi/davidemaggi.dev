@@ -1,4 +1,3 @@
-import { APP_ICON_CHOICES_BY_ID } from '../../desktop/appIcons'
 import { AVAILABLE_LOCALES, DEFAULT_LOCALE } from '../../desktop/i18n'
 import { DESKTOP_PLUGINS } from '../../desktop/plugins'
 import type {
@@ -175,19 +174,12 @@ export const loadPersistedPreferences = (): DesktopPreferences => {
       ? (parsed.clockDateFormat as ClockDateFormat)
       : DEFAULT_PREFERENCES.clockDateFormat
 
-    const rawIcons = parsed.appIcons
-    const appIcons = PLUGIN_IDS.reduce((result, id) => {
-      const iconId = rawIcons?.[id]
-      if (iconId && APP_ICON_CHOICES_BY_ID[iconId]) {
-        result[id] = iconId
-      }
-      return result
-    }, {} as Partial<Record<AppId, string>>)
-
+    // Per-app icon overrides came from the pre-redesign Settings, which no longer offers them:
+    // drop any stored choice so old icons can't hide the current set (it is overwritten on next save).
     return {
       theme,
       wallpaper,
-      appIcons,
+      appIcons: {},
       desktopIconSize,
       clockHourFormat,
       clockDateFormat,

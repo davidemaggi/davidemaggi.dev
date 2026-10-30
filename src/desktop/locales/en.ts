@@ -377,6 +377,25 @@ const en = {
   'achievement.stardestroyer': 'The Empire welcomes you aboard. The Imperial Fleet wallpaper is now in Settings.',
   'wallpaper.stardestroyer': 'Imperial Fleet',
   'crawl.continue': 'Back to DaveOS',
+
+  'app.blog.title': 'MonkeyProof',
+  'blog.tagline': 'Software architecture, backend engineering and technically accurate chaos.',
+  'blog.intro.caption': '∞ monkeys · ∞ typewriters · {{count}} articles so far',
+  'blog.replay': 'Replay the monkeys',
+  'blog.visit': 'Visit the blog',
+  'blog.latest': 'Latest article',
+  'blog.read': 'Read the article',
+  'blog.back': 'The Press',
+  'blog.openExternal': 'Open in a new tab',
+  'blog.loading': 'Monkeys fetching bananas…',
+  'blog.colophon': 'Typed by ∞ monkeys. Proofread by one architect.',
+  'palette.group.blog': 'Blog',
+  'terminal.blog.heading': 'MonkeyProof — latest articles',
+
+  'blog.live': 'Live feed',
+  'blog.offline': 'Offline copy',
+  'blog.count': '{{count}} articles',
+  'blog.updated': 'Last article: {{date}}',
 } as const
 
 export default en

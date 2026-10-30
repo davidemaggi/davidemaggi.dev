@@ -1,5 +1,6 @@
 import { AboutApp } from '../apps/AboutApp'
 import { ArkanoidApp } from '../apps/ArkanoidApp'
+import { BlogApp } from '../apps/BlogApp'
 import { AppStoreApp } from '../apps/AppStoreApp'
 import { CalendarApp } from '../apps/CalendarApp'
 import { CertManagerApp } from '../apps/CertManagerApp'
@@ -55,6 +56,23 @@ export const DESKTOP_PLUGINS: Record<AppId, DesktopPlugin> = {
       height: 620,
     },
     Component: CertManagerApp,
+  },
+  blog: {
+    id: 'blog',
+    titleKey: 'app.blog.title',
+    icon: {
+      kind: 'image',
+      src: '/icons/apps/monkeyproof.svg',
+      alt: 'MonkeyProof icon',
+      bare: true,
+    },
+    defaultBounds: {
+      x: 180,
+      y: 56,
+      width: 900,
+      height: 640,
+    },
+    Component: BlogApp,
   },
   terminal: {
     id: 'terminal',

@@ -8,6 +8,7 @@ import type { WorkExperienceEvent } from '../desktop/resources/calendar/types'
 import type { DesktopAppProps, Locale } from '../desktop/types'
 import { getTerminalContent } from '../desktop/resources/terminal'
 import { OPEN_SOURCE_PROJECTS } from '../desktop/resources/projects'
+import { FALLBACK_POSTS } from '../desktop/resources/blog'
 import { useProfileSummary } from '../desktop-shell/hooks/useProfileSummary'
 import { triggerEasterEgg } from '../desktop-shell/utils/easterEgg'
 import { formatDesktopDateTime } from '../desktop/utils/dateTimeFormat'
@@ -210,6 +211,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
               "    Type ' dump ' to show Everything!!!",
               "    Type ' neofetch ' to print DaveOS system info.",
               "    Type ' projects | repos | oss ' to list my open source projects.",
+              "    Type ' blog | posts ' to list the latest MonkeyProof articles.",
               "    Type ' clear | cls ' to clear the console.",
               "    Type ' show | menu ' to show/hide navigation.",
               "    Type ' v | version ' display version number.",
@@ -234,6 +236,7 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
               "    Digita ' dump ' per mostrare tutto.",
               "    Digita ' neofetch ' per le info di sistema di DaveOS.",
               "    Digita ' projects | progetti | oss ' per i miei progetti open source.",
+              "    Digita ' blog | articoli ' per gli ultimi articoli di MonkeyProof.",
               "    Digita ' clear | cls ' per pulire la console.",
               "    Digita ' show | menu ' per mostrare/nascondere la navigazione.",
               "    Digita ' v | version ' per mostrare la versione.",
@@ -243,6 +246,19 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
       ),
       credits: () => terminalContent.creditsLines,
       neofetch: () => [renderNeofetch()],
+      blog: () => [
+        <div key="terminal-blog" className="terminal-block">
+          <p className="mb-2 font-bold text-[var(--term-accent)]">{t('terminal.blog.heading')}</p>
+          {FALLBACK_POSTS.map((post) => (
+            <p key={post.link} className="mb-1.5">
+              <span className="text-[var(--term-muted)]">{post.publishedAt.slice(0, 10)} </span>
+              <a href={post.link} target="_blank" rel="noreferrer" className="text-[var(--term-cyan)] underline decoration-dotted underline-offset-2">
+                {post.title}
+              </a>
+            </p>
+          ))}
+        </div>,
+      ],
       starwars: () => {
         window.setTimeout(triggerEasterEgg, 600)
         return [t('terminal.egg.crawl')]
@@ -670,6 +686,9 @@ export function TerminalApp({ desktopApi, i18nApi, preferencesApi, launchIntent 
       ls: 'ls',
       cat: 'cat',
       neofetch: 'neofetch',
+      blog: 'blog',
+      posts: 'blog',
+      articoli: 'blog',
       starwars: 'starwars',
       episode: 'starwars',
       crawl: 'starwars',
