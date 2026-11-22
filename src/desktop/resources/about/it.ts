@@ -2,13 +2,13 @@ import type { AboutContent } from './types'
 
 const itAboutContent: AboutContent = {
   greeting: 'Ciao! Sono Davide',
-  headline: 'Tech Lead · System Architect · Nerd di Star Wars',
+  headline: 'Manager · System Architect · Nerd a tempo pieno',
   bio: [
-    'Potrei non essere un Jedi, ma la forza di un tech lead e un architetto scorre potente in me.',
-    'Con oltre 20 anni di esperienza nella programmazione, ho le competenze per progettare e guidare un team di sviluppatori nell\'ideazione di soluzioni innovative che ti faranno dire "non è una luna, è una stazione spaziale".',
-    'Sono appassionato di coding e adoro creare software che non solo sia funzionale, ma anche elegante e manutenibile. Sono un convinto sostenitore della scrittura di codice leggibile e mi sforzo sempre di ottenere un codice di facile comprensione. Nel mio tempo libero, mi puoi trovare a nerdare su Star Wars e a giocare ai videogiochi.',
+    'Ho passato più di 20 anni a scrivere codice. Poi qualcuno mi ha consegnato un calendario, un team e un badge con scritto "Manager". Sto ancora cercando di capire chi ha perso la scommessa.',
+    'Oggi il mio lavoro è fare in modo che chi scrive il codice abbia tutto quello che gli serve: obiettivi chiari, meno riunioni inutili e qualcuno a cui dare la colpa quando il deploy del venerdì va storto. Meno Darth Vader che strozza gli ufficiali per il budget della Morte Nera, più un ammiraglio che ascolta gli ingegneri prima che quel condotto di scarico diventi un problema.',
+    'Il terminale però non l\'ho mollato del tutto: disegno ancora diagrammi architetturali che nessuno mi ha chiesto, ogni tanto revisiono qualche PR e rompo cose nei miei side project per non perdere l\'abitudine. Fuori orario mi trovi a riguardare Star Wars per la centesima volta, a divorare fantascienza, a pianificare la mia strategia per l\'apocalisse zombie, a giocare ai videogiochi o a far volare un drone dove probabilmente non dovrei.',
   ],
-  signOff: 'Che la forza sia con te e con il tuo codice.',
+  signOff: 'Che la forza sia con te e con il tuo sprint.',
   info: {
     email: 'me[at]davidemaggi.dev',
     phone: 'Disponibile su richiesta',
@@ -43,7 +43,7 @@ const itAboutContent: AboutContent = {
   interests: [
     { label: 'Ex giocatore e arbitro di Serie A di pallanuoto', icon: '/icons/waterpolo.svg' },
     { label: 'Amante della pizza', icon: '/icons/pizza.svg' },
-    { label: 'Creatore di bug senior', icon: '/icons/bug.svg' },
+    { label: 'Creatore di bug in pensione, ora li delego', icon: '/icons/bug.svg' },
     { label: "Supporter dell'Impero", icon: '/icons/empire.svg', mono: true },
     { label: 'Amo viaggiare', icon: '/icons/travel.svg' },
     { label: 'Amante di film e serie TV', icon: '/icons/movie.svg' },

@@ -254,8 +254,8 @@ const en = {
 
   'hero.status': 'Online · Rapallo, Italy',
   'hero.greeting': "Hi there, I'm",
-  'hero.roles': 'System Architect|Tech Lead|Solution Architect|Full-stack Engineer|Expert Bug Maker',
-  'hero.tagline': "I design systems and lead teams that ship software that's not just functional, but elegant and maintainable. Not a Jedi — but the Force is strong with this one.",
+  'hero.roles': 'Manager|System Architect|Solution Architect|Full-stack Engineer|Retired Bug Maker',
+  'hero.tagline': "I lead teams that ship software that's not just functional, but elegant and maintainable, and I still sneak in some architecture now and then. Not a Jedi, but the Force is strong with this one.",
   'hero.stat.years': 'years writing code',
   'hero.stat.roles': 'roles',
   'hero.stat.tech': 'technologies',

@@ -254,8 +254,8 @@ const it = {
 
   'hero.status': 'Online · Rapallo, Italia',
   'hero.greeting': 'Ciao, sono',
-  'hero.roles': 'System Architect|Tech Lead|Solution Architect|Ingegnere Full-stack|Esperto creatore di bug',
-  'hero.tagline': 'Progetto sistemi e guido team che rilasciano software non solo funzionante, ma elegante e manutenibile. Non sono un Jedi, ma la Forza è potente in me.',
+  'hero.roles': 'Manager|System Architect|Solution Architect|Ingegnere Full-stack|Creatore di bug in pensione',
+  'hero.tagline': 'Guido team che rilasciano software non solo funzionante, ma elegante e manutenibile, e ogni tanto disegno ancora l\'architettura. Non sono un Jedi, ma la Forza è potente in me.',
   'hero.stat.years': 'anni di codice',
   'hero.stat.roles': 'ruoli',
   'hero.stat.tech': 'tecnologie',

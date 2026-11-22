@@ -2,13 +2,13 @@ import type { AboutContent } from './types'
 
 const enAboutContent: AboutContent = {
   greeting: "Hi! I'm Davide",
-  headline: 'Tech Lead · System Architect · Star Wars nerd',
+  headline: 'Manager · System Architect · Full-time nerd',
   bio: [
-    'I may not be a Jedi, but I have the force of a powerful tech lead and architect.',
-    'With over 20 years of programming experience, I have the skills to design and lead a team of developers to create innovative solutions that will make you say "that\'s no moon, it\'s a space station".',
-    "I'm passionate about coding and I love to create software that's not just functional, but also elegant and maintainable. I'm a firm believer in writing readable code and I always strive for code that's easy to understand. In my free time, I can be found nerding out over Star Wars and playing video games.",
+    'I spent 20+ years writing code. Then someone handed me a calendar, a team and a badge that says "Manager". I\'m still trying to figure out who lost the bet.',
+    'These days my job is making sure the people writing the code have what they need: clear goals, fewer pointless meetings, and someone to blame when the Friday deploy goes sideways. Less Darth Vader force-choking officers over the Death Star budget, more an admiral who actually listens to the engineers before that exhaust port becomes a problem.',
+    "I haven't fully left the terminal, though. I still draw architecture diagrams nobody asked for, review the odd PR, and break things in my side projects so I don't lose the habit. Off the clock you'll find me rewatching Star Wars for the hundredth time, binging sci-fi, fine-tuning my zombie apocalypse survival plan, playing video games, or flying a drone somewhere I probably shouldn't.",
   ],
-  signOff: 'May the force be with you and your code.',
+  signOff: 'May the force be with you and your sprint.',
   info: {
     email: 'me[at]davidemaggi.dev',
     phone: 'Available on request',
@@ -43,7 +43,7 @@ const enAboutContent: AboutContent = {
   interests: [
     { label: 'Former National Waterpolo player & referee', icon: '/icons/waterpolo.svg' },
     { label: 'Pizza lover', icon: '/icons/pizza.svg' },
-    { label: 'Expert bug maker', icon: '/icons/bug.svg' },
+    { label: 'Retired bug maker, now bug delegator', icon: '/icons/bug.svg' },
     { label: 'Empire supporter', icon: '/icons/empire.svg', mono: true },
     { label: 'Love to travel', icon: '/icons/travel.svg' },
     { label: 'Movies & series enthusiast', icon: '/icons/movie.svg' },
