@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="spellbook">
+  <defs>
+    <linearGradient id="sb-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e1b4b"/>
+      <stop offset="0.55" stop-color="#4c1d95"/>
+      <stop offset="1" stop-color="#7e22ce"/>
+    </linearGradient>
+    <radialGradient id="sb-glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fde68a" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#fde68a" stop-opacity="0"/>
+    </radialGradient>
+    <symbol id="sb-spark" viewBox="-10 -10 20 20">
+      <path d="M0-10 L2-2 L10 0 L2 2 L0 10 L-2 2 L-10 0 L-2-2Z" fill="#fef3c7"/>
+    </symbol>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="56" fill="url(#sb-bg)"/>
+  <g fill="#ffffff" opacity="0.7">
+    <circle cx="44" cy="52" r="2"/><circle cx="206" cy="200" r="1.6"/><circle cx="58" cy="206" r="1.4"/><circle cx="214" cy="96" r="1.4"/>
+  </g>
+  <use href="#sb-spark" x="186" y="34" width="30" height="30" opacity="0.95"/>
+  <use href="#sb-spark" x="36" y="150" width="18" height="18" opacity="0.8"/>
+  <g transform="translate(43 82)">
+    <ellipse cx="85" cy="70" rx="110" ry="85" fill="url(#sb-glow)"/>
+    <path d="M85 40 C60 22 25 20 0 28 L0 128 C25 120 60 122 85 140 Z" fill="#fef3c7" stroke="#fbbf24" stroke-width="4"/>
+    <path d="M85 40 C110 22 145 20 170 28 L170 128 C145 120 110 122 85 140 Z" fill="#fffbeb" stroke="#fbbf24" stroke-width="4"/>
+    <g stroke="#a78bfa" stroke-width="5" stroke-linecap="round" fill="none">
+      <path d="M18 56 Q45 50 70 60"/><path d="M18 80 Q45 74 70 84"/><path d="M18 104 Q40 99 60 106"/>
+      <path d="M100 60 Q125 50 152 56"/><path d="M100 84 Q125 74 152 80"/><path d="M110 106 Q130 99 152 104"/>
+    </g>
+    <use href="#sb-spark" x="62" y="-34" width="26" height="26"/>
+    <use href="#sb-spark" x="100" y="-16" width="16" height="16"/>
+  </g>
+</svg>

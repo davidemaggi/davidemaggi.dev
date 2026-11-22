@@ -345,7 +345,7 @@ const it = {
   'appStore.download': 'Scarica',
   'appStore.about': 'Descrizione',
   'appStore.features': 'In evidenza',
-  'appStore.install.title': 'Installa con un package manager',
+  'appStore.install.title': 'Installazione',
   'appStore.stack': 'Realizzato con',
   'appStore.fact.version': 'Ultima versione',
   'appStore.fact.released': 'Rilasciata',

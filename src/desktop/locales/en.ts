@@ -345,7 +345,7 @@ const en = {
   'appStore.download': 'Download',
   'appStore.about': 'About',
   'appStore.features': 'Highlights',
-  'appStore.install.title': 'Install with a package manager',
+  'appStore.install.title': 'Install',
   'appStore.stack': 'Built with',
   'appStore.fact.version': 'Latest',
   'appStore.fact.released': 'Released',
