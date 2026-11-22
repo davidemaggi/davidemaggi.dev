@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/davidemaggi/davidemaggi.dev/compare/v1.3.0...v1.4.0) (2026-11-22)
+
+
+### Features
+
+* add Kamino, Conrad and spellbook to the App Store and new >DM_ favicon ([#24](https://github.com/davidemaggi/davidemaggi.dev/issues/24)) ([a784124](https://github.com/davidemaggi/davidemaggi.dev/commit/a784124ecda1b8496217854da83a93eed8e5bdeb))
+
 # [1.3.0](https://github.com/davidemaggi/davidemaggi.dev/compare/v1.2.0...v1.3.0) (2026-11-22)
 
 
