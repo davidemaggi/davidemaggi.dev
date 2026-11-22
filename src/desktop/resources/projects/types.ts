@@ -2,7 +2,7 @@ import type { Locale } from '../../types'
 
 export type Localized<T = string> = Record<Locale, T>
 
-export type ProjectPlatform = 'macos' | 'windows' | 'linux'
+export type ProjectPlatform = 'macos' | 'windows' | 'linux' | 'ios' | 'android' | 'docker'
 
 /**
  * One open source project shown in the App Store.
@@ -28,6 +28,8 @@ export type OpenSourceProject = {
   license: string
   /** Optional package-manager one-liners shown on the project page. */
   install?: string[]
+  /** Overrides the Download button target (defaults to the latest GitHub release). */
+  downloadUrl?: string
   /** Shown as the App Store "app of the day" banner. */
   featured?: boolean
 }

@@ -14,6 +14,9 @@ const PLATFORM_LABELS: Record<ProjectPlatform, string> = {
   macos: 'macOS',
   windows: 'Windows',
   linux: 'Linux',
+  ios: 'iOS',
+  android: 'Android',
+  docker: 'Docker',
 }
 
 const GITHUB_PROFILE = 'https://github.com/davidemaggi'
@@ -73,7 +76,7 @@ function ProjectPage({ project, locale, t, onBack }: { project: OpenSourceProjec
     }
   }
 
-  const releaseUrl = stats?.releaseUrl ?? `https://github.com/${project.repo}/releases/latest`
+  const releaseUrl = project.downloadUrl ?? stats?.releaseUrl ?? `https://github.com/${project.repo}/releases/latest`
   const facts = [
     { label: t('appStore.fact.version'), value: stats?.version ?? '—' },
     {
