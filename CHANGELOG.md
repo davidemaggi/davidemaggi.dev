@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/davidemaggi/davidemaggi.dev/compare/v1.2.0...v1.3.0) (2026-11-22)
+
+
+### Features
+
+* rewrite About page and align site copy with Manager role ([#23](https://github.com/davidemaggi/davidemaggi.dev/issues/23)) ([fd4fe92](https://github.com/davidemaggi/davidemaggi.dev/commit/fd4fe928162a1deed748e8362b2b7139e722f39a))
+
 # [1.2.0](https://github.com/davidemaggi/davidemaggi.dev/compare/v1.1.0...v1.2.0) (2026-10-30)
 
 
