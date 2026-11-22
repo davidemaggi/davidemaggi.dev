@@ -3,10 +3,10 @@ import type { WorkExperienceEvent } from './types'
 const itCalendarEvents: WorkExperienceEvent[] = [
   {
     id: 'accenture_22',
-    role: 'System Architect, Manager',
+    role: 'Manager, System Architect',
     companyName: 'Accenture Industry X',
     description:
-      'Sono un System Architect presso Accenture Industry X, dove coordino lo sviluppo di una soluzione per la gestione della qualità. Nel mio ruolo, mi occupo della progettazione dell\'architettura complessiva del sistema, ricoprendo anche il ruolo di tech lead e guidando il team di sviluppo nell\'implementazione. Lavoro a stretto contatto con la direzione per garantire che gli obiettivi del progetto siano allineati e che la soluzione soddisfi i requisiti sia aziendali che tecnici.',
+      'Sono Manager presso Accenture Industry X, dove guido il team che sviluppa una soluzione per la gestione della qualità. Mi occupo soprattutto di persone e delivery: definire gli obiettivi, pianificare il lavoro, far crescere il team e mantenere gli stakeholder allineati su priorità e risultati. Avendo progettato l\'architettura del sistema, continuo a indirizzarne le scelte tecniche, assicurandomi che la soluzione soddisfi i requisiti sia aziendali che tecnici.',
     barColor: '#A100FF',
     icon: {
       src: '/icons/accenture.svg',

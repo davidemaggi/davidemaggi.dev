@@ -3,10 +3,10 @@ import type { WorkExperienceEvent } from './types'
 const enCalendarEvents: WorkExperienceEvent[] = [
   {
     id: 'accenture_22',
-    role: 'System Architect, Manager',
+    role: 'Manager, System Architect',
     companyName: 'Accenture Industry X',
     description:
-        'I am a System Architect at Accenture Industry X, leading the development of a quality management solution. In my role, I design the overall architecture of the system while also acting as a technical lead, guiding the development team through the implementation process. I collaborate closely with management to ensure alignment on project goals and deliverables, ensuring the solution meets both business and technical requirements.',
+        'I am a Manager at Accenture Industry X, where I lead the team building a quality management solution. My focus is on the people and the delivery: setting goals, planning the work, growing the team and keeping stakeholders aligned on priorities and deliverables. With a background as the system\'s architect, I still shape its technical direction, making sure the solution meets both business and technical requirements.',
     barColor: '#A100FF',
     icon: {
       src: '/icons/accenture.svg',
